@@ -678,7 +678,7 @@ export const translations = {
         verifiedDimensions: "Dimensiones Verificadas",
       },
       actions: {
-        like: "Me Gusta Esta Entrada",
+        like: "Me Gusta",
         liked: "Me Gusta",
         suggestDifferent: "Sugerir Diferente",
         share: "Compartir",
