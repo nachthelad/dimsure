@@ -9,6 +9,8 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { LanguageProvider } from "@/components/language-provider"
 import { siteConfig } from "@/lib/site-config"
 import { Footer } from "@/components/footer"
+import { CookieConsent } from "@/components/cookie-consent"
+import { AccountReactivation } from "@/components/account-reactivation"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -56,7 +58,7 @@ export const metadata: Metadata = {
   alternates: {
     canonical: siteConfig.url,
   },
-    generator: 'v0.dev'
+  generator: "v0.dev",
 }
 
 export default function RootLayout({
@@ -74,6 +76,24 @@ export default function RootLayout({
           crossOrigin="anonymous"
           strategy="afterInteractive"
         />
+
+        {/* Google Analytics with Consent Mode */}
+        <Script src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID" strategy="afterInteractive" />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            
+            // Set default consent mode
+            gtag('consent', 'default', {
+              'analytics_storage': 'denied',
+              'ad_storage': 'denied'
+            });
+            
+            gtag('js', new Date());
+            gtag('config', 'GA_MEASUREMENT_ID');
+          `}
+        </Script>
 
         {/* Additional meta tags for better SEO and AdSense */}
         <meta name="google-adsense-account" content="ca-pub-1027418154196814" />
@@ -101,6 +121,8 @@ export default function RootLayout({
                 <Navbar />
                 <main>{children}</main>
                 <Footer />
+                <CookieConsent />
+                <AccountReactivation />
               </div>
             </UnitProvider>
           </LanguageProvider>
