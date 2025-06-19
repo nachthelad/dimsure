@@ -1,31 +1,31 @@
 {
   "site": {
     "name": "Dimsure",
-    "tagline": "Measure it once. Trust it forever.",
-    "description": "A public, community-powered database of box dimensions for products. Optimize your packaging and logistics with verified data."
+    "tagline": "Measure once. Trust forever.",
+    "description": "A public, collaborative database of product packaging dimensions. Optimize your packages and logistics with verified data."
   },
   "navigation": {
+    "home": "Home",
     "addProduct": "Add Product",
     "myContributions": "My Contributions",
     "communityDisputes": "Community Disputes",
     "blog": "Blog",
     "signIn": "Sign in with Google",
     "signOut": "Sign out",
-    "myAccount": "My Account",
-    "home": "Home"
+    "myAccount": "My Account"
   },
   "home": {
     "hero": {
-      "title": "Measure it once.",
-      "titleHighlight": "Trust it forever.",
-      "subtitle": "A public, community-powered database of box dimensions for products. Optimize your packaging and logistics with verified data."
+      "title": "Measure once.",
+      "titleHighlight": "Trust forever.",
+      "subtitle": "A public, collaborative database of product packaging dimensions. Optimize your packages and logistics with verified data."
     },
     "stats": {
       "totalProducts": "Total Products",
       "productsInDatabase": "Products in database",
       "contributions": "Contributions",
-      "dataSubmissions": "Data submissions & updates",
-      "avgConfidence": "Avg. Confidence",
+      "dataSubmissions": "Data submissions and updates",
+      "avgConfidence": "Avg Confidence",
       "dataReliability": "Data reliability"
     },
     "recentlyAdded": {
@@ -66,7 +66,7 @@
       "imageUpload": "Click to upload or drag and drop",
       "imageFormats": "PNG, JPG up to 10MB",
       "submittedBy": "Submitted by:",
-      "attribution": "Your contribution will be attributed to your account and will appear in \"My Contributions\".",
+      "attribution": "Your contribution will be attributed to your account and appear in \"My Contributions\".",
       "submit": "Submit Product",
       "submitting": "Creating Product..."
     },
@@ -76,11 +76,11 @@
       "redirecting": "Redirecting to product page..."
     },
     "suggestions": {
-      "cleanSpacing": "Clean up spacing:",
+      "cleanSpacing": "Clean spacing:",
       "apply": "Apply"
     },
     "validation": {
-      "nameRequired": "Product name must be at least 3 characters long",
+      "nameRequired": "Product name must be at least 3 characters",
       "nameTooLong": "Product name must be less than 100 characters",
       "loginRequired": "You must be logged in to add a product"
     }
@@ -107,7 +107,7 @@
       "addFirst": "Add Your First Product",
       "debugInfo": "Debug Info",
       "refresh": "Refresh",
-      "fixOrphans": "Fix Orphan Products",
+      "fixOrphans": "Fix Orphaned Products",
       "fixing": "Fixing...",
       "clearSearch": "Clear Search"
     },
@@ -115,7 +115,7 @@
       "noProducts": "No Products Yet",
       "noProductsMessage": "You haven't submitted any products to the database yet.",
       "noResults": "No Results Found",
-      "noResultsMessage": "No products match your search for \"{{searchTerm}}\". Try a different search term."
+      "noResultsMessage": "No products match your search for \"{{searchTerm}}\". Try a different term."
     },
     "orphanProducts": {
       "notFound": "No contributions found",
@@ -134,7 +134,7 @@
       "verifiedDimensions": "Verified Dimensions"
     },
     "actions": {
-      "like": "Like This Entry",
+      "like": "Like",
       "liked": "Liked",
       "suggestDifferent": "Suggest Different",
       "share": "Share",
@@ -160,7 +160,7 @@
     "comments": {
       "title": "Community Comments",
       "noComments": "No Comments Yet",
-      "noCommentsMessage": "Be the first to share your thoughts about these dimensions."
+      "noCommentsMessage": "Be the first to share your thoughts on these dimensions."
     },
     "history": {
       "title": "Version History",
@@ -171,7 +171,7 @@
   "auth": {
     "signIn": {
       "title": "Sign in to Dimsure",
-      "message": "You need to be signed in to access this feature",
+      "message": "You need to sign in to access this feature",
       "continueWithGoogle": "Continue with Google",
       "backToHome": "Back to Home",
       "agreement": "By signing in, you agree to our Terms of Service and Privacy Policy"
@@ -186,7 +186,7 @@
       "description": "Choose a unique username that will be displayed with your contributions.",
       "username": "Username",
       "placeholder": "your_username",
-      "requirements": "• 3-20 characters • Letters, numbers, and underscores only",
+      "requirements": "• 3-20 characters • Only letters, numbers, and underscores",
       "cancel": "Cancel",
       "save": "Save Username",
       "saving": "Saving...",
@@ -195,15 +195,15 @@
         "tooShort": "Username must be at least 3 characters",
         "tooLong": "Username must be less than 20 characters",
         "invalidChars": "Username can only contain letters, numbers, and underscores",
-        "permissionDenied": "Permission denied. Please try signing out and back in, then try again.",
-        "notFound": "User not found. Please try signing out and back in.",
-        "insufficientPermissions": "Database permission error. Please try signing out and back in.",
+        "permissionDenied": "Permission denied. Try signing out and back in, then try again.",
+        "notFound": "User not found. Try signing out and back in.",
+        "insufficientPermissions": "Database permission error. Try signing out and back in.",
         "updateFailed": "Failed to update username: {{error}}"
       }
     }
   },
   "footer": {
-    "description": "A public, community-powered database of box dimensions for products. Measure it once. Trust it forever.",
+    "description": "A public, collaborative database of product packaging dimensions. Measure once. Trust forever.",
     "sections": {
       "product": "Product",
       "company": "Company",
@@ -228,23 +228,23 @@
     "subtitle": "We're building the world's most comprehensive database of product packaging dimensions, powered by a community of logistics professionals, e-commerce sellers, and shipping enthusiasts.",
     "mission": {
       "title": "Our Mission",
-      "description1": "Every day, millions of packages are shipped around the world. Yet finding accurate packaging dimensions for products remains a frustrating challenge for e-commerce sellers, logistics professionals, and consumers.",
-      "description2": "Dimsure solves this problem by creating a free, open, and community-driven database where anyone can contribute and access verified packaging dimensions. Our goal is simple:",
-      "goal": "measure it once, trust it forever."
+      "description1": "Every day, millions of packages are shipped around the world. Yet finding accurate packaging dimensions for products remains a frustrating challenge for e-commerce sellers, logistics professionals, and consumers alike.",
+      "description2": "Dimsure solves this by creating a free, open, community-driven database where anyone can contribute and access verified packaging dimensions. Our goal is simple:",
+      "goal": "measure once, trust forever."
     },
     "whyMatters": {
       "title": "Why Accurate Dimensions Matter",
       "ecommerce": {
         "title": "E-commerce Sellers",
-        "description": "Calculate accurate shipping costs, optimize packaging, and reduce returns due to size expectations."
+        "description": "Calculate precise shipping costs, optimize packaging, and reduce returns due to size expectations."
       },
       "logistics": {
         "title": "Logistics Companies",
-        "description": "Optimize warehouse space, plan transportation capacity, and improve delivery efficiency."
+        "description": "Optimize warehouse space, plan transport capacity, and improve delivery efficiency."
       },
       "consumers": {
         "title": "Consumers",
-        "description": "Make informed purchasing decisions and plan storage space before buying products online."
+        "description": "Make informed purchase decisions and plan storage space before buying products online."
       }
     },
     "howItWorks": {
@@ -259,7 +259,7 @@
       },
       "step3": {
         "title": "Everyone Benefits",
-        "description": "Free access to accurate, crowd-sourced packaging data for everyone."
+        "description": "Free access to accurate, collaborative packaging data for all."
       }
     },
     "community": {
@@ -278,8 +278,8 @@
     "title": "Contact Us",
     "subtitle": "Have questions, suggestions, or want to collaborate? We'd love to hear from you.",
     "email": {
-      "title": "Email Us",
-      "description": "For any questions, suggestions, or business inquiries, please reach out to us:",
+      "title": "Send us an Email",
+      "description": "For any questions, suggestions, or business inquiries, please contact us:",
       "responseTime": "We typically respond within 24-48 hours during business days."
     },
     "responseTime": {
@@ -295,7 +295,7 @@
       "title": "What Can We Help With?",
       "technical": {
         "title": "Technical Issues:",
-        "description": "Problems with the website, data accuracy, or account issues"
+        "description": "Website problems, data accuracy, or account issues"
       },
       "data": {
         "title": "Data Contributions:",
@@ -323,6 +323,142 @@
     "communityProject": {
       "title": "Community-Driven Project",
       "description": "Dimsure is built and maintained by a small team passionate about solving real logistics challenges. We appreciate your patience as we continue to improve and expand the platform based on community feedback."
+    }
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "subtitle": "Your privacy and data protection are important to us.",
+    "lastUpdated": "Last updated:",
+    "sections": {
+      "introduction": {
+        "title": "Introduction",
+        "description1": "Dimsure (\"we,\" \"our,\" or \"us\") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our website and services.",
+        "description2": "By using Dimsure, you agree to the collection and use of information in accordance with this policy."
+      },
+      "informationWeCollect": {
+        "title": "Information We Collect",
+        "personalInfo": {
+          "title": "Personal Information",
+          "googleAccount": "Name, email address, and profile picture when you sign in with Google",
+          "username": "Custom username you choose for your public profile",
+          "contributions": "Product data, dimensions, and descriptions you submit",
+          "interactions": "Likes, views, comments, and other platform activities"
+        },
+        "automaticInfo": {
+          "title": "Automatically Collected Information",
+          "usageData": "Pages visited, time spent, and user interactions",
+          "deviceInfo": "Browser type, operating system, and device identifiers",
+          "ipAddress": "For security and analytics purposes",
+          "cookies": "To enhance your experience and remember preferences"
+        }
+      },
+      "howWeUse": {
+        "title": "How We Use Your Information",
+        "accountManagement": "Create and manage your user account",
+        "serviceProvision": "Enable you to contribute and access product dimension data",
+        "attribution": "Display your contributions with your chosen username",
+        "communication": "Send important updates about our service",
+        "analytics": "Understand usage patterns to improve our platform",
+        "security": "Protect against fraud and unauthorized access",
+        "legalCompliance": "Meet legal obligations and enforce our terms"
+      },
+      "dataSharing": {
+        "title": "How We Share Your Information",
+        "noSelling": "🛡️ We DO NOT sell your personal data to third parties.",
+        "thirdPartyServices": {
+          "title": "Third-Party Services",
+          "google": "Authentication services and analytics",
+          "firebase": "Database and hosting services",
+          "vercel": "Website hosting and deployment",
+          "adsense": "Advertising services (anonymized data only)"
+        },
+        "publicInfo": {
+          "title": "Public Information",
+          "username": "Your username and product contributions are publicly visible",
+          "productData": "Product data you submit becomes part of our public database",
+          "comments": "Comments and interactions on products are publicly displayed"
+        }
+      },
+      "dataSecurity": {
+        "title": "Data Security",
+        "encryption": "All data is encrypted in transit and at rest",
+        "accessControl": "Limited access to personal data on a need-to-know basis",
+        "googleSecurity": "We leverage Google's enterprise-grade security infrastructure",
+        "regularUpdates": "Security measures are continuously updated and monitored",
+        "dataMinimization": "We only collect data necessary for our services"
+      },
+      "yourRights": {
+        "title": "Your Rights and Choices",
+        "accountManagement": {
+          "title": "Account Management",
+          "access": "View and download your personal data",
+          "correction": "Update or correct your information",
+          "deactivation": "Deactivate your account (data preserved for reactivation)",
+          "usernameChanges": "Modify your public username"
+        },
+        "dataControl": {
+          "title": "Data Control",
+          "cookiePreferences": "Manage cookie settings in your browser",
+          "marketingOptOut": "Unsubscribe from promotional communications",
+          "dataPortability": "Request a copy of your data in a portable format"
+        },
+        "note": "Product contributions may remain in our database even after account deactivation to maintain data integrity for the community. Your username will be anonymized if you choose to permanently delete your account."
+      },
+      "internationalUsers": {
+        "title": "International Users",
+        "gdprCompliance": {
+          "title": "GDPR Compliance (EU Users)",
+          "description": "If you are located in the European Union, you have additional rights under GDPR:",
+          "rightToBeForgotten": "Right to be forgotten (data deletion)",
+          "dataPortability": "Right to data portability",
+          "objectToProcessing": "Right to object to processing",
+          "withdrawConsent": "Right to withdraw consent"
+        },
+        "ccpaCompliance": {
+          "title": "CCPA Compliance (California Users)",
+          "description": "California residents have the right to:",
+          "knowInfo": "Know what personal information is collected",
+          "deleteInfo": "Delete personal information",
+          "optOutSale": "Opt-out of the sale of personal information",
+          "nonDiscrimination": "Non-discrimination for exercising privacy rights"
+        }
+      },
+      "cookies": {
+        "title": "Cookies and Tracking",
+        "description": "We use cookies and similar technologies to enhance your experience:",
+        "essential": {
+          "title": "Essential Cookies",
+          "authState": "Authentication state",
+          "security": "Security features",
+          "basicFunctionality": "Basic functionality"
+        },
+        "analytics": {
+          "title": "Analytics Cookies",
+          "usageStats": "Usage statistics",
+          "performanceMonitoring": "Performance monitoring",
+          "featureOptimization": "Feature optimization"
+        }
+      },
+      "dataRetention": {
+        "title": "Data Retention",
+        "activeAccounts": "Data retained while account is active",
+        "deactivatedAccounts": "Personal data preserved for potential reactivation",
+        "productContributions": "Retained indefinitely for community benefit",
+        "analyticsData": "Aggregated data retained for up to 26 months",
+        "legalRequirements": "Some data may be retained longer for legal compliance"
+      },
+      "changesToPolicy": {
+        "title": "Changes to This Privacy Policy",
+        "description": "We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the \"Last updated\" date. You are advised to review this Privacy Policy periodically for any changes."
+      },
+      "contact": {
+        "title": "Contact Us",
+        "description": "If you have any questions about this Privacy Policy or our data practices, please contact us:",
+        "email": "Email:",
+        "emailAddress": "privacy@dimsure.com",
+        "subjectLine": "Subject Line:",
+        "subjectText": "Privacy Policy Question - Dimsure"
+      }
     }
   },
   "common": {

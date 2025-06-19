@@ -339,38 +339,38 @@
         "title": "Información que Recopilamos",
         "personalInfo": {
           "title": "Información Personal",
-          "googleAccount": "Datos de Cuenta de Google: Nombre, dirección de email y foto de perfil cuando inicias sesión con Google",
-          "username": "Nombre de Usuario: Nombre de usuario personalizado que eliges para tu perfil público",
-          "contributions": "Contribuciones de Productos: Datos de productos, dimensiones y descripciones que envías",
-          "interactions": "Interacciones de Usuario: Me gusta, visualizaciones, comentarios y otras actividades en la plataforma"
+          "googleAccount": "Nombre, dirección de email y foto de perfil cuando inicias sesión con Google",
+          "username": "Nombre de usuario personalizado que eliges para tu perfil público",
+          "contributions": "Datos de productos, dimensiones y descripciones que envías",
+          "interactions": "Me gusta, visualizaciones, comentarios y otras actividades en la plataforma"
         },
         "automaticInfo": {
           "title": "Información Recopilada Automáticamente",
-          "usageData": "Datos de Uso: Páginas visitadas, tiempo transcurrido e interacciones del usuario",
-          "deviceInfo": "Información del Dispositivo: Tipo de navegador, sistema operativo e identificadores del dispositivo",
-          "ipAddress": "Dirección IP: Para propósitos de seguridad y análisis",
-          "cookies": "Cookies: Para mejorar tu experiencia y recordar preferencias"
+          "usageData": "Páginas visitadas, tiempo transcurrido e interacciones del usuario",
+          "deviceInfo": "Tipo de navegador, sistema operativo e identificadores del dispositivo",
+          "ipAddress": "Para propósitos de seguridad y análisis",
+          "cookies": "Para mejorar tu experiencia y recordar preferencias"
         }
       },
       "howWeUse": {
         "title": "Cómo Usamos tu Información",
-        "accountManagement": "Gestión de Cuenta: Crear y gestionar tu cuenta de usuario",
-        "serviceProvision": "Provisión del Servicio: Permitirte contribuir y acceder a datos de dimensiones de productos",
-        "attribution": "Atribución: Mostrar tus contribuciones con tu nombre de usuario elegido",
-        "communication": "Comunicación: Enviar actualizaciones importantes sobre nuestro servicio",
-        "analytics": "Análisis: Entender patrones de uso para mejorar nuestra plataforma",
-        "security": "Seguridad: Proteger contra fraude y acceso no autorizado",
-        "legalCompliance": "Cumplimiento Legal: Cumplir obligaciones legales y hacer cumplir nuestros términos"
+        "accountManagement": "Crear y gestionar tu cuenta de usuario",
+        "serviceProvision": "Permitirte contribuir y acceder a datos de dimensiones de productos",
+        "attribution": "Mostrar tus contribuciones con tu nombre de usuario elegido",
+        "communication": "Enviar actualizaciones importantes sobre nuestro servicio",
+        "analytics": "Entender patrones de uso para mejorar nuestra plataforma",
+        "security": "Proteger contra fraude y acceso no autorizado",
+        "legalCompliance": "Cumplir obligaciones legales y hacer cumplir nuestros términos"
       },
       "dataSharing": {
         "title": "Cómo Compartimos tu Información",
         "noSelling": "🛡️ NO vendemos tus datos personales a terceros.",
         "thirdPartyServices": {
           "title": "Servicios de Terceros",
-          "google": "Google: Servicios de autenticación y análisis",
-          "firebase": "Firebase: Servicios de base de datos y hosting",
-          "vercel": "Vercel: Hosting y despliegue del sitio web",
-          "adsense": "Google AdSense: Servicios de publicidad (solo datos anonimizados)"
+          "google": "Servicios de autenticación y análisis",
+          "firebase": "Servicios de base de datos y hosting",
+          "vercel": "Hosting y despliegue del sitio web",
+          "adsense": "Servicios de publicidad (solo datos anonimizados)"
         },
         "publicInfo": {
           "title": "Información Pública",
@@ -381,26 +381,26 @@
       },
       "dataSecurity": {
         "title": "Seguridad de Datos",
-        "encryption": "Cifrado: Todos los datos están cifrados en tránsito y en reposo",
-        "accessControl": "Control de Acceso: Acceso limitado a datos personales según necesidad",
-        "googleSecurity": "Seguridad de Google: Aprovechamos la infraestructura de seguridad empresarial de Google",
-        "regularUpdates": "Actualizaciones Regulares: Las medidas de seguridad se actualizan y monitorean continuamente",
-        "dataMinimization": "Minimización de Datos: Solo recopilamos datos necesarios para nuestros servicios"
+        "encryption": "Todos los datos están cifrados en tránsito y en reposo",
+        "accessControl": "Acceso limitado a datos personales según necesidad",
+        "googleSecurity": "Aprovechamos la infraestructura de seguridad empresarial de Google",
+        "regularUpdates": "Las medidas de seguridad se actualizan y monitorean continuamente",
+        "dataMinimization": "Solo recopilamos datos necesarios para nuestros servicios"
       },
       "yourRights": {
         "title": "Tus Derechos y Opciones",
         "accountManagement": {
           "title": "Gestión de Cuenta",
-          "access": "Acceso: Ver y descargar tus datos personales",
-          "correction": "Corrección: Actualizar o corregir tu información",
-          "deactivation": "Desactivación: Desactivar tu cuenta (datos preservados para reactivación)",
-          "usernameChanges": "Cambios de Nombre de Usuario: Modificar tu nombre de usuario público"
+          "access": "Ver y descargar tus datos personales",
+          "correction": "Actualizar o corregir tu información",
+          "deactivation": "Desactivar tu cuenta (datos preservados para reactivación)",
+          "usernameChanges": "Modificar tu nombre de usuario público"
         },
         "dataControl": {
           "title": "Control de Datos",
           "cookiePreferences": "Gestionar configuración de cookies en tu navegador",
-          "marketingOptOut": "Exclusión de Marketing: Cancelar suscripción a comunicaciones promocionales",
-          "dataPortability": "Portabilidad de Datos: Solicitar una copia de tus datos en formato portable"
+          "marketingOptOut": "Cancelar suscripción a comunicaciones promocionales",
+          "dataPortability": "Solicitar una copia de tus datos en formato portable"
         },
         "note": "Las contribuciones de productos pueden permanecer en nuestra base de datos incluso después de la desactivación de la cuenta para mantener la integridad de datos para la comunidad. Tu nombre de usuario será anonimizado si eliges eliminar permanentemente tu cuenta."
       },
@@ -441,11 +441,11 @@
       },
       "dataRetention": {
         "title": "Retención de Datos",
-        "activeAccounts": "Cuentas Activas: Datos retenidos mientras la cuenta esté activa",
-        "deactivatedAccounts": "Cuentas Desactivadas: Datos personales preservados para posible reactivación",
-        "productContributions": "Contribuciones de Productos: Retenidas indefinidamente para beneficio de la comunidad",
-        "analyticsData": "Datos de Análisis: Datos agregados retenidos hasta 26 meses",
-        "legalRequirements": "Requisitos Legales: Algunos datos pueden retenerse más tiempo para cumplimiento legal"
+        "activeAccounts": "Datos retenidos mientras la cuenta esté activa",
+        "deactivatedAccounts": "Datos personales preservados para posible reactivación",
+        "productContributions": "Retenidas indefinidamente para beneficio de la comunidad",
+        "analyticsData": "Datos agregados retenidos hasta 26 meses",
+        "legalRequirements": "Algunos datos pueden retenerse más tiempo para cumplimiento legal"
       },
       "changesToPolicy": {
         "title": "Cambios a Esta Política de Privacidad",
