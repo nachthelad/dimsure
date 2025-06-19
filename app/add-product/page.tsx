@@ -3,7 +3,7 @@
 import type React from "react"
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { Upload, Package, CheckCircle, Lightbulb, AlertCircle } from "lucide-react"
+import { Upload, Package, CheckCircle, Lightbulb, AlertCircle, X, ImageIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -14,8 +14,10 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { useUnit } from "@/components/unit-provider"
 import { useAuth } from "@/hooks/useAuth"
 import { createProduct } from "@/lib/firestore"
+import { uploadProductImage, validateImageFile } from "@/lib/storage"
 import { normalizeProductName, normalizeBrandName, validateProductName } from "@/lib/product-normalizer"
 import { useLanguage } from "@/components/language-provider"
+import { toast } from "@/hooks/use-toast"
 
 export default function AddProductPage() {
   const { isLoggedIn, userData, loading, user } = useAuth()
@@ -23,9 +25,11 @@ export default function AddProductPage() {
   const router = useRouter()
   const { unit } = useUnit()
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isUploadingImage, setIsUploadingImage] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
   const [nameSuggestion, setNameSuggestion] = useState<string>("")
   const [error, setError] = useState<string>("")
+  const [imagePreview, setImagePreview] = useState<string>("")
   const [formData, setFormData] = useState({
     name: "",
     sku: "",
@@ -66,6 +70,36 @@ export default function AddProductPage() {
     }
   }
 
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      // Validate the image
+      const validation = validateImageFile(file)
+      if (!validation.isValid) {
+        toast({
+          title: t("addProduct.form.imageError"),
+          description: validation.error,
+          variant: "destructive",
+        })
+        return
+      }
+
+      setFormData((prev) => ({ ...prev, image: file }))
+
+      // Create preview
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        setImagePreview(e.target?.result as string)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  const removeImage = () => {
+    setFormData((prev) => ({ ...prev, image: null }))
+    setImagePreview("")
+  }
+
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-8 max-w-2xl">
@@ -91,6 +125,30 @@ export default function AddProductPage() {
         throw new Error(t("addProduct.validation.loginRequired"))
       }
 
+      let imageUrl = "/placeholder.svg?height=400&width=400"
+
+      // Upload image if provided
+      if (formData.image) {
+        setIsUploadingImage(true)
+        try {
+          imageUrl = await uploadProductImage(formData.image, formData.sku.toUpperCase())
+          toast({
+            title: t("addProduct.form.imageUploaded"),
+            description: t("addProduct.form.imageUploadedDesc"),
+          })
+        } catch (imageError) {
+          console.error("Image upload failed:", imageError)
+          toast({
+            title: t("addProduct.form.imageUploadFailed"),
+            description: t("addProduct.form.imageUploadFailedDesc"),
+            variant: "destructive",
+          })
+          // Continue without image
+        } finally {
+          setIsUploadingImage(false)
+        }
+      }
+
       const productData = {
         name: normalizeProductName(formData.name), // Only basic capitalization
         sku: formData.sku.toUpperCase(),
@@ -104,8 +162,8 @@ export default function AddProductPage() {
           unit: "mm", // Always store in mm
         },
         weight: formData.weight ? Number.parseFloat(formData.weight) : null,
-        images: [], // TODO: Handle image upload
-        mainImage: "/placeholder.svg?height=400&width=400",
+        images: imageUrl !== "/placeholder.svg?height=400&width=400" ? [imageUrl] : [], // Store uploaded images
+        mainImage: imageUrl, // Use uploaded image or placeholder
         specifications: {
           // Add basic specs
           weight: formData.weight ? `${formData.weight}g` : "Not specified",
@@ -115,6 +173,10 @@ export default function AddProductPage() {
       const createdSku = await createProduct(productData, user.uid)
 
       setIsSuccess(true)
+      toast({
+        title: t("addProduct.success.title"),
+        description: t("addProduct.success.message"),
+      })
 
       // Redirect to product page after 2 seconds
       setTimeout(() => {
@@ -123,15 +185,14 @@ export default function AddProductPage() {
     } catch (error: any) {
       console.error("❌ Error creating product:", error)
       setError(error.message || t("common.error"))
+      toast({
+        title: t("common.error"),
+        description: error.message || t("common.error"),
+        variant: "destructive",
+      })
     } finally {
       setIsSubmitting(false)
-    }
-  }
-
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      setFormData((prev) => ({ ...prev, image: file }))
+      setIsUploadingImage(false)
     }
   }
 
@@ -208,9 +269,7 @@ export default function AddProductPage() {
                   </AlertDescription>
                 </Alert>
               )}
-              <p className="text-xs text-muted-foreground">
-                Enter the product name as you see it. The community will help improve naming consistency over time.
-              </p>
+              <p className="text-xs text-muted-foreground">{t("addProduct.form.productNameHelp")}</p>
             </div>
 
             <div className="space-y-2">
@@ -320,17 +379,64 @@ export default function AddProductPage() {
               />
             </div>
 
-            <div className="space-y-2">
+            {/* Enhanced Image Upload Section */}
+            <div className="space-y-4">
               <Label htmlFor="image">{t("addProduct.form.productImage")}</Label>
-              <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary/50 transition-colors">
-                <input id="image" type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
-                <label htmlFor="image" className="cursor-pointer">
-                  <Upload className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-                  <p className="text-sm text-muted-foreground">{t("addProduct.form.imageUpload")}</p>
-                  <p className="text-xs text-muted-foreground">{t("addProduct.form.imageFormats")}</p>
-                </label>
-                {formData.image && <p className="text-sm text-primary mt-2">{formData.image.name} selected</p>}
-              </div>
+
+              {!imagePreview ? (
+                <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary/50 transition-colors">
+                  <input
+                    id="image"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                    disabled={isUploadingImage}
+                  />
+                  <label htmlFor="image" className="cursor-pointer">
+                    <Upload className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+                    <p className="text-sm text-muted-foreground">{t("addProduct.form.imageUpload")}</p>
+                    <p className="text-xs text-muted-foreground">{t("addProduct.form.imageFormats")}</p>
+                    <p className="text-xs text-muted-foreground mt-1">{t("addProduct.form.imageSize")}</p>
+                  </label>
+                </div>
+              ) : (
+                <div className="relative">
+                  <div className="border rounded-lg p-4 bg-muted/50">
+                    <div className="flex items-start gap-4">
+                      <div className="relative">
+                        <img
+                          src={imagePreview || "/placeholder.svg"}
+                          alt="Preview"
+                          className="w-24 h-24 object-cover rounded-lg"
+                        />
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="sm"
+                          className="absolute -top-2 -right-2 h-6 w-6 rounded-full p-0"
+                          onClick={removeImage}
+                          disabled={isUploadingImage}
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <ImageIcon className="h-4 w-4 text-primary" />
+                          <span className="text-sm font-medium">{formData.image?.name}</span>
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          {formData.image && `${(formData.image.size / 1024 / 1024).toFixed(2)} MB`}
+                        </p>
+                        <Badge variant="secondary" className="mt-2">
+                          {t("addProduct.form.imageReady")}
+                        </Badge>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="bg-primary/10 p-4 rounded-lg">
@@ -340,8 +446,12 @@ export default function AddProductPage() {
               <p className="text-xs text-muted-foreground mt-1">{t("addProduct.form.attribution")}</p>
             </div>
 
-            <Button type="submit" className="w-full" size="lg" disabled={isSubmitting}>
-              {isSubmitting ? t("addProduct.form.submitting") : t("addProduct.form.submit")}
+            <Button type="submit" className="w-full" size="lg" disabled={isSubmitting || isUploadingImage}>
+              {isUploadingImage
+                ? t("addProduct.form.uploadingImage")
+                : isSubmitting
+                  ? t("addProduct.form.submitting")
+                  : t("addProduct.form.submit")}
             </Button>
           </form>
         </CardContent>
