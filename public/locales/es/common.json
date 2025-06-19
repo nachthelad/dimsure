@@ -325,6 +325,142 @@
       "description": "Dimsure es construido y mantenido por un pequeño equipo apasionado por resolver desafíos logísticos reales. Apreciamos tu paciencia mientras continuamos mejorando y expandiendo la plataforma basada en los comentarios de la comunidad."
     }
   },
+  "privacy": {
+    "title": "Política de Privacidad",
+    "subtitle": "Tu privacidad y protección de datos son importantes para nosotros.",
+    "lastUpdated": "Última actualización:",
+    "sections": {
+      "introduction": {
+        "title": "Introducción",
+        "description1": "Dimsure (\"nosotros\", \"nuestro\" o \"nos\") está comprometido a proteger tu privacidad. Esta Política de Privacidad explica cómo recopilamos, usamos, divulgamos y protegemos tu información cuando usas nuestro sitio web y servicios.",
+        "description2": "Al usar Dimsure, aceptas la recopilación y uso de información de acuerdo con esta política."
+      },
+      "informationWeCollect": {
+        "title": "Información que Recopilamos",
+        "personalInfo": {
+          "title": "Información Personal",
+          "googleAccount": "Datos de Cuenta de Google: Nombre, dirección de email y foto de perfil cuando inicias sesión con Google",
+          "username": "Nombre de Usuario: Nombre de usuario personalizado que eliges para tu perfil público",
+          "contributions": "Contribuciones de Productos: Datos de productos, dimensiones y descripciones que envías",
+          "interactions": "Interacciones de Usuario: Me gusta, visualizaciones, comentarios y otras actividades en la plataforma"
+        },
+        "automaticInfo": {
+          "title": "Información Recopilada Automáticamente",
+          "usageData": "Datos de Uso: Páginas visitadas, tiempo transcurrido e interacciones del usuario",
+          "deviceInfo": "Información del Dispositivo: Tipo de navegador, sistema operativo e identificadores del dispositivo",
+          "ipAddress": "Dirección IP: Para propósitos de seguridad y análisis",
+          "cookies": "Cookies: Para mejorar tu experiencia y recordar preferencias"
+        }
+      },
+      "howWeUse": {
+        "title": "Cómo Usamos tu Información",
+        "accountManagement": "Gestión de Cuenta: Crear y gestionar tu cuenta de usuario",
+        "serviceProvision": "Provisión del Servicio: Permitirte contribuir y acceder a datos de dimensiones de productos",
+        "attribution": "Atribución: Mostrar tus contribuciones con tu nombre de usuario elegido",
+        "communication": "Comunicación: Enviar actualizaciones importantes sobre nuestro servicio",
+        "analytics": "Análisis: Entender patrones de uso para mejorar nuestra plataforma",
+        "security": "Seguridad: Proteger contra fraude y acceso no autorizado",
+        "legalCompliance": "Cumplimiento Legal: Cumplir obligaciones legales y hacer cumplir nuestros términos"
+      },
+      "dataSharing": {
+        "title": "Cómo Compartimos tu Información",
+        "noSelling": "🛡️ NO vendemos tus datos personales a terceros.",
+        "thirdPartyServices": {
+          "title": "Servicios de Terceros",
+          "google": "Google: Servicios de autenticación y análisis",
+          "firebase": "Firebase: Servicios de base de datos y hosting",
+          "vercel": "Vercel: Hosting y despliegue del sitio web",
+          "adsense": "Google AdSense: Servicios de publicidad (solo datos anonimizados)"
+        },
+        "publicInfo": {
+          "title": "Información Pública",
+          "username": "Tu nombre de usuario y contribuciones de productos son públicamente visibles",
+          "productData": "Los datos de productos que envías se convierten en parte de nuestra base de datos pública",
+          "comments": "Los comentarios e interacciones en productos se muestran públicamente"
+        }
+      },
+      "dataSecurity": {
+        "title": "Seguridad de Datos",
+        "encryption": "Cifrado: Todos los datos están cifrados en tránsito y en reposo",
+        "accessControl": "Control de Acceso: Acceso limitado a datos personales según necesidad",
+        "googleSecurity": "Seguridad de Google: Aprovechamos la infraestructura de seguridad empresarial de Google",
+        "regularUpdates": "Actualizaciones Regulares: Las medidas de seguridad se actualizan y monitorean continuamente",
+        "dataMinimization": "Minimización de Datos: Solo recopilamos datos necesarios para nuestros servicios"
+      },
+      "yourRights": {
+        "title": "Tus Derechos y Opciones",
+        "accountManagement": {
+          "title": "Gestión de Cuenta",
+          "access": "Acceso: Ver y descargar tus datos personales",
+          "correction": "Corrección: Actualizar o corregir tu información",
+          "deactivation": "Desactivación: Desactivar tu cuenta (datos preservados para reactivación)",
+          "usernameChanges": "Cambios de Nombre de Usuario: Modificar tu nombre de usuario público"
+        },
+        "dataControl": {
+          "title": "Control de Datos",
+          "cookiePreferences": "Gestionar configuración de cookies en tu navegador",
+          "marketingOptOut": "Exclusión de Marketing: Cancelar suscripción a comunicaciones promocionales",
+          "dataPortability": "Portabilidad de Datos: Solicitar una copia de tus datos en formato portable"
+        },
+        "note": "Las contribuciones de productos pueden permanecer en nuestra base de datos incluso después de la desactivación de la cuenta para mantener la integridad de datos para la comunidad. Tu nombre de usuario será anonimizado si eliges eliminar permanentemente tu cuenta."
+      },
+      "internationalUsers": {
+        "title": "Usuarios Internacionales",
+        "gdprCompliance": {
+          "title": "Cumplimiento GDPR (Usuarios de la UE)",
+          "description": "Si te encuentras en la Unión Europea, tienes derechos adicionales bajo GDPR:",
+          "rightToBeForgotten": "Derecho al olvido (eliminación de datos)",
+          "dataPortability": "Derecho a la portabilidad de datos",
+          "objectToProcessing": "Derecho a objetar el procesamiento",
+          "withdrawConsent": "Derecho a retirar el consentimiento"
+        },
+        "ccpaCompliance": {
+          "title": "Cumplimiento CCPA (Usuarios de California)",
+          "description": "Los residentes de California tienen derecho a:",
+          "knowInfo": "Saber qué información personal se recopila",
+          "deleteInfo": "Eliminar información personal",
+          "optOutSale": "Optar por no vender información personal",
+          "nonDiscrimination": "No discriminación por ejercer derechos de privacidad"
+        }
+      },
+      "cookies": {
+        "title": "Cookies y Seguimiento",
+        "description": "Usamos cookies y tecnologías similares para mejorar tu experiencia:",
+        "essential": {
+          "title": "Cookies Esenciales",
+          "authState": "Estado de autenticación",
+          "security": "Características de seguridad",
+          "basicFunctionality": "Funcionalidad básica"
+        },
+        "analytics": {
+          "title": "Cookies de Análisis",
+          "usageStats": "Estadísticas de uso",
+          "performanceMonitoring": "Monitoreo de rendimiento",
+          "featureOptimization": "Optimización de características"
+        }
+      },
+      "dataRetention": {
+        "title": "Retención de Datos",
+        "activeAccounts": "Cuentas Activas: Datos retenidos mientras la cuenta esté activa",
+        "deactivatedAccounts": "Cuentas Desactivadas: Datos personales preservados para posible reactivación",
+        "productContributions": "Contribuciones de Productos: Retenidas indefinidamente para beneficio de la comunidad",
+        "analyticsData": "Datos de Análisis: Datos agregados retenidos hasta 26 meses",
+        "legalRequirements": "Requisitos Legales: Algunos datos pueden retenerse más tiempo para cumplimiento legal"
+      },
+      "changesToPolicy": {
+        "title": "Cambios a Esta Política de Privacidad",
+        "description": "Podemos actualizar esta Política de Privacidad de vez en cuando. Te notificaremos de cualquier cambio publicando la nueva Política de Privacidad en esta página y actualizando la fecha de \"Última actualización\". Se te aconseja revisar esta Política de Privacidad periódicamente para cualquier cambio."
+      },
+      "contact": {
+        "title": "Contáctanos",
+        "description": "Si tienes alguna pregunta sobre esta Política de Privacidad o nuestras prácticas de datos, por favor contáctanos:",
+        "email": "Email:",
+        "emailAddress": "privacy@dimsure.com",
+        "subjectLine": "Línea de Asunto:",
+        "subjectText": "Pregunta sobre Política de Privacidad - Dimsure"
+      }
+    }
+  },
   "common": {
     "loading": "Cargando...",
     "error": "Error",
