@@ -469,7 +469,7 @@ export const translations = {
           title: "Contact Us",
           description: "If you have any questions about this Privacy Policy or our data practices, please contact us:",
           email: "Email:",
-          emailAddress: "privacy@dimsure.com",
+          emailAddress: "nachthelad.dev@gmail.com",
           subjectLine: "Subject Line:",
           subjectText: "Privacy Policy Question - Dimsure",
         },
@@ -980,7 +980,7 @@ export const translations = {
           description:
             "Si tienes alguna pregunta sobre esta Política de Privacidad o nuestras prácticas de datos, por favor contáctanos:",
           email: "Correo electrónico:",
-          emailAddress: "privacy@dimsure.com",
+          emailAddress: "nachthelad.dev@gmail.com",
           subjectLine: "Línea de asunto:",
           subjectText: "Pregunta sobre Política de Privacidad - Dimsure",
         },
