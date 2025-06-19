@@ -680,7 +680,7 @@ export const translations = {
       actions: {
         like: "Me Gusta",
         liked: "Me Gusta",
-        suggestDifferent: "Sugerir Diferente",
+        suggestDifferent: "Sugerir Diferencia",
         share: "Compartir",
         copied: "¡Copiado!",
         reportIssue: "Reportar Problema",
