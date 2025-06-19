@@ -155,8 +155,8 @@ export const translations = {
         likes: "likes",
         views: "views",
         confidence: "confidence",
-        submittedBy: "First submitted by:",
-        lastModified: "Last modified by:",
+        submittedBy: "First submitted by",
+        lastModified: "Last modified by",
         verifiedDimensions: "Verified Dimensions",
       },
       actions: {
@@ -653,8 +653,8 @@ export const translations = {
         likes: "me gusta",
         views: "visualizaciones",
         confidence: "confianza",
-        submittedBy: "Enviado por primera vez por:",
-        lastModified: "Última modificación por:",
+        submittedBy: "Creado por",
+        lastModified: "Última modificación por",
         verifiedDimensions: "Dimensiones Verificadas",
       },
       actions: {
