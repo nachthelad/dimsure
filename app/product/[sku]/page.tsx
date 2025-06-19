@@ -219,34 +219,38 @@ export default function ProductDetailPage({
             <p className="text-muted-foreground mb-6">{product.description}</p>
           </div>
 
-          <Separator />
+          {/* Submission Info - Solo mostrar si está logueado */}
+          {isLoggedIn && (
+            <>
+              <Separator />
 
-          {/* Submission Info */}
-          <div className="space-y-3">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <User className="h-4 w-4" />
-              <span>
-                {t("product.details.submittedBy")}:{" "}
-                <strong className="text-foreground">
-                  {createdByUser?.publicTag || createdByUser?.displayName || "@unknown"}
-                </strong>
-              </span>
-            </div>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Clock className="h-4 w-4" />
-              <span>
-                {t("product.details.lastModified")}:{" "}
-                <strong className="text-foreground">
-                  {lastModifiedByUser?.publicTag ||
-                    lastModifiedByUser?.displayName ||
-                    createdByUser?.publicTag ||
-                    createdByUser?.displayName ||
-                    "@unknown"}
-                </strong>
-              </span>
-              {product.lastModified && <span>{new Date(product.lastModified.toDate()).toLocaleDateString()}</span>}
-            </div>
-          </div>
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <User className="h-4 w-4" />
+                  <span>
+                    {t("product.details.submittedBy")}:{" "}
+                    <strong className="text-foreground">
+                      {createdByUser?.publicTag || createdByUser?.displayName || "@unknown"}
+                    </strong>
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Clock className="h-4 w-4" />
+                  <span>
+                    {t("product.details.lastModified")}:{" "}
+                    <strong className="text-foreground">
+                      {lastModifiedByUser?.publicTag ||
+                        lastModifiedByUser?.displayName ||
+                        createdByUser?.publicTag ||
+                        createdByUser?.displayName ||
+                        "@unknown"}
+                    </strong>
+                  </span>
+                  {product.lastModified && <span>{new Date(product.lastModified.toDate()).toLocaleDateString()}</span>}
+                </div>
+              </div>
+            </>
+          )}
 
           <Separator />
 
