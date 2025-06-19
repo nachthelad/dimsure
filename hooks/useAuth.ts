@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { type User, onAuthStateChanged } from "firebase/auth"
 import { auth } from "@/lib/firebase"
-import { getUserData, checkAccountStatus, reactivateAccount } from "@/lib/firestore"
+import { getUserById, checkAccountStatus, reactivateAccount } from "@/lib/firestore"
 
 export interface UserData {
   publicTag?: string
@@ -18,10 +18,10 @@ export function useAuth() {
   const [user, setUser] = useState<User | null>(null)
   const [userData, setUserData] = useState<UserData | null>(null)
   const [loading, setLoading] = useState(true)
-  const [accountStatus, setAccountStatus] = useState<{
-    isActive: boolean
-    needsReactivation: boolean
-  }>({ isActive: true, needsReactivation: false })
+  const [accountStatus, setAccountStatus] = useState({
+    isActive: true,
+    needsReactivation: false,
+  })
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
@@ -32,7 +32,7 @@ export function useAuth() {
       if (firebaseUser) {
         try {
           // Get user data from Firestore
-          const data = await getUserData(firebaseUser.uid)
+          const data = await getUserById(firebaseUser.uid)
           setUserData(data)
 
           // Check account status
