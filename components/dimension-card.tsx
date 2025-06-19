@@ -1,0 +1,66 @@
+"use client"
+
+import { Package, Ruler } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { useUnit } from "./unit-provider"
+import { useLanguage } from "./language-provider"
+
+interface DimensionCardProps {
+  dimensions: { length: number; width: number; height: number }
+  title: string
+  isPrimary?: boolean
+}
+
+export function DimensionCard({ dimensions, title, isPrimary = false }: DimensionCardProps) {
+  const { unit, convertDimension } = useUnit()
+  const { t } = useLanguage()
+
+  const formatDimension = (value: number) => {
+    const converted = convertDimension(value, "mm")
+    return Math.round(converted).toString()
+  }
+
+  return (
+    <Card className={isPrimary ? "border-primary/20 bg-primary/5 dark:bg-primary/10" : ""}>
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-center gap-2 text-lg">
+          <Package className="h-5 w-5" />
+          {title}
+          <Badge variant="secondary">{unit}</Badge>
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="grid grid-cols-3 gap-4">
+          <div className="text-center">
+            <div className="flex items-center justify-center gap-1 mb-1">
+              <Ruler className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm text-muted-foreground">{t("units.length")}</span>
+            </div>
+            <div className="text-2xl font-bold text-foreground">{formatDimension(dimensions.length)}</div>
+          </div>
+          <div className="text-center">
+            <div className="flex items-center justify-center gap-1 mb-1">
+              <Ruler className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm text-muted-foreground">{t("units.width")}</span>
+            </div>
+            <div className="text-2xl font-bold text-foreground">{formatDimension(dimensions.width)}</div>
+          </div>
+          <div className="text-center">
+            <div className="flex items-center justify-center gap-1 mb-1">
+              <Ruler className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm text-muted-foreground">{t("units.height")}</span>
+            </div>
+            <div className="text-2xl font-bold text-foreground">{formatDimension(dimensions.height)}</div>
+          </div>
+        </div>
+        <div className="mt-4 text-center">
+          <span className="text-lg font-semibold text-foreground">
+            {formatDimension(dimensions.length)} × {formatDimension(dimensions.width)} ×{" "}
+            {formatDimension(dimensions.height)} {unit}
+          </span>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}

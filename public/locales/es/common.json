@@ -1,0 +1,359 @@
+{
+  "site": {
+    "name": "Dimsure",
+    "tagline": "Mídelo una vez. Confía para siempre.",
+    "description": "Una base de datos pública y colaborativa de dimensiones de embalaje de productos. Optimiza tus paquetes y logística con datos verificados."
+  },
+  "navigation": {
+    "home": "Inicio",
+    "addProduct": "Agregar Producto",
+    "myContributions": "Mis Contribuciones",
+    "communityDisputes": "Disputas de la Comunidad",
+    "blog": "Blog",
+    "signIn": "Iniciar sesión con Google",
+    "signOut": "Cerrar sesión",
+    "myAccount": "Mi Cuenta"
+  },
+  "home": {
+    "hero": {
+      "title": "Mídelo una vez.",
+      "titleHighlight": "Confía para siempre.",
+      "subtitle": "Una base de datos pública y colaborativa de dimensiones de embalaje de productos. Optimiza tus paquetes y logística con datos verificados."
+    },
+    "stats": {
+      "totalProducts": "Total de Productos",
+      "productsInDatabase": "Productos en la base de datos",
+      "contributions": "Contribuciones",
+      "dataSubmissions": "Envíos de datos y actualizaciones",
+      "avgConfidence": "Confianza Promedio",
+      "dataReliability": "Confiabilidad de datos"
+    },
+    "recentlyAdded": {
+      "title": "Agregados Recientemente",
+      "subtitle": "Últimos productos agregados a la base de datos",
+      "noProducts": "Aún No Hay Productos",
+      "beFirst": "¡Sé el primero en agregar un producto a la base de datos!"
+    },
+    "search": {
+      "placeholder": "Buscar por SKU, nombre del producto o marca...",
+      "searching": "Buscando...",
+      "noResults": "No se encontraron productos para \"{{searchTerm}}\"",
+      "tryDifferent": "Intenta buscar por SKU, nombre del producto o marca"
+    }
+  },
+  "addProduct": {
+    "title": "Agregar Nuevo Producto",
+    "subtitle": "Ayuda a la comunidad agregando dimensiones de embalaje verificadas para un nuevo producto.",
+    "form": {
+      "productName": "Nombre del Producto",
+      "productNamePlaceholder": "ej., Nintendo Switch OLED Blanca",
+      "brand": "Marca",
+      "brandPlaceholder": "ej., Nintendo",
+      "sku": "SKU",
+      "skuPlaceholder": "ej., NSW-OLED-WHT",
+      "category": "Categoría",
+      "categoryPlaceholder": "ej., Consolas de Videojuegos",
+      "description": "Descripción",
+      "descriptionPlaceholder": "Breve descripción del producto y embalaje...",
+      "boxDimensions": "Dimensiones de la Caja",
+      "inMillimeters": "(en milímetros)",
+      "length": "Largo (mm)",
+      "width": "Ancho (mm)",
+      "height": "Alto (mm)",
+      "packageWeight": "Peso del Paquete (gramos)",
+      "weightPlaceholder": "ej., 250",
+      "productImage": "Imagen del Producto (Opcional)",
+      "imageUpload": "Haz clic para subir o arrastra y suelta",
+      "imageFormats": "PNG, JPG hasta 10MB",
+      "submittedBy": "Enviado por:",
+      "attribution": "Tu contribución será atribuida a tu cuenta y aparecerá en \"Mis Contribuciones\".",
+      "submit": "Enviar Producto",
+      "submitting": "Creando Producto..."
+    },
+    "success": {
+      "title": "¡Producto Agregado Exitosamente!",
+      "message": "Tu producto ha sido agregado a la base de datos de Dimsure.",
+      "redirecting": "Redirigiendo a la página del producto..."
+    },
+    "suggestions": {
+      "cleanSpacing": "Limpiar espaciado:",
+      "apply": "Aplicar"
+    },
+    "validation": {
+      "nameRequired": "El nombre del producto debe tener al menos 3 caracteres",
+      "nameTooLong": "El nombre del producto debe tener menos de 100 caracteres",
+      "loginRequired": "Debes iniciar sesión para agregar un producto"
+    }
+  },
+  "myContributions": {
+    "title": "Mis Contribuciones",
+    "subtitle": "Rastrea tus envíos e impacto en la comunidad",
+    "stats": {
+      "totalProducts": "Total de Productos",
+      "productsSubmitted": "Productos enviados",
+      "totalLikes": "Total de Me Gusta",
+      "communityAppreciation": "Apreciación de la comunidad",
+      "totalViews": "Total de Visualizaciones",
+      "productPageVisits": "Visitas a páginas de productos"
+    },
+    "search": {
+      "placeholder": "Buscar tus productos...",
+      "showing": "Mostrando {{filtered}} de {{total}} productos"
+    },
+    "actions": {
+      "edit": "Editar",
+      "view": "Ver",
+      "addNew": "Agregar Nuevo Producto",
+      "addFirst": "Agregar Tu Primer Producto",
+      "debugInfo": "Info de Depuración",
+      "refresh": "Actualizar",
+      "fixOrphans": "Arreglar Productos Huérfanos",
+      "fixing": "Arreglando...",
+      "clearSearch": "Limpiar Búsqueda"
+    },
+    "empty": {
+      "noProducts": "Aún No Hay Productos",
+      "noProductsMessage": "Aún no has enviado ningún producto a la base de datos.",
+      "noResults": "No Se Encontraron Resultados",
+      "noResultsMessage": "Ningún producto coincide con tu búsqueda de \"{{searchTerm}}\". Intenta con un término diferente."
+    },
+    "orphanProducts": {
+      "notFound": "No se encontraron contribuciones",
+      "mightNotBeLinked": "Si has agregado productos antes, podrían no estar vinculados a tu cuenta.",
+      "fixMyProducts": "Arreglar Mis Productos"
+    }
+  },
+  "product": {
+    "details": {
+      "sku": "SKU:",
+      "likes": "me gusta",
+      "views": "visualizaciones",
+      "confidence": "confianza",
+      "submittedBy": "Enviado por primera vez por:",
+      "lastModified": "Última modificación por:",
+      "verifiedDimensions": "Dimensiones Verificadas"
+    },
+    "actions": {
+      "like": "Me Gusta",
+      "liked": "Me Gusta",
+      "suggestDifferent": "Sugerir Diferencia",
+      "share": "Compartir",
+      "copied": "¡Copiado!",
+      "reportIssue": "Reportar Problema"
+    },
+    "tabs": {
+      "specifications": "Especificaciones",
+      "alternatives": "Dimensiones Alternativas",
+      "comments": "Comentarios",
+      "history": "Historial de Versiones"
+    },
+    "specifications": {
+      "title": "Especificaciones del Producto",
+      "packageWeight": "Peso del Paquete:",
+      "weight": "Peso:",
+      "notSpecified": "No especificado"
+    },
+    "alternatives": {
+      "noAlternatives": "Sin Dimensiones Alternativas",
+      "noAlternativesMessage": "Este producto actualmente no tiene medidas alternativas enviadas por la comunidad."
+    },
+    "comments": {
+      "title": "Comentarios de la Comunidad",
+      "noComments": "Aún No Hay Comentarios",
+      "noCommentsMessage": "Sé el primero en compartir tus pensamientos sobre estas dimensiones."
+    },
+    "history": {
+      "title": "Historial de Versiones",
+      "updated": "Dimensiones actualizadas y medidas verificadas",
+      "initialSubmission": "Envío inicial con dimensiones del producto"
+    }
+  },
+  "auth": {
+    "signIn": {
+      "title": "Iniciar sesión en Dimsure",
+      "message": "Necesitas iniciar sesión para acceder a esta función",
+      "continueWithGoogle": "Continuar con Google",
+      "backToHome": "Volver al Inicio",
+      "agreement": "Al iniciar sesión, aceptas nuestros Términos de Servicio y Política de Privacidad"
+    },
+    "userMenu": {
+      "editUsername": "Editar Nombre de Usuario",
+      "units": "Unidades",
+      "signOut": "Cerrar sesión"
+    },
+    "editUsername": {
+      "title": "Editar Nombre de Usuario",
+      "description": "Elige un nombre de usuario único que se mostrará con tus contribuciones.",
+      "username": "Nombre de Usuario",
+      "placeholder": "tu_nombre_usuario",
+      "requirements": "• 3-20 caracteres • Solo letras, números y guiones bajos",
+      "cancel": "Cancelar",
+      "save": "Guardar Nombre de Usuario",
+      "saving": "Guardando...",
+      "errors": {
+        "required": "El nombre de usuario es requerido",
+        "tooShort": "El nombre de usuario debe tener al menos 3 caracteres",
+        "tooLong": "El nombre de usuario debe tener menos de 20 caracteres",
+        "invalidChars": "El nombre de usuario solo puede contener letras, números y guiones bajos",
+        "permissionDenied": "Permiso denegado. Intenta cerrar sesión y volver a iniciar, luego inténtalo de nuevo.",
+        "notFound": "Usuario no encontrado. Intenta cerrar sesión y volver a iniciar.",
+        "insufficientPermissions": "Error de permisos de base de datos. Intenta cerrar sesión y volver a iniciar.",
+        "updateFailed": "Error al actualizar nombre de usuario: {{error}}"
+      }
+    }
+  },
+  "footer": {
+    "description": "Una base de datos pública y colaborativa de dimensiones de embalaje de productos. Mídelo una vez. Confía para siempre.",
+    "sections": {
+      "product": "Producto",
+      "company": "Empresa",
+      "getInTouch": "Ponte en Contacto"
+    },
+    "links": {
+      "addProduct": "Agregar Producto",
+      "myContributions": "Mis Contribuciones",
+      "communityDisputes": "Disputas de la Comunidad",
+      "blog": "Blog",
+      "about": "Acerca de Nosotros",
+      "contact": "Contacto",
+      "privacy": "Política de Privacidad",
+      "terms": "Términos de Servicio",
+      "followTwitter": "Síguenos en Twitter"
+    },
+    "copyright": "© {{year}} Dimsure. Todos los derechos reservados.",
+    "poweredBy": "Desarrollado por"
+  },
+  "about": {
+    "title": "Acerca de Dimsure",
+    "subtitle": "Estamos construyendo la base de datos más completa del mundo de dimensiones de embalaje de productos, impulsada por una comunidad de profesionales de logística, vendedores de comercio electrónico y entusiastas del envío.",
+    "mission": {
+      "title": "Nuestra Misión",
+      "description1": "Todos los días, millones de paquetes se envían alrededor del mundo. Sin embargo, encontrar dimensiones precisas de embalaje para productos sigue siendo un desafío frustrante para vendedores de comercio electrónico, profesionales de logística y consumidores.",
+      "description2": "Dimsure resuelve este problema creando una base de datos gratuita, abierta y impulsada por la comunidad donde cualquiera puede contribuir y acceder a dimensiones de embalaje verificadas. Nuestro objetivo es simple:",
+      "goal": "mídelo una vez, confía para siempre."
+    },
+    "whyMatters": {
+      "title": "Por Qué Importan las Dimensiones Precisas",
+      "ecommerce": {
+        "title": "Vendedores de E-commerce",
+        "description": "Calcula costos de envío precisos, optimiza el embalaje y reduce devoluciones debido a expectativas de tamaño."
+      },
+      "logistics": {
+        "title": "Empresas de Logística",
+        "description": "Optimiza el espacio del almacén, planifica la capacidad de transporte y mejora la eficiencia de entrega."
+      },
+      "consumers": {
+        "title": "Consumidores",
+        "description": "Toma decisiones de compra informadas y planifica el espacio de almacenamiento antes de comprar productos en línea."
+      }
+    },
+    "howItWorks": {
+      "title": "Cómo Funciona Dimsure",
+      "step1": {
+        "title": "La Comunidad Contribuye",
+        "description": "Los usuarios miden y envían dimensiones de embalaje para productos que poseen o manejan."
+      },
+      "step2": {
+        "title": "Los Datos Se Verifican",
+        "description": "Múltiples envíos y comentarios de la comunidad aseguran precisión y confiabilidad."
+      },
+      "step3": {
+        "title": "Todos Se Benefician",
+        "description": "Acceso gratuito a datos de embalaje precisos y colaborativos para todos."
+      }
+    },
+    "community": {
+      "title": "Construido por la Comunidad",
+      "description1": "Dimsure es más que solo una base de datos: es una comunidad de personas que creen en el poder del conocimiento compartido. Cada medida, cada verificación y cada mejora proviene de usuarios como tú que quieren hacer que el envío y la logística sean más eficientes para todos.",
+      "description2": "Ya seas un vendedor de Amazon buscando dimensiones FBA, un gerente de logística optimizando el espacio del almacén, o un consumidor planificando una compra, tus contribuciones ayudan a construir algo más grande que cualquier esfuerzo individual."
+    },
+    "getInvolved": {
+      "title": "Involúcrate",
+      "description": "¿Listo para contribuir al futuro de los datos de embalaje? Únete a nuestra comunidad hoy.",
+      "addProduct": "Agregar Tu Primer Producto",
+      "contactUs": "Contáctanos"
+    }
+  },
+  "contact": {
+    "title": "Contáctanos",
+    "subtitle": "¿Tienes preguntas, sugerencias o quieres colaborar? Nos encantaría saber de ti.",
+    "email": {
+      "title": "Envíanos un Email",
+      "description": "Para cualquier pregunta, sugerencia o consulta comercial, por favor contáctanos:",
+      "responseTime": "Típicamente respondemos dentro de 24-48 horas durante días hábiles."
+    },
+    "responseTime": {
+      "title": "Tiempo de Respuesta",
+      "general": "Consultas Generales:",
+      "generalTime": "24-48 horas",
+      "technical": "Problemas Técnicos:",
+      "technicalTime": "12-24 horas",
+      "business": "Asociaciones Comerciales:",
+      "businessTime": "2-3 días hábiles"
+    },
+    "helpWith": {
+      "title": "¿En Qué Podemos Ayudar?",
+      "technical": {
+        "title": "Problemas Técnicos:",
+        "description": "Problemas con el sitio web, precisión de datos o problemas de cuenta"
+      },
+      "data": {
+        "title": "Contribuciones de Datos:",
+        "description": "Preguntas sobre agregar productos o pautas de medición"
+      },
+      "business": {
+        "title": "Asociaciones Comerciales:",
+        "description": "Acceso a API, necesidades de datos masivos u oportunidades de colaboración"
+      },
+      "features": {
+        "title": "Solicitudes de Funciones:",
+        "description": "Sugerencias para nuevas funciones o mejoras"
+      },
+      "content": {
+        "title": "Problemas de Contenido:",
+        "description": "Reportar datos incorrectos o contenido inapropiado"
+      }
+    },
+    "quickActions": {
+      "title": "Acciones Rápidas",
+      "reportTechnical": "Reportar Problema Técnico",
+      "suggestFeature": "Sugerir Función",
+      "businessInquiry": "Consulta Comercial"
+    },
+    "communityProject": {
+      "title": "Proyecto Impulsado por la Comunidad",
+      "description": "Dimsure es construido y mantenido por un pequeño equipo apasionado por resolver desafíos logísticos reales. Apreciamos tu paciencia mientras continuamos mejorando y expandiendo la plataforma basada en los comentarios de la comunidad."
+    }
+  },
+  "common": {
+    "loading": "Cargando...",
+    "error": "Error",
+    "success": "Éxito",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "view": "Ver",
+    "share": "Compartir",
+    "like": "Me Gusta",
+    "unlike": "No Me Gusta",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "sort": "Ordenar",
+    "close": "Cerrar",
+    "open": "Abrir",
+    "yes": "Sí",
+    "no": "No",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "previous": "Anterior",
+    "comingSoon": "Próximamente"
+  },
+  "units": {
+    "mm": "mm",
+    "inches": "pulgadas",
+    "length": "Largo",
+    "width": "Ancho",
+    "height": "Alto"
+  }
+}

@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://dimsure.vercel.app/sitemap.xml
+
+# AdSense
+User-agent: Mediapartners-Google
+Allow: /
+
+# Crawl-delay for better performance
+Crawl-delay: 1

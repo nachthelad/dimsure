@@ -1,0 +1,111 @@
+import type React from "react"
+import type { Metadata } from "next"
+import { Inter } from "next/font/google"
+import Script from "next/script"
+import "./globals.css"
+import { Navbar } from "@/components/navbar"
+import { UnitProvider } from "@/components/unit-provider"
+import { ThemeProvider } from "@/components/theme-provider"
+import { LanguageProvider } from "@/components/language-provider"
+import { siteConfig } from "@/lib/site-config"
+import { Footer } from "@/components/footer"
+
+const inter = Inter({ subsets: ["latin"] })
+
+export const metadata: Metadata = {
+  title: `${siteConfig.name} — Measure it once. Trust it forever.`,
+  description: siteConfig.description,
+  keywords: siteConfig.keywords.join(", "),
+  authors: [{ name: siteConfig.creator }],
+  creator: siteConfig.creator,
+  publisher: siteConfig.name,
+  metadataBase: new URL(siteConfig.url),
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  openGraph: {
+    title: `${siteConfig.name} — Measure it once. Trust it forever.`,
+    description: siteConfig.description,
+    type: "website",
+    locale: "en_US",
+    url: siteConfig.url,
+    siteName: siteConfig.name,
+    images: [
+      {
+        url: siteConfig.ogImage,
+        width: 1200,
+        height: 630,
+        alt: siteConfig.name,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${siteConfig.name} — Measure it once. Trust it forever.`,
+    description: siteConfig.description,
+    images: [siteConfig.ogImage],
+  },
+  alternates: {
+    canonical: siteConfig.url,
+  },
+    generator: 'v0.dev'
+}
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* Google AdSense */}
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1027418154196814"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
+
+        {/* Additional meta tags for better SEO and AdSense */}
+        <meta name="google-adsense-account" content="ca-pub-1027418154196814" />
+        <link rel="canonical" href={siteConfig.url} />
+
+        {/* Favicon and app icons */}
+        <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+        <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png" />
+        <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png" />
+
+        {/* Theme color */}
+        <meta name="theme-color" content="#10b981" />
+
+        {/* Web App Manifest */}
+        <link rel="manifest" href="/site.webmanifest" />
+      </head>
+      <body className={inter.className}>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
+          <LanguageProvider>
+            <UnitProvider>
+              <div className="min-h-screen bg-background">
+                <Navbar />
+                <main>{children}</main>
+                <Footer />
+              </div>
+            </UnitProvider>
+          </LanguageProvider>
+        </ThemeProvider>
+      </body>
+    </html>
+  )
+}

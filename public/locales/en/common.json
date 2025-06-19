@@ -1,0 +1,359 @@
+{
+  "site": {
+    "name": "Dimsure",
+    "tagline": "Measure it once. Trust it forever.",
+    "description": "A public, community-powered database of box dimensions for products. Optimize your packaging and logistics with verified data."
+  },
+  "navigation": {
+    "addProduct": "Add Product",
+    "myContributions": "My Contributions",
+    "communityDisputes": "Community Disputes",
+    "blog": "Blog",
+    "signIn": "Sign in with Google",
+    "signOut": "Sign out",
+    "myAccount": "My Account",
+    "home": "Home"
+  },
+  "home": {
+    "hero": {
+      "title": "Measure it once.",
+      "titleHighlight": "Trust it forever.",
+      "subtitle": "A public, community-powered database of box dimensions for products. Optimize your packaging and logistics with verified data."
+    },
+    "stats": {
+      "totalProducts": "Total Products",
+      "productsInDatabase": "Products in database",
+      "contributions": "Contributions",
+      "dataSubmissions": "Data submissions & updates",
+      "avgConfidence": "Avg. Confidence",
+      "dataReliability": "Data reliability"
+    },
+    "recentlyAdded": {
+      "title": "Recently Added",
+      "subtitle": "Latest products added to the database",
+      "noProducts": "No Products Yet",
+      "beFirst": "Be the first to add a product to the database!"
+    },
+    "search": {
+      "placeholder": "Search by SKU, product name, or brand...",
+      "searching": "Searching...",
+      "noResults": "No products found for \"{{searchTerm}}\"",
+      "tryDifferent": "Try searching by SKU, product name, or brand"
+    }
+  },
+  "addProduct": {
+    "title": "Add New Product",
+    "subtitle": "Help the community by adding verified packaging dimensions for a new product.",
+    "form": {
+      "productName": "Product Name",
+      "productNamePlaceholder": "e.g., Nintendo Switch OLED White",
+      "brand": "Brand",
+      "brandPlaceholder": "e.g., Nintendo",
+      "sku": "SKU",
+      "skuPlaceholder": "e.g., NSW-OLED-WHT",
+      "category": "Category",
+      "categoryPlaceholder": "e.g., Gaming Consoles",
+      "description": "Description",
+      "descriptionPlaceholder": "Brief description of the product and packaging...",
+      "boxDimensions": "Box Dimensions",
+      "inMillimeters": "(in millimeters)",
+      "length": "Length (mm)",
+      "width": "Width (mm)",
+      "height": "Height (mm)",
+      "packageWeight": "Package Weight (grams)",
+      "weightPlaceholder": "e.g., 250",
+      "productImage": "Product Image (Optional)",
+      "imageUpload": "Click to upload or drag and drop",
+      "imageFormats": "PNG, JPG up to 10MB",
+      "submittedBy": "Submitted by:",
+      "attribution": "Your contribution will be attributed to your account and will appear in \"My Contributions\".",
+      "submit": "Submit Product",
+      "submitting": "Creating Product..."
+    },
+    "success": {
+      "title": "Product Added Successfully!",
+      "message": "Your product has been added to the Dimsure database.",
+      "redirecting": "Redirecting to product page..."
+    },
+    "suggestions": {
+      "cleanSpacing": "Clean up spacing:",
+      "apply": "Apply"
+    },
+    "validation": {
+      "nameRequired": "Product name must be at least 3 characters long",
+      "nameTooLong": "Product name must be less than 100 characters",
+      "loginRequired": "You must be logged in to add a product"
+    }
+  },
+  "myContributions": {
+    "title": "My Contributions",
+    "subtitle": "Track your submissions and community impact",
+    "stats": {
+      "totalProducts": "Total Products",
+      "productsSubmitted": "Products submitted",
+      "totalLikes": "Total Likes",
+      "communityAppreciation": "Community appreciation",
+      "totalViews": "Total Views",
+      "productPageVisits": "Product page visits"
+    },
+    "search": {
+      "placeholder": "Search your products...",
+      "showing": "Showing {{filtered}} of {{total}} products"
+    },
+    "actions": {
+      "edit": "Edit",
+      "view": "View",
+      "addNew": "Add New Product",
+      "addFirst": "Add Your First Product",
+      "debugInfo": "Debug Info",
+      "refresh": "Refresh",
+      "fixOrphans": "Fix Orphan Products",
+      "fixing": "Fixing...",
+      "clearSearch": "Clear Search"
+    },
+    "empty": {
+      "noProducts": "No Products Yet",
+      "noProductsMessage": "You haven't submitted any products to the database yet.",
+      "noResults": "No Results Found",
+      "noResultsMessage": "No products match your search for \"{{searchTerm}}\". Try a different search term."
+    },
+    "orphanProducts": {
+      "notFound": "No contributions found",
+      "mightNotBeLinked": "If you've added products before, they might not be linked to your account.",
+      "fixMyProducts": "Fix My Products"
+    }
+  },
+  "product": {
+    "details": {
+      "sku": "SKU:",
+      "likes": "likes",
+      "views": "views",
+      "confidence": "confidence",
+      "submittedBy": "First submitted by:",
+      "lastModified": "Last modified by:",
+      "verifiedDimensions": "Verified Dimensions"
+    },
+    "actions": {
+      "like": "Like This Entry",
+      "liked": "Liked",
+      "suggestDifferent": "Suggest Different",
+      "share": "Share",
+      "copied": "Copied!",
+      "reportIssue": "Report Issue"
+    },
+    "tabs": {
+      "specifications": "Specifications",
+      "alternatives": "Alternative Dimensions",
+      "comments": "Comments",
+      "history": "Version History"
+    },
+    "specifications": {
+      "title": "Product Specifications",
+      "packageWeight": "Package Weight:",
+      "weight": "Weight:",
+      "notSpecified": "Not specified"
+    },
+    "alternatives": {
+      "noAlternatives": "No Alternative Dimensions",
+      "noAlternativesMessage": "This product currently has no alternative measurements submitted by the community."
+    },
+    "comments": {
+      "title": "Community Comments",
+      "noComments": "No Comments Yet",
+      "noCommentsMessage": "Be the first to share your thoughts about these dimensions."
+    },
+    "history": {
+      "title": "Version History",
+      "updated": "Updated dimensions and verified measurements",
+      "initialSubmission": "Initial submission with product dimensions"
+    }
+  },
+  "auth": {
+    "signIn": {
+      "title": "Sign in to Dimsure",
+      "message": "You need to be signed in to access this feature",
+      "continueWithGoogle": "Continue with Google",
+      "backToHome": "Back to Home",
+      "agreement": "By signing in, you agree to our Terms of Service and Privacy Policy"
+    },
+    "userMenu": {
+      "editUsername": "Edit Username",
+      "units": "Units",
+      "signOut": "Sign out"
+    },
+    "editUsername": {
+      "title": "Edit Username",
+      "description": "Choose a unique username that will be displayed with your contributions.",
+      "username": "Username",
+      "placeholder": "your_username",
+      "requirements": "• 3-20 characters • Letters, numbers, and underscores only",
+      "cancel": "Cancel",
+      "save": "Save Username",
+      "saving": "Saving...",
+      "errors": {
+        "required": "Username is required",
+        "tooShort": "Username must be at least 3 characters",
+        "tooLong": "Username must be less than 20 characters",
+        "invalidChars": "Username can only contain letters, numbers, and underscores",
+        "permissionDenied": "Permission denied. Please try signing out and back in, then try again.",
+        "notFound": "User not found. Please try signing out and back in.",
+        "insufficientPermissions": "Database permission error. Please try signing out and back in.",
+        "updateFailed": "Failed to update username: {{error}}"
+      }
+    }
+  },
+  "footer": {
+    "description": "A public, community-powered database of box dimensions for products. Measure it once. Trust it forever.",
+    "sections": {
+      "product": "Product",
+      "company": "Company",
+      "getInTouch": "Get in Touch"
+    },
+    "links": {
+      "addProduct": "Add Product",
+      "myContributions": "My Contributions",
+      "communityDisputes": "Community Disputes",
+      "blog": "Blog",
+      "about": "About Us",
+      "contact": "Contact",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "followTwitter": "Follow us on Twitter"
+    },
+    "copyright": "© {{year}} Dimsure. All rights reserved.",
+    "poweredBy": "Powered by"
+  },
+  "about": {
+    "title": "About Dimsure",
+    "subtitle": "We're building the world's most comprehensive database of product packaging dimensions, powered by a community of logistics professionals, e-commerce sellers, and shipping enthusiasts.",
+    "mission": {
+      "title": "Our Mission",
+      "description1": "Every day, millions of packages are shipped around the world. Yet finding accurate packaging dimensions for products remains a frustrating challenge for e-commerce sellers, logistics professionals, and consumers.",
+      "description2": "Dimsure solves this problem by creating a free, open, and community-driven database where anyone can contribute and access verified packaging dimensions. Our goal is simple:",
+      "goal": "measure it once, trust it forever."
+    },
+    "whyMatters": {
+      "title": "Why Accurate Dimensions Matter",
+      "ecommerce": {
+        "title": "E-commerce Sellers",
+        "description": "Calculate accurate shipping costs, optimize packaging, and reduce returns due to size expectations."
+      },
+      "logistics": {
+        "title": "Logistics Companies",
+        "description": "Optimize warehouse space, plan transportation capacity, and improve delivery efficiency."
+      },
+      "consumers": {
+        "title": "Consumers",
+        "description": "Make informed purchasing decisions and plan storage space before buying products online."
+      }
+    },
+    "howItWorks": {
+      "title": "How Dimsure Works",
+      "step1": {
+        "title": "Community Contributes",
+        "description": "Users measure and submit packaging dimensions for products they own or handle."
+      },
+      "step2": {
+        "title": "Data Gets Verified",
+        "description": "Multiple submissions and community feedback ensure accuracy and reliability."
+      },
+      "step3": {
+        "title": "Everyone Benefits",
+        "description": "Free access to accurate, crowd-sourced packaging data for everyone."
+      }
+    },
+    "community": {
+      "title": "Built by the Community",
+      "description1": "Dimsure is more than just a database—it's a community of people who believe in the power of shared knowledge. Every measurement, every verification, and every improvement comes from users like you who want to make shipping and logistics more efficient for everyone.",
+      "description2": "Whether you're an Amazon seller looking for FBA dimensions, a logistics manager optimizing warehouse space, or a consumer planning a purchase, your contributions help build something bigger than any individual effort."
+    },
+    "getInvolved": {
+      "title": "Get Involved",
+      "description": "Ready to contribute to the future of packaging data? Join our community today.",
+      "addProduct": "Add Your First Product",
+      "contactUs": "Contact Us"
+    }
+  },
+  "contact": {
+    "title": "Contact Us",
+    "subtitle": "Have questions, suggestions, or want to collaborate? We'd love to hear from you.",
+    "email": {
+      "title": "Email Us",
+      "description": "For any questions, suggestions, or business inquiries, please reach out to us:",
+      "responseTime": "We typically respond within 24-48 hours during business days."
+    },
+    "responseTime": {
+      "title": "Response Time",
+      "general": "General Inquiries:",
+      "generalTime": "24-48 hours",
+      "technical": "Technical Issues:",
+      "technicalTime": "12-24 hours",
+      "business": "Business Partnerships:",
+      "businessTime": "2-3 business days"
+    },
+    "helpWith": {
+      "title": "What Can We Help With?",
+      "technical": {
+        "title": "Technical Issues:",
+        "description": "Problems with the website, data accuracy, or account issues"
+      },
+      "data": {
+        "title": "Data Contributions:",
+        "description": "Questions about adding products or measurement guidelines"
+      },
+      "business": {
+        "title": "Business Partnerships:",
+        "description": "API access, bulk data needs, or collaboration opportunities"
+      },
+      "features": {
+        "title": "Feature Requests:",
+        "description": "Suggestions for new features or improvements"
+      },
+      "content": {
+        "title": "Content Issues:",
+        "description": "Report incorrect data or inappropriate content"
+      }
+    },
+    "quickActions": {
+      "title": "Quick Actions",
+      "reportTechnical": "Report Technical Issue",
+      "suggestFeature": "Suggest Feature",
+      "businessInquiry": "Business Inquiry"
+    },
+    "communityProject": {
+      "title": "Community-Driven Project",
+      "description": "Dimsure is built and maintained by a small team passionate about solving real logistics challenges. We appreciate your patience as we continue to improve and expand the platform based on community feedback."
+    }
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "edit": "Edit",
+    "delete": "Delete",
+    "view": "View",
+    "share": "Share",
+    "like": "Like",
+    "unlike": "Unlike",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "close": "Close",
+    "open": "Open",
+    "yes": "Yes",
+    "no": "No",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "comingSoon": "Coming Soon"
+  },
+  "units": {
+    "mm": "mm",
+    "inches": "inches",
+    "length": "Length",
+    "width": "Width",
+    "height": "Height"
+  }
+}

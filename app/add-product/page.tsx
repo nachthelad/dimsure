@@ -1,0 +1,351 @@
+"use client"
+
+import type React from "react"
+import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
+import { Upload, Package, CheckCircle, Lightbulb, AlertCircle } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Textarea } from "@/components/ui/textarea"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { useUnit } from "@/components/unit-provider"
+import { useAuth } from "@/hooks/useAuth"
+import { createProduct } from "@/lib/firestore"
+import { normalizeProductName, normalizeBrandName, validateProductName } from "@/lib/product-normalizer"
+import { useLanguage } from "@/components/language-provider"
+
+export default function AddProductPage() {
+  const { isLoggedIn, userData, loading, user } = useAuth()
+  const { t } = useLanguage()
+  const router = useRouter()
+  const { unit } = useUnit()
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSuccess, setIsSuccess] = useState(false)
+  const [nameSuggestion, setNameSuggestion] = useState<string>("")
+  const [error, setError] = useState<string>("")
+  const [formData, setFormData] = useState({
+    name: "",
+    sku: "",
+    brand: "",
+    category: "",
+    description: "",
+    length: "",
+    width: "",
+    height: "",
+    weight: "",
+    image: null as File | null,
+  })
+
+  useEffect(() => {
+    if (!loading && !isLoggedIn) {
+      router.push("/login?redirect=/add-product")
+    }
+  }, [isLoggedIn, loading, router])
+
+  // Simplified name validation - only suggest for spacing issues
+  const handleNameChange = (value: string) => {
+    setFormData((prev) => ({ ...prev, name: value }))
+
+    if (value.length > 2) {
+      const validation = validateProductName(value)
+      if (validation.suggestion && validation.suggestion !== value) {
+        setNameSuggestion(validation.suggestion)
+      } else {
+        setNameSuggestion("")
+      }
+    }
+  }
+
+  const applySuggestion = () => {
+    if (nameSuggestion) {
+      setFormData((prev) => ({ ...prev, name: nameSuggestion }))
+      setNameSuggestion("")
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-8 max-w-2xl">
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
+      </div>
+    )
+  }
+
+  if (!isLoggedIn) {
+    return null // Will redirect
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsSubmitting(true)
+    setError("")
+
+    try {
+      // Validate user is logged in
+      if (!user?.uid) {
+        throw new Error(t("addProduct.validation.loginRequired"))
+      }
+
+      const productData = {
+        name: normalizeProductName(formData.name), // Only basic capitalization
+        sku: formData.sku.toUpperCase(),
+        brand: normalizeBrandName(formData.brand), // Only basic capitalization
+        category: formData.category,
+        description: formData.description,
+        primaryDimensions: {
+          length: Number.parseFloat(formData.length),
+          width: Number.parseFloat(formData.width),
+          height: Number.parseFloat(formData.height),
+          unit: "mm", // Always store in mm
+        },
+        weight: formData.weight ? Number.parseFloat(formData.weight) : null,
+        images: [], // TODO: Handle image upload
+        mainImage: "/placeholder.svg?height=400&width=400",
+        specifications: {
+          // Add basic specs
+          weight: formData.weight ? `${formData.weight}g` : "Not specified",
+        },
+      }
+
+      const createdSku = await createProduct(productData, user.uid)
+
+      setIsSuccess(true)
+
+      // Redirect to product page after 2 seconds
+      setTimeout(() => {
+        router.push(`/product/${createdSku}`)
+      }, 2000)
+    } catch (error: any) {
+      console.error("❌ Error creating product:", error)
+      setError(error.message || t("common.error"))
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      setFormData((prev) => ({ ...prev, image: file }))
+    }
+  }
+
+  if (isSuccess) {
+    return (
+      <div className="container mx-auto px-4 py-8 max-w-2xl">
+        <Card>
+          <CardContent className="text-center py-12">
+            <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
+            <h2 className="text-2xl font-bold text-foreground mb-2">{t("addProduct.success.title")}</h2>
+            <p className="text-muted-foreground mb-4">{t("addProduct.success.message")}</p>
+            <p className="text-sm text-muted-foreground">{t("addProduct.success.redirecting")}</p>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
+  const displayName = userData?.publicTag || user?.displayName || user?.email || "@newuser"
+
+  return (
+    <div className="container mx-auto px-4 py-8 max-w-2xl">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-foreground mb-2">{t("addProduct.title")}</h1>
+        <p className="text-muted-foreground">{t("addProduct.subtitle")}</p>
+      </div>
+
+      {/* User Info - Clean version */}
+      <Alert className="mb-6">
+        <Package className="h-4 w-4" />
+        <AlertDescription>
+          <p className="text-sm">
+            <strong>{t("addProduct.form.submittedBy")}</strong> {displayName}
+          </p>
+        </AlertDescription>
+      </Alert>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Package className="h-5 w-5" />
+            {t("addProduct.title")}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {error && (
+            <Alert className="mb-6" variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-2">
+              <Label htmlFor="name">{t("addProduct.form.productName")} *</Label>
+              <Input
+                id="name"
+                type="text"
+                placeholder={t("addProduct.form.productNamePlaceholder")}
+                value={formData.name}
+                onChange={(e) => handleNameChange(e.target.value)}
+                required
+              />
+              {nameSuggestion && (
+                <Alert>
+                  <Lightbulb className="h-4 w-4" />
+                  <AlertDescription className="flex items-center justify-between">
+                    <span>
+                      {t("addProduct.suggestions.cleanSpacing")} <strong>{nameSuggestion}</strong>
+                    </span>
+                    <Button size="sm" variant="outline" onClick={applySuggestion}>
+                      {t("addProduct.suggestions.apply")}
+                    </Button>
+                  </AlertDescription>
+                </Alert>
+              )}
+              <p className="text-xs text-muted-foreground">
+                Enter the product name as you see it. The community will help improve naming consistency over time.
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="brand">{t("addProduct.form.brand")} *</Label>
+              <Input
+                id="brand"
+                type="text"
+                placeholder={t("addProduct.form.brandPlaceholder")}
+                value={formData.brand}
+                onChange={(e) => setFormData((prev) => ({ ...prev, brand: e.target.value }))}
+                required
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="sku">{t("addProduct.form.sku")} *</Label>
+                <Input
+                  id="sku"
+                  type="text"
+                  placeholder={t("addProduct.form.skuPlaceholder")}
+                  value={formData.sku}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, sku: e.target.value }))}
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="category">{t("addProduct.form.category")} *</Label>
+                <Input
+                  id="category"
+                  type="text"
+                  placeholder={t("addProduct.form.categoryPlaceholder")}
+                  value={formData.category}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, category: e.target.value }))}
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="description">{t("addProduct.form.description")}</Label>
+              <Textarea
+                id="description"
+                placeholder={t("addProduct.form.descriptionPlaceholder")}
+                value={formData.description}
+                onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
+                rows={3}
+              />
+            </div>
+
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <Label>
+                  {t("addProduct.form.boxDimensions")} * {t("addProduct.form.inMillimeters")}
+                </Label>
+                <Badge variant="secondary">mm</Badge>
+              </div>
+              <div className="grid grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="length">{t("addProduct.form.length")}</Label>
+                  <Input
+                    id="length"
+                    type="number"
+                    step="1"
+                    placeholder="0"
+                    value={formData.length}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, length: e.target.value }))}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="width">{t("addProduct.form.width")}</Label>
+                  <Input
+                    id="width"
+                    type="number"
+                    step="1"
+                    placeholder="0"
+                    value={formData.width}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, width: e.target.value }))}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="height">{t("addProduct.form.height")}</Label>
+                  <Input
+                    id="height"
+                    type="number"
+                    step="1"
+                    placeholder="0"
+                    value={formData.height}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, height: e.target.value }))}
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="weight">{t("addProduct.form.packageWeight")}</Label>
+              <Input
+                id="weight"
+                type="number"
+                placeholder={t("addProduct.form.weightPlaceholder")}
+                value={formData.weight}
+                onChange={(e) => setFormData((prev) => ({ ...prev, weight: e.target.value }))}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="image">{t("addProduct.form.productImage")}</Label>
+              <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary/50 transition-colors">
+                <input id="image" type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+                <label htmlFor="image" className="cursor-pointer">
+                  <Upload className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+                  <p className="text-sm text-muted-foreground">{t("addProduct.form.imageUpload")}</p>
+                  <p className="text-xs text-muted-foreground">{t("addProduct.form.imageFormats")}</p>
+                </label>
+                {formData.image && <p className="text-sm text-primary mt-2">{formData.image.name} selected</p>}
+              </div>
+            </div>
+
+            <div className="bg-primary/10 p-4 rounded-lg">
+              <p className="text-sm text-foreground">
+                <strong>{t("addProduct.form.submittedBy")}</strong> {displayName}
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">{t("addProduct.form.attribution")}</p>
+            </div>
+
+            <Button type="submit" className="w-full" size="lg" disabled={isSubmitting}>
+              {isSubmitting ? t("addProduct.form.submitting") : t("addProduct.form.submit")}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
