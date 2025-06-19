@@ -351,7 +351,7 @@ export default function PrivacyPage() {
             </p>
             <div className="bg-muted/50 p-4 rounded-lg">
               <p className="font-semibold">{locale === "es" ? "Email:" : "Email:"}</p>
-              <p className="text-muted-foreground">privacy@dimsure.com</p>
+              <p className="text-muted-foreground">nachthelad.dev@gmail.com</p>
               <p className="font-semibold mt-2">{locale === "es" ? "Línea de Asunto:" : "Subject Line:"}</p>
               <p className="text-muted-foreground">
                 {locale === "es"
