@@ -20,12 +20,6 @@ import { db } from "./firebase"
 // Product operations
 export const createProduct = async (productData: any, userId: string) => {
   try {
-    console.log("🔄 Creating product with data:", {
-      sku: productData.sku,
-      name: productData.name,
-      userId: userId,
-    })
-
     if (!userId) {
       throw new Error("User ID is required to create a product")
     }
@@ -41,7 +35,7 @@ export const createProduct = async (productData: any, userId: string) => {
     const productToSave = {
       ...productData,
       createdAt: serverTimestamp(),
-      createdBy: userId, // Explicitly set the user ID
+      createdBy: userId,
       lastModified: serverTimestamp(),
       lastModifiedBy: userId,
       likes: 0,
@@ -51,33 +45,11 @@ export const createProduct = async (productData: any, userId: string) => {
       likedBy: [],
     }
 
-    console.log("💾 Saving product to Firestore:", {
-      sku: productToSave.sku,
-      createdBy: productToSave.createdBy,
-      userId: userId,
-    })
-
     await setDoc(productRef, productToSave)
-
-    console.log("✅ Product created successfully!")
-
-    // Verify the product was saved correctly
-    const savedProduct = await getDoc(productRef)
-    if (savedProduct.exists()) {
-      const savedData = savedProduct.data()
-      console.log("✅ Verification - Product saved with createdBy:", savedData.createdBy)
-
-      if (savedData.createdBy !== userId) {
-        console.error("❌ ERROR: createdBy mismatch!", {
-          expected: userId,
-          actual: savedData.createdBy,
-        })
-      }
-    }
 
     return productData.sku
   } catch (error) {
-    console.error("❌ Error creating product:", error)
+    console.error("Error creating product:", error)
     throw error
   }
 }
@@ -114,10 +86,7 @@ export const getProduct = async (sku: string) => {
 
 export const getUserProducts = async (userId: string) => {
   try {
-    console.log("🔍 Fetching products for userId:", userId)
-
     if (!userId) {
-      console.error("❌ No userId provided")
       return []
     }
 
@@ -125,16 +94,9 @@ export const getUserProducts = async (userId: string) => {
     const userProductsQuery = query(collection(db, "products"), where("createdBy", "==", userId))
 
     const userProductsSnapshot = await getDocs(userProductsQuery)
-    console.log("📊 User products found:", userProductsSnapshot.docs.length)
 
     const userProducts = userProductsSnapshot.docs.map((doc) => {
       const data = doc.data()
-      console.log("📦 Product:", {
-        id: doc.id,
-        name: data.name,
-        createdBy: data.createdBy,
-        matches: data.createdBy === userId,
-      })
       return {
         id: doc.id,
         ...data,
@@ -148,15 +110,12 @@ export const getUserProducts = async (userId: string) => {
       return bTime.getTime() - aTime.getTime()
     })
 
-    console.log("✅ Successfully fetched and sorted user products")
-
     return userProducts
   } catch (error) {
-    console.error("❌ Error getting user products:", error)
+    console.error("Error getting user products:", error)
 
     // Fallback: try to get all products and filter manually
     try {
-      console.log("🔄 Trying fallback method...")
       const allProductsQuery = query(collection(db, "products"))
       const allProductsSnapshot = await getDocs(allProductsQuery)
 
@@ -169,10 +128,9 @@ export const getUserProducts = async (userId: string) => {
           return bTime.getTime() - aTime.getTime()
         })
 
-      console.log("✅ Fallback method found:", userProducts.length, "products")
       return userProducts
     } catch (fallbackError) {
-      console.error("❌ Fallback method also failed:", fallbackError)
+      console.error("Fallback method also failed:", fallbackError)
       return []
     }
   }
@@ -190,7 +148,6 @@ export const getRecentProducts = async (limitCount = 10) => {
       }))
     } catch (error) {
       // Fallback: get all and sort manually
-      console.log("Using fallback for recent products...")
       const q = query(collection(db, "products"), limit(50))
       const querySnapshot = await getDocs(q)
       const products = querySnapshot.docs.map((doc) => ({
@@ -376,7 +333,7 @@ export const ensureUserDocument = async (userId: string, userEmail?: string, use
         reputation: 0,
         contributionsCount: 0,
         isVerified: false,
-        isActive: true, // New field for account status
+        isActive: true,
         preferences: {},
       })
       return true
@@ -447,7 +404,6 @@ export const deactivateAccount = async (userId: string) => {
       isActive: false,
       deactivatedAt: serverTimestamp(),
     })
-    console.log("✅ Account deactivated successfully")
   } catch (error) {
     console.error("Error deactivating account:", error)
     throw error
@@ -462,7 +418,6 @@ export const reactivateAccount = async (userId: string) => {
       reactivatedAt: serverTimestamp(),
       lastLogin: serverTimestamp(),
     })
-    console.log("✅ Account reactivated successfully")
   } catch (error) {
     console.error("Error reactivating account:", error)
     throw error
@@ -476,7 +431,7 @@ export const checkAccountStatus = async (userId: string) => {
       const userData = userDoc.data()
       return {
         exists: true,
-        isActive: userData.isActive !== false, // Default to true if not set
+        isActive: userData.isActive !== false,
         userData,
       }
     }
@@ -490,8 +445,6 @@ export const checkAccountStatus = async (userId: string) => {
 // Fix orphan products - assign them to a user
 export const fixOrphanProducts = async (userId: string) => {
   try {
-    console.log("🔧 Fixing orphan products for user:", userId)
-
     const orphanProductsQuery = query(collection(db, "products"))
     const orphanSnapshot = await getDocs(orphanProductsQuery)
 
@@ -507,12 +460,10 @@ export const fixOrphanProducts = async (userId: string) => {
           lastModifiedBy: userId,
         })
 
-        console.log(`✅ Fixed product: ${productData.name} (${productDoc.id})`)
         fixedCount++
       }
     }
 
-    console.log(`🎉 Fixed ${fixedCount} orphan products!`)
     return fixedCount
   } catch (error) {
     console.error("Error fixing orphan products:", error)

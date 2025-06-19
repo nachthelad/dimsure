@@ -25,8 +25,6 @@ export function useAuth() {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      console.log("Auth state changed:", firebaseUser?.uid || "null")
-
       setUser(firebaseUser)
 
       if (firebaseUser) {

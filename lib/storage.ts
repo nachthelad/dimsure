@@ -4,8 +4,6 @@ import { storage } from "./firebase"
 // Upload image to Firebase Storage
 export const uploadProductImage = async (file: File, productSku: string): Promise<string> => {
   try {
-    console.log("🔄 Uploading image for product:", productSku)
-
     // Create a reference to the file location
     const timestamp = Date.now()
     const fileName = `${productSku}_${timestamp}_${file.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`
@@ -13,15 +11,13 @@ export const uploadProductImage = async (file: File, productSku: string): Promis
 
     // Upload the file
     const snapshot = await uploadBytes(imageRef, file)
-    console.log("✅ Image uploaded successfully")
 
     // Get the download URL
     const downloadURL = await getDownloadURL(snapshot.ref)
-    console.log("✅ Download URL obtained:", downloadURL)
 
     return downloadURL
   } catch (error) {
-    console.error("❌ Error uploading image:", error)
+    console.error("Error uploading image:", error)
     throw new Error("Failed to upload image")
   }
 }
@@ -32,9 +28,8 @@ export const deleteProductImage = async (imageUrl: string): Promise<void> => {
     // Extract the file path from the URL
     const imageRef = ref(storage, imageUrl)
     await deleteObject(imageRef)
-    console.log("✅ Image deleted successfully")
   } catch (error) {
-    console.error("❌ Error deleting image:", error)
+    console.error("Error deleting image:", error)
     throw new Error("Failed to delete image")
   }
 }
@@ -46,7 +41,7 @@ export const uploadMultipleImages = async (files: File[], productSku: string): P
     const urls = await Promise.all(uploadPromises)
     return urls
   } catch (error) {
-    console.error("❌ Error uploading multiple images:", error)
+    console.error("Error uploading multiple images:", error)
     throw new Error("Failed to upload images")
   }
 }
