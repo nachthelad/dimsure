@@ -376,9 +376,15 @@ export const ensureUserDocument = async (userId: string, userEmail?: string, use
         reputation: 0,
         contributionsCount: 0,
         isVerified: false,
+        isActive: true, // New field for account status
         preferences: {},
       })
       return true
+    } else {
+      // Update last login for existing users
+      await updateDoc(userRef, {
+        lastLogin: serverTimestamp(),
+      })
     }
     return false
   } catch (error) {
@@ -430,6 +436,54 @@ export const getUserPreferences = async (userId: string) => {
   } catch (error) {
     console.error("Error getting user preferences:", error)
     return {}
+  }
+}
+
+// Account deactivation/reactivation
+export const deactivateAccount = async (userId: string) => {
+  try {
+    const userRef = doc(db, "users", userId)
+    await updateDoc(userRef, {
+      isActive: false,
+      deactivatedAt: serverTimestamp(),
+    })
+    console.log("✅ Account deactivated successfully")
+  } catch (error) {
+    console.error("Error deactivating account:", error)
+    throw error
+  }
+}
+
+export const reactivateAccount = async (userId: string) => {
+  try {
+    const userRef = doc(db, "users", userId)
+    await updateDoc(userRef, {
+      isActive: true,
+      reactivatedAt: serverTimestamp(),
+      lastLogin: serverTimestamp(),
+    })
+    console.log("✅ Account reactivated successfully")
+  } catch (error) {
+    console.error("Error reactivating account:", error)
+    throw error
+  }
+}
+
+export const checkAccountStatus = async (userId: string) => {
+  try {
+    const userDoc = await getDoc(doc(db, "users", userId))
+    if (userDoc.exists()) {
+      const userData = userDoc.data()
+      return {
+        exists: true,
+        isActive: userData.isActive !== false, // Default to true if not set
+        userData,
+      }
+    }
+    return { exists: false, isActive: false, userData: null }
+  } catch (error) {
+    console.error("Error checking account status:", error)
+    return { exists: false, isActive: false, userData: null }
   }
 }
 
