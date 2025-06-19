@@ -4,17 +4,22 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Shield, ArrowLeft } from "lucide-react"
 import Link from "next/link"
+import { signInWithGoogle } from "@/lib/auth"
 
 export default function LoginPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const redirectTo = searchParams.get("redirect") || "/"
 
-  const handleGoogleSignIn = () => {
-    // Mock sign in - in real app this would handle Google OAuth
-    console.log("Signing in with Google...")
-    // After successful sign in, redirect to the intended page
-    router.push(redirectTo)
+  const handleGoogleSignIn = async () => {
+    try {
+      await signInWithGoogle()
+      // After successful sign in, redirect to the intended page
+      router.push(redirectTo)
+    } catch (error) {
+      console.error("Error signing in:", error)
+      // You could add error handling here, like showing a toast
+    }
   }
 
   return (
