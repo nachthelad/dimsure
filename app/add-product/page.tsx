@@ -150,22 +150,21 @@ export default function AddProductPage() {
       }
 
       const productData = {
-        name: normalizeProductName(formData.name), // Only basic capitalization
+        name: normalizeProductName(formData.name),
         sku: formData.sku.toUpperCase(),
-        brand: normalizeBrandName(formData.brand), // Only basic capitalization
+        brand: normalizeBrandName(formData.brand),
         category: formData.category,
         description: formData.description,
         primaryDimensions: {
           length: Number.parseFloat(formData.length),
           width: Number.parseFloat(formData.width),
           height: Number.parseFloat(formData.height),
-          unit: "mm", // Always store in mm
+          unit: "mm",
         },
         weight: formData.weight ? Number.parseFloat(formData.weight) : null,
-        images: imageUrl !== "/placeholder.svg?height=400&width=400" ? [imageUrl] : [], // Store uploaded images
-        mainImage: imageUrl, // Use uploaded image or placeholder
+        images: imageUrl !== "/placeholder.svg?height=400&width=400" ? [imageUrl] : [],
+        mainImage: imageUrl,
         specifications: {
-          // Add basic specs
           weight: formData.weight ? `${formData.weight}g` : "Not specified",
         },
       }
@@ -183,7 +182,7 @@ export default function AddProductPage() {
         router.push(`/product/${createdSku}`)
       }, 2000)
     } catch (error: any) {
-      console.error("❌ Error creating product:", error)
+      console.error("Error creating product:", error)
       setError(error.message || t("common.error"))
       toast({
         title: t("common.error"),

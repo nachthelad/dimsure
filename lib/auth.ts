@@ -16,17 +16,11 @@ googleProvider.addScope("profile")
 
 export const signInWithGoogle = async () => {
   try {
-    console.log("Starting Google sign in...")
-
     const result = await signInWithPopup(auth, googleProvider)
     const user = result.user
 
-    console.log("User signed in successfully:", user.uid)
-
     // Ensure user document exists in Firestore
     await ensureUserDocument(user.uid, user.email || undefined, user.displayName || undefined)
-
-    console.log("User document ensured in Firestore")
 
     return user
   } catch (error: any) {
@@ -47,9 +41,7 @@ export const signInWithGoogle = async () => {
 
 export const signOut = async () => {
   try {
-    console.log("Signing out user...")
     await firebaseSignOut(auth)
-    console.log("User signed out successfully")
   } catch (error) {
     console.error("Error signing out:", error)
     throw error
