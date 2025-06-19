@@ -981,7 +981,7 @@ export const translations = {
             "Si tienes alguna pregunta sobre esta Política de Privacidad o nuestras prácticas de datos, por favor contáctanos:",
           email: "Correo electrónico:",
           emailAddress: "nachthelad.dev@gmail.com",
-          subjectLine: "Línea de asunto:",
+          subjectLine: "Asunto:",
           subjectText: "Pregunta sobre Política de Privacidad - Dimsure",
         },
       },
