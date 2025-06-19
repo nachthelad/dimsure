@@ -147,13 +147,14 @@ export default function ProductDetailPage({
         <div className="space-y-4">
           <Card>
             <CardContent className="p-6">
-              <div className="w-full h-[400px] bg-muted dark:bg-muted/50 rounded-lg flex items-center justify-center">
+              <div className="w-full h-[400px] bg-muted dark:bg-muted/50 rounded-lg overflow-hidden flex items-center justify-center">
                 <Image
                   src={product.mainImage || "/placeholder.svg?height=400&width=400&text=Product+Image"}
                   alt={product.name}
                   width={400}
                   height={400}
-                  className="w-full h-auto rounded-lg object-contain"
+                  className="max-w-full max-h-full object-contain"
+                  style={{ width: "auto", height: "auto" }}
                 />
               </div>
             </CardContent>
@@ -165,13 +166,14 @@ export default function ProductDetailPage({
               {product.images.map((img: string, index: number) => (
                 <Card key={index} className="cursor-pointer hover:ring-2 hover:ring-primary">
                   <CardContent className="p-2">
-                    <div className="w-full h-[100px] bg-muted dark:bg-muted/50 rounded flex items-center justify-center">
+                    <div className="w-full h-[100px] bg-muted dark:bg-muted/50 rounded overflow-hidden flex items-center justify-center">
                       <Image
                         src={img || "/placeholder.svg?height=100&width=100&text=Image"}
                         alt={`${product.name} view ${index + 1}`}
                         width={100}
                         height={100}
-                        className="w-full h-auto rounded object-contain"
+                        className="max-w-full max-h-full object-contain"
+                        style={{ width: "auto", height: "auto" }}
                       />
                     </div>
                   </CardContent>
