@@ -38,7 +38,28 @@ export const translations = {
         units: "Units",
         signOut: "Sign Out",
       },
-    },
+      editUsername: {
+        title: "Edit username",
+        description: "This name will be visible to others.",
+        username: "Username",
+        placeholder: "e.g. nacho_dev",
+        cancel: "Cancel",
+        save: "Save",
+        saving: "Saving...",
+        requirements: "3–20 characters. Only letters, numbers, and underscores.",
+        errors: {
+          required: "Username is required.",
+          tooShort: "Must be at least 3 characters.",
+          tooLong: "Cannot exceed 20 characters.",
+          invalidChars: "Only letters, numbers, and underscores are allowed.",
+          permissionDenied: "You don't have permission to do this.",
+          notFound: "User not found.",
+          insufficientPermissions: "Insufficient permissions.",
+          updateFailed: "Failed to update username: {{error}}"
+        }
+      }
+    }
+,    
     home: {
       hero: {
         title: "Measure it once.",
@@ -545,6 +566,26 @@ export const translations = {
         units: "Unidades",
         signOut: "Cerrar Sesión",
       },
+      editUsername: {
+        title: "Editar nombre de usuario",
+        description: "Este nombre se mostrará públicamente.",
+        username: "Nombre de usuario",
+        placeholder: "ej. nacho_dev",
+        cancel: "Cancelar",
+        save: "Guardar",
+        saving: "Guardando...",
+        requirements: "3–20 caracteres. Solo letras, números y guiones bajos.",
+        errors: {
+          required: "El nombre de usuario es obligatorio.",
+          tooShort: "Debe tener al menos 3 caracteres.",
+          tooLong: "No puede superar los 20 caracteres.",
+          invalidChars: "Solo se permiten letras, números y guiones bajos.",
+          permissionDenied: "No tenés permisos para hacer esto.",
+          notFound: "Usuario no encontrado.",
+          insufficientPermissions: "Permisos insuficientes.",
+          updateFailed: "No se pudo actualizar el nombre: {{error}}"
+        }
+      }
     },
     home: {
       hero: {
