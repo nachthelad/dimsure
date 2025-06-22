@@ -91,7 +91,7 @@ export function UserNameModal({ isOpen, onClose, currentTag, userId }: UserNameM
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="username" className="text-right">
+            <Label htmlFor="username" className="text-left">
               {t("auth.editUsername.username")}
             </Label>
             <div className="col-span-3 flex items-center">

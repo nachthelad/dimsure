@@ -3,7 +3,7 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react"
 import type { Locale } from "@/lib/i18n"
 import { defaultLocale } from "@/lib/i18n"
-import { getTranslation, interpolate } from "@/lib/translations"
+import { getTranslation, interpolate } from "@/lib/translations/index"
 
 interface LanguageContextType {
   locale: Locale
