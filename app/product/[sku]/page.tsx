@@ -301,7 +301,7 @@ export default function ProductDetailPage({
               <CardTitle>{t("product.specifications.title")}</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
                 {product.specifications &&
                   Object.entries(product.specifications).map(([key, value]) => (
                     <div key={key} className="flex justify-between py-2 border-b border-border last:border-0">
@@ -313,14 +313,6 @@ export default function ProductDetailPage({
                       </span>
                     </div>
                   ))}
-                {product.weight && (
-                  <div className="flex justify-between py-2 border-b border-border">
-                    <span className="font-medium text-muted-foreground">
-                      {t("product.specifications.packageWeight")}
-                    </span>
-                    <span className="text-foreground">{product.weight}g</span>
-                  </div>
-                )}
               </div>
             </CardContent>
           </Card>
