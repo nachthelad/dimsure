@@ -139,6 +139,13 @@ export default function AddProductPage() {
         finalName = validation.suggestion
       }
 
+      // Convertir dimensiones a mm si es necesario
+      const parseAndConvert = (value: string) => {
+        const num = Number.parseFloat(value)
+        if (isNaN(num)) return 0
+        return unit === "inches" ? num * 25.4 : num
+      }
+
       const productData = {
         name: normalizeProductName(finalName),
         sku: formData.sku.toUpperCase(),
@@ -146,9 +153,9 @@ export default function AddProductPage() {
         category: formData.category,
         description: formData.description,
         primaryDimensions: {
-          length: Number.parseFloat(formData.length),
-          width: Number.parseFloat(formData.width),
-          height: Number.parseFloat(formData.height),
+          length: parseAndConvert(formData.length),
+          width: parseAndConvert(formData.width),
+          height: parseAndConvert(formData.height),
           unit: "mm",
         },
         weight: formData.weight ? Number.parseFloat(formData.weight) : null,
@@ -300,9 +307,9 @@ export default function AddProductPage() {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <Label>
-                  {t("addProduct.form.boxDimensions")} * {t("addProduct.form.inMillimeters")}
+                  {t("addProduct.form.boxDimensions")} * {unit === "mm" ? t("addProduct.form.inMillimeters") : t("addProduct.form.inInches")}
                 </Label>
-                <Badge variant="secondary">mm</Badge>
+                <Badge variant="secondary">{unit}</Badge>
               </div>
               <div className="grid grid-cols-3 gap-4">
                 <div className="space-y-2">
