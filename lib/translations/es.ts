@@ -492,7 +492,7 @@ export const es = {
         contact: "Contacto",
         privacy: "Política de Privacidad",
         terms: "Términos de Servicio",
-        followTwitter: "Síguenos en Twitter",
+        followX: "Síguenos en X",
       },
       copyright: "© {{year}} Dimsure. Todos los derechos reservados.",
       poweredBy: "Desarrollado por",

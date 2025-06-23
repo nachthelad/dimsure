@@ -490,7 +490,7 @@ export const en = {
         contact: "Contact",
         privacy: "Privacy Policy",
         terms: "Terms of Service",
-        followTwitter: "Follow us on Twitter",
+        followX: "Follow us on X",
       },
       copyright: "© {{year}} Dimsure. All rights reserved.",
       poweredBy: "Powered by",
