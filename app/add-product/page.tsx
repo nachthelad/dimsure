@@ -27,7 +27,6 @@ export default function AddProductPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isUploadingImage, setIsUploadingImage] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
-  const [nameSuggestion, setNameSuggestion] = useState<string>("")
   const [error, setError] = useState<string>("")
   const [imagePreview, setImagePreview] = useState<string>("")
   const [formData, setFormData] = useState({
