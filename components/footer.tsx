@@ -1,10 +1,11 @@
 "use client"
 
 import Link from "next/link"
-import { Package, Mail, Twitter } from "lucide-react"
+import { Package, Mail } from "lucide-react"
 import { Separator } from "@/components/ui/separator"
 import { useLanguage } from "@/components/language-provider"
 import { APP_CONSTANTS } from "@/lib/constants"
+import { FaXTwitter } from "react-icons/fa6"
 
 export function Footer() {
   const { t } = useLanguage()
@@ -83,24 +84,24 @@ export function Footer() {
           {/* Contact */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-foreground">{t("footer.sections.getInTouch")}</h3>
-            <div className="space-y-2 text-sm">
+            <div className="flex flex-row xl:flex-col gap-4 text-sm">
               <div className="flex items-center gap-2 text-muted-foreground">
-                <Mail className="h-4 w-4" />
                 <a href={`mailto:${APP_CONSTANTS.ADMIN_EMAIL}`} className="hover:text-foreground transition-colors">
-                  {APP_CONSTANTS.ADMIN_EMAIL}
+                  <span className="xl:hidden"><Mail className="h-5 w-5" /></span>
+                  <span className="hidden xl:inline-flex items-center gap-2"><Mail className="h-4 w-4" />{APP_CONSTANTS.ADMIN_EMAIL}</span>
                 </a>
               </div>
-            </div>
-            <div className="pt-2">
-              <a
-                href="https://twitter.com/dimsure"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors text-sm"
-              >
-                <Twitter className="h-4 w-4" />
-                <span>{t("footer.links.followTwitter")}</span>
-              </a>
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <a
+                  href="https://twitter.com/dimsure_app"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-foreground transition-colors text-sm"
+                >
+                  <span className="xl:hidden"><FaXTwitter className="h-5 w-5" /></span>
+                  <span className="hidden xl:inline-flex items-center gap-2"><FaXTwitter className="h-4 w-4" />{t("footer.links.followX")}</span>
+                </a>
+              </div>
             </div>
           </div>
         </div>

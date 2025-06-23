@@ -4,7 +4,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Package, Plus, User, MessageSquare, BookOpen, Menu } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { Separator } from "@/components/ui/separator"
 import { cn } from "@/lib/utils"
 import { AuthButton } from "@/components/auth-button"
@@ -34,7 +34,7 @@ export function Navbar() {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-4">
+          <div className="hidden xl:flex items-center space-x-4">
             <div className="flex items-center space-x-1">
               {navigation.map((item) => {
                 const Icon = item.icon
@@ -62,7 +62,7 @@ export function Navbar() {
           </div>
 
           {/* Mobile Navigation */}
-          <div className="md:hidden flex items-center space-x-2">
+          <div className="xl:hidden flex items-center space-x-2">
             <LanguageToggle />
             <ThemeToggle />
             <Sheet>
@@ -72,6 +72,7 @@ export function Navbar() {
                 </Button>
               </SheetTrigger>
               <SheetContent side="right" className="w-64">
+                <SheetTitle>Menu</SheetTitle>
                 <div className="flex flex-col space-y-2 mt-8">
                   {navigation.map((item) => {
                     const Icon = item.icon
