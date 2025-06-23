@@ -14,19 +14,29 @@ import { signInWithGoogle, signOut } from "@/lib/auth"
 import { useAuth } from "@/hooks/useAuth"
 import { UnitToggle } from "./unit-toggle"
 import { UserNameModal } from "./user-name-modal"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useLanguage } from "./language-provider"
 import { toast } from "@/hooks/use-toast"
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
+import { useRouter } from "next/navigation"
 
 export function AuthButton() {
   const { user, userData, loading, isLoggedIn } = useAuth()
   const { t } = useLanguage()
-  const [isNameModalOpen, setIsNameModalOpen] = useState(false)
   const [isSigningIn, setIsSigningIn] = useState(false)
+  const [showUserNameModal, setShowUserNameModal] = useState(false)
+  const router = useRouter()
+
+  useEffect(() => {
+    if (isLoggedIn && user && (!userData?.publicTag || userData.publicTag.trim() === "")) {
+      setShowUserNameModal(true)
+    } else {
+      setShowUserNameModal(false)
+    }
+  }, [isLoggedIn, user, userData?.publicTag])
 
   const handleSignIn = async () => {
     if (isSigningIn) return
-
     setIsSigningIn(true)
     try {
       await signInWithGoogle()
@@ -72,38 +82,21 @@ export function AuthButton() {
   }
 
   if (isLoggedIn && user) {
-    const displayName = userData?.publicTag || `@${user.displayName?.toLowerCase().replace(/\s+/g, "") || "user"}`
-
     return (
       <>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="flex items-center gap-2">
-              <User className="h-4 w-4" />
-              <span>{t("navigation.myAccount")}</span>
-              <ChevronDown className="h-4 w-4" />
+            <Button variant="ghost" className="flex items-center gap-2 p-1.5">
+              <Avatar>
+                <AvatarImage src={user.photoURL || undefined} alt={user.displayName || "User"} />
+                <AvatarFallback>{user.displayName?.[0]?.toUpperCase() || "U"}</AvatarFallback>
+              </Avatar>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
-            <DropdownMenuLabel className="font-normal">
-              <div className="flex flex-col space-y-1">
-                <p className="text-sm font-medium leading-none">{displayName}</p>
-                <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
-              </div>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => setIsNameModalOpen(true)}>
-              <Edit className="mr-2 h-4 w-4" />
-              <span>{t("auth.userMenu.editUsername")}</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <div className="flex items-center justify-between w-full">
-                <div className="flex items-center">
-                  <Settings className="mr-2 h-4 w-4" />
-                  <span>{t("auth.userMenu.units")}</span>
-                </div>
-                <UnitToggle />
-              </div>
+          <DropdownMenuContent align="end" className="w-44">
+            <DropdownMenuItem onClick={() => router.push("/profile")}> 
+              <User className="mr-2 h-4 w-4" />
+              <span>{t("auth.userMenu.profile") || "Profile"}</span>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleSignOut}>
@@ -112,13 +105,15 @@ export function AuthButton() {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-
-        <UserNameModal
-          isOpen={isNameModalOpen}
-          onClose={() => setIsNameModalOpen(false)}
-          currentTag={userData?.publicTag}
-          userId={user.uid}
-        />
+        {showUserNameModal && (
+          <UserNameModal
+            isOpen={showUserNameModal}
+            onClose={() => setShowUserNameModal(false)}
+            currentTag={userData?.publicTag}
+            userId={user.uid}
+            forceModal
+          />
+        )}
       </>
     )
   }

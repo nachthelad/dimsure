@@ -33,19 +33,21 @@ export const es = {
       signOutErrorDescription: "Hubo un problema al cerrar sesión. Por favor intenta de nuevo.",
       termsAgreement: "Al iniciar sesión, aceptas nuestros Términos de Servicio y Política de Privacidad",
       userMenu: {
-        editUsername: "Editar Nombre de Usuario",
+        profile: "Perfil",
         units: "Unidades",
         signOut: "Cerrar Sesión",
       },
       editUsername: {
-        title: "Editar nombre de usuario",
+        title: "Elegir nombre de usuario",
         description: "Este nombre se mostrará públicamente.",
         username: "Nombre de usuario",
-        placeholder: "ej. nacho_dev",
+        placeholder: "ej. AmanteDeLaLogistica",
         cancel: "Cancelar",
         save: "Guardar",
+        saved: "Guardado",
         saving: "Guardando...",
         requirements: "3–20 caracteres. Solo letras, números y guiones bajos.",
+        daysLeft: "Podrás cambiar tu usuario en {{days}} días",
         errors: {
           required: "El nombre de usuario es obligatorio.",
           tooShort: "Debe tener al menos 3 caracteres.",
@@ -55,7 +57,7 @@ export const es = {
           notFound: "Usuario no encontrado.",
           insufficientPermissions: "Permisos insuficientes.",
           updateFailed: "No se pudo actualizar el nombre: {{error}}"
-        }
+        },
       }
     },
     home: {

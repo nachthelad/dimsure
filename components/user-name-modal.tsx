@@ -21,12 +21,14 @@ interface UserNameModalProps {
   onClose: () => void
   currentTag?: string | null
   userId: string
+  forceModal?: boolean
 }
 
-export function UserNameModal({ isOpen, onClose, currentTag, userId }: UserNameModalProps) {
+export function UserNameModal({ isOpen, onClose, currentTag, userId, forceModal }: UserNameModalProps) {
   const [username, setUsername] = useState(currentTag?.replace("@", "") || "")
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
+  const [wasSaved, setWasSaved] = useState(false)
   const { user } = useAuth()
   const { t } = useLanguage()
 
@@ -57,10 +59,10 @@ export function UserNameModal({ isOpen, onClose, currentTag, userId }: UserNameM
     try {
       const newTag = `@${username.toLowerCase()}`
       await updateUserTag(userId, newTag, user?.email || undefined, user?.displayName || undefined)
-      onClose()
+      setWasSaved(true)
       setTimeout(() => {
-        window.location.reload()
-      }, 500)
+        onClose()
+      }, 600) 
     } catch (error: any) {
       if (error.code === "permission-denied") {
         setError(t("auth.editUsername.errors.permissionDenied"))
@@ -76,15 +78,9 @@ export function UserNameModal({ isOpen, onClose, currentTag, userId }: UserNameM
     }
   }
 
-  const handleClose = () => {
-    setError("")
-    setUsername(currentTag?.replace("@", "") || "")
-    onClose()
-  }
-
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[425px]">
+    <Dialog open={isOpen}>
+      <DialogContent className="sm:max-w-[425px]" hideCloseButton={forceModal} disableOutsideClick={forceModal}>
         <DialogHeader>
           <DialogTitle>{t("auth.editUsername.title")}</DialogTitle>
           <DialogDescription>{t("auth.editUsername.description")}</DialogDescription>
@@ -112,11 +108,12 @@ export function UserNameModal({ isOpen, onClose, currentTag, userId }: UserNameM
           <div className="text-xs text-muted-foreground">{t("auth.editUsername.requirements")}</div>
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={handleClose}>
-            {t("auth.editUsername.cancel")}
-          </Button>
-          <Button onClick={handleSave} disabled={isLoading}>
-            {isLoading ? t("auth.editUsername.saving") : t("auth.editUsername.save")}
+          <Button onClick={handleSave} disabled={isLoading || wasSaved}>
+            {isLoading
+              ? t("auth.editUsername.saving")
+              : wasSaved
+                ? t("auth.editUsername.saved")
+                : t("auth.editUsername.save")}
           </Button>
         </DialogFooter>
       </DialogContent>
