@@ -49,25 +49,8 @@ export default function AddProductPage() {
     }
   }, [isLoggedIn, loading, router])
 
-  // Simplified name validation - only suggest for spacing issues
   const handleNameChange = (value: string) => {
     setFormData((prev) => ({ ...prev, name: value }))
-
-    if (value.length > 2) {
-      const validation = validateProductName(value)
-      if (validation.suggestion && validation.suggestion !== value) {
-        setNameSuggestion(validation.suggestion)
-      } else {
-        setNameSuggestion("")
-      }
-    }
-  }
-
-  const applySuggestion = () => {
-    if (nameSuggestion) {
-      setFormData((prev) => ({ ...prev, name: nameSuggestion }))
-      setNameSuggestion("")
-    }
   }
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -149,8 +132,15 @@ export default function AddProductPage() {
         }
       }
 
+      // Validar y normalizar el nombre aquí
+      const validation = validateProductName(formData.name)
+      let finalName = formData.name
+      if (validation.suggestion && validation.suggestion !== formData.name) {
+        finalName = validation.suggestion
+      }
+
       const productData = {
-        name: normalizeProductName(formData.name),
+        name: normalizeProductName(finalName),
         sku: formData.sku.toUpperCase(),
         brand: normalizeBrandName(formData.brand),
         category: formData.category,
@@ -255,19 +245,6 @@ export default function AddProductPage() {
                 onChange={(e) => handleNameChange(e.target.value)}
                 required
               />
-              {nameSuggestion && (
-                <Alert>
-                  <Lightbulb className="h-4 w-4" />
-                  <AlertDescription className="flex items-center justify-between">
-                    <span>
-                      {t("addProduct.suggestions.cleanSpacing")} <strong>{nameSuggestion}</strong>
-                    </span>
-                    <Button size="sm" variant="outline" onClick={applySuggestion}>
-                      {t("addProduct.suggestions.apply")}
-                    </Button>
-                  </AlertDescription>
-                </Alert>
-              )}
               <p className="text-xs text-muted-foreground">{t("addProduct.form.productNameHelp")}</p>
             </div>
 
