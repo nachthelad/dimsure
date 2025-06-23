@@ -104,6 +104,7 @@ export const es = {
         descriptionPlaceholder: "Breve descripción del producto y embalaje...",
         boxDimensions: "Dimensiones de la Caja",
         inMillimeters: "(en milímetros)",
+        inInches: "(en pulgadas)",
         length: "Largo (mm)",
         width: "Ancho (mm)",
         height: "Alto (mm)",
