@@ -182,6 +182,12 @@ export const es = {
         fixMyProducts: "Arreglar Mis Productos",
       },
     },
+    blog: {
+      admin: {
+        notAuthorized: "No autorizado",
+        loading: "Cargando..."
+      },
+    },
     product: {
       details: {
         sku: "SKU:",

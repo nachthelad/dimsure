@@ -1,10 +1,24 @@
 "use client"
-import { BookOpen, Calendar, Clock } from "lucide-react"
+import { useEffect, useState } from "react"
+import Link from "next/link"
+import { db } from "@/lib/firebase"
+import { collection, getDocs, query, orderBy } from "firebase/firestore"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { useAuth } from "@/hooks/useAuth"
 
 export default function BlogPage() {
-  const { loading } = useAuth();
+  const [loading, setLoading] = useState(true)
+  const [posts, setPosts] = useState<any[]>([])
+
+  useEffect(() => {
+    async function fetchPosts() {
+      const q = query(collection(db, "blogPosts"), orderBy("createdAt", "desc"))
+      const snapshot = await getDocs(q)
+      const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+      setPosts(data)
+      setLoading(false)
+    }
+    fetchPosts()
+  }, [])
 
   if (loading) {
     return (
@@ -25,37 +39,45 @@ export default function BlogPage() {
         </p>
       </div>
 
-      <Card className="max-w-2xl mx-auto">
-        <CardHeader className="text-center">
-          <div className="mx-auto mb-4 p-4 bg-primary/10 rounded-full w-fit">
-            <BookOpen className="h-8 w-8 text-primary" />
-          </div>
-          <CardTitle className="text-2xl">Coming Soon</CardTitle>
-        </CardHeader>
-        <CardContent className="text-center space-y-4">
-          <p className="text-muted-foreground">We're working on bringing you valuable content about:</p>
-          <div className="grid md:grid-cols-3 gap-4 mt-6">
-            <div className="p-4 bg-muted/50 rounded-lg">
-              <BookOpen className="h-6 w-6 text-primary mx-auto mb-2" />
-              <h3 className="font-semibold text-sm">Best Practices</h3>
-              <p className="text-xs text-muted-foreground mt-1">Packaging and measurement guides</p>
-            </div>
-            <div className="p-4 bg-muted/50 rounded-lg">
-              <Calendar className="h-6 w-6 text-primary mx-auto mb-2" />
-              <h3 className="font-semibold text-sm">Industry Updates</h3>
-              <p className="text-xs text-muted-foreground mt-1">Latest logistics and shipping news</p>
-            </div>
-            <div className="p-4 bg-muted/50 rounded-lg">
-              <Clock className="h-6 w-6 text-primary mx-auto mb-2" />
-              <h3 className="font-semibold text-sm">Platform News</h3>
-              <p className="text-xs text-muted-foreground mt-1">Dimsure feature updates and announcements</p>
-            </div>
-          </div>
-          <p className="text-sm text-muted-foreground mt-6">
-            Stay tuned for expert articles, community spotlights, and platform updates.
-          </p>
-        </CardContent>
-      </Card>
+      <div className="grid gap-8 md:grid-cols-2">
+        {posts.length === 0 && (
+          <Card className="max-w-2xl mx-auto">
+            <CardHeader className="text-center">
+              <CardTitle className="text-2xl">No articles yet</CardTitle>
+            </CardHeader>
+            <CardContent className="text-center">
+              <p className="text-muted-foreground">There are no blog articles published yet.</p>
+            </CardContent>
+          </Card>
+        )}
+        {posts.map(post => (
+          <Link key={post.id} href={`/blog/${post.slug}`} className="block group">
+            <Card className="h-full flex flex-col">
+              {post.coverImage && (
+                <img
+                  src={post.coverImage}
+                  alt={post.title}
+                  className="w-full h-48 object-cover rounded-t"
+                />
+              )}
+              <CardHeader>
+                <CardTitle className="text-2xl group-hover:text-primary transition-colors">
+                  {post.title}
+                </CardTitle>
+                <div className="text-xs text-muted-foreground mt-1">
+                  {post.createdAt?.toDate ? post.createdAt.toDate().toLocaleDateString() : ""}
+                </div>
+              </CardHeader>
+              <CardContent className="flex-1">
+                <div
+                  className="text-muted-foreground text-sm line-clamp-3"
+                  dangerouslySetInnerHTML={{ __html: post.content?.slice(0, 300) + (post.content?.length > 300 ? "..." : "") }}
+                />
+              </CardContent>
+            </Card>
+          </Link>
+        ))}
+      </div>
     </div>
   )
 }
