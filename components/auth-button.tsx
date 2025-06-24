@@ -28,12 +28,14 @@ export function AuthButton() {
   const router = useRouter()
 
   useEffect(() => {
-    if (isLoggedIn && user && (!userData?.publicTag || userData.publicTag.trim() === "")) {
-      setShowUserNameModal(true)
-    } else {
-      setShowUserNameModal(false)
+    if (!loading && userData !== null) {
+      if (isLoggedIn && user && (!userData.publicTag || userData.publicTag.trim() === "")) {
+        setShowUserNameModal(true)
+      } else {
+        setShowUserNameModal(false)
+      }
     }
-  }, [isLoggedIn, user, userData?.publicTag])
+  }, [isLoggedIn, user, userData, loading])
 
   const handleSignIn = async () => {
     if (isSigningIn) return
@@ -105,7 +107,7 @@ export function AuthButton() {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-        {showUserNameModal && (
+        {!loading && showUserNameModal && (
           <UserNameModal
             isOpen={showUserNameModal}
             onClose={() => setShowUserNameModal(false)}
