@@ -67,3 +67,19 @@ export const validateImageFile = (file: File): { isValid: boolean; error?: strin
 
   return { isValid: true }
 }
+
+// Upload image to Firebase Storage for blog cover images
+export const uploadBlogImage = async (file: File): Promise<string> => {
+  try {
+    const timestamp = Date.now()
+    const fileName = `${timestamp}_${file.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`
+    const imageRef = ref(storage, `blog/${fileName}`)
+
+    const snapshot = await uploadBytes(imageRef, file)
+    const downloadURL = await getDownloadURL(snapshot.ref)
+    return downloadURL
+  } catch (error) {
+    console.error("Error uploading blog image:", error)
+    throw new Error("Failed to upload blog image")
+  }
+}
