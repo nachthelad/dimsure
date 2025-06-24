@@ -54,6 +54,12 @@ export default function ProfilePage() {
     }
   }, [userData?.tagLastChanged])
 
+  useEffect(() => {
+    if (!loading && (!isLoggedIn || !user)) {
+      router.push("/")
+    }
+  }, [isLoggedIn, user, loading, router])
+
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-8 max-w-xl">
@@ -65,7 +71,6 @@ export default function ProfilePage() {
   }
 
   if (!isLoggedIn || !user) {
-    router.push("/")
     return null
   }
 
