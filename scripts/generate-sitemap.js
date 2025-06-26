@@ -1,3 +1,6 @@
+const fs = require("fs")
+const path = require("path")
+
 const siteConfig = {
   name: "Dimsure",
   description:
@@ -32,30 +35,25 @@ const generateSitemap = () => {
     { url: "/terms", changefreq: "yearly", priority: "0.5" },
   ]
 
+  const today = new Date().toISOString().split("T")[0]
+
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${pages
   .map(
     (page) => `  <url>
     <loc>${siteConfig.url}${page.url}</loc>
-    <lastmod>${new Date().toISOString().split("T")[0]}</lastmod>
+    <lastmod>${today}</lastmod>
     <changefreq>${page.changefreq}</changefreq>
     <priority>${page.priority}</priority>
-  </url>`,
+  </url>`
   )
   .join("\n")}
 </urlset>`
 
-  console.log("Generated sitemap.xml:")
-  console.log(sitemap)
-  console.log("✅ Sitemap generated successfully!")
-  console.log("")
-  console.log("📋 Pages included:")
-  pages.forEach((page) => {
-    console.log(`   • ${siteConfig.url}${page.url} (${page.priority} priority)`)
-  })
-
-  return sitemap
+  const filePath = path.join(__dirname, "../public/sitemap.xml")
+  fs.writeFileSync(filePath, sitemap)
+  console.log("✅ Sitemap generated and saved at: public/sitemap.xml")
 }
 
 generateSitemap()
