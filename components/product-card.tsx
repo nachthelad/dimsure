@@ -12,18 +12,10 @@ import { useUnit } from "./unit-provider"
 import { useAuth } from "@/hooks/useAuth"
 import { likeProduct, unlikeProduct } from "@/lib/firestore"
 import { useState, useEffect } from "react"
+import type { Product } from "@/lib/types"
 
 interface ProductCardProps {
-  product: {
-    id: string
-    name: string
-    sku: string
-    primaryDimensions: { length: number; width: number; height: number }
-    likes: number
-    confidence: number
-    mainImage: string
-    likedBy?: string[]
-  }
+  product: Product
 }
 
 export function ProductCard({ product }: ProductCardProps) {
@@ -107,10 +99,10 @@ export function ProductCard({ product }: ProductCardProps) {
                   <span>{likesCount}</span>
                 </Button>
                 <Badge
-                  variant={product.confidence >= 90 ? "default" : "secondary"}
+                  variant={product.confidence && product.confidence >= 90 ? "default" : "secondary"}
                   className="text-xs bg-primary/10 text-primary border-primary/20"
                 >
-                  {product.confidence}%
+                  {product.confidence !== undefined ? `${product.confidence}%` : "N/A"}
                 </Badge>
               </div>
             </div>

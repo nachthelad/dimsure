@@ -7,6 +7,7 @@ import { ProductCard } from "@/components/product-card"
 import { ProductSearch } from "@/components/product-search"
 import { getRecentProducts, getDatabaseStats } from "@/lib/firestore"
 import { useLanguage } from "@/components/language-provider"
+import type { Product } from "@/lib/types"
 
 interface DatabaseStats {
   totalProducts: number
@@ -16,7 +17,7 @@ interface DatabaseStats {
 
 export default function HomePage() {
   const { t } = useLanguage()
-  const [products, setProducts] = useState([])
+  const [products, setProducts] = useState<Product[]>([])
   const [stats, setStats] = useState<DatabaseStats>({
     totalProducts: 0,
     totalContributions: 0,
