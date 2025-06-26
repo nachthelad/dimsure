@@ -1,3 +1,6 @@
+const fs = require("fs")
+const path = require("path")
+
 const siteConfig = {
   url: "https://dimsure.online",
 }
@@ -6,21 +9,28 @@ const generateRobots = () => {
   const robots = `User-agent: *
 Allow: /
 
-# Sitemap
+# Prevent indexing admin-like paths
+Disallow: /my-contributions
+Disallow: /disputes
+Disallow: /add-product
+
+# Sitemap location
 Sitemap: ${siteConfig.url}/sitemap.xml
 
-# AdSense
+# Special rules for Google AdSense crawler
 User-agent: Mediapartners-Google
 Allow: /
 
-# Crawl-delay for better performance
-Crawl-delay: 1`
+# Respectful crawling
+Crawl-delay: 1
 
-  console.log("Generated robots.txt:")
-  console.log(robots)
-  console.log("✅ Robots.txt generated successfully!")
+# Dimsure is under development – site rules may change
+# Generated: ${new Date().toISOString().split("T")[0]}
+`
 
-  return robots
+  const filePath = path.join(__dirname, "../public/robots.txt")
+  fs.writeFileSync(filePath, robots)
+  console.log("✅ robots.txt generated and saved at: public/robots.txt")
 }
 
 generateRobots()

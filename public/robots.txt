@@ -1,12 +1,20 @@
 User-agent: *
 Allow: /
 
-# Sitemap
+# Prevent indexing admin-like paths
+Disallow: /my-contributions
+Disallow: /disputes
+Disallow: /add-product
+
+# Sitemap location
 Sitemap: https://dimsure.online/sitemap.xml
 
-# AdSense
+# Special rules for Google AdSense crawler
 User-agent: Mediapartners-Google
 Allow: /
 
-# Crawl-delay for better performance
+# Respectful crawling
 Crawl-delay: 1
+
+# Dimsure is under development – site rules may change
+# Generated: 2025-06-26
