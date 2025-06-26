@@ -69,13 +69,16 @@ export function ProductCard({ product }: ProductCardProps) {
       <Card className="hover:shadow-lg transition-shadow cursor-pointer">
         <CardContent className="p-4">
           <div className="flex items-start gap-3">
-            <Image
-              src={product.mainImage || "/placeholder.svg"}
-              alt={product.name}
-              width={60}
-              height={60}
-              className="rounded-lg object-cover flex-shrink-0"
-            />
+            <div className="relative aspect-square w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-muted">
+              <Image
+                src={product.mainImage || "/placeholder.svg"}
+                alt={product.name}
+                fill
+                className="object-cover"
+                sizes="64px"
+                priority={false}
+              />
+            </div>
             <div className="flex-1 min-w-0">
               <h3 className="font-semibold text-sm text-foreground truncate mb-1">{product.name}</h3>
               <p className="text-sm font-mono text-primary mb-2 font-medium">{product.sku}</p>

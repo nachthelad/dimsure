@@ -51,69 +51,104 @@ export default function HomePage() {
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
       {/* Hero Section */}
-      <div className="text-center mb-12">
-        <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-4">
+      <div className="text-center mb-8">
+        <h1 className="text-3xl md:text-5xl font-bold text-foreground mb-3">
           {t("home.hero.title")}
           <br />
           <span className="text-primary">{t("home.hero.titleHighlight")}</span>
         </h1>
-        <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">{t("home.hero.subtitle")}</p>
-
-        <div className="mb-8">
-          <ProductSearch />
-        </div>
+        <p className="text-lg md:text-md text-muted-foreground mb-6 max-w-2xl mx-auto">{t("home.hero.subtitle")}</p>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t("home.stats.totalProducts")}</CardTitle>
-            <Package className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
+      {/* Stats Cards - compact and above search */}
+      <div className="w-full max-w-xl mx-auto flex flex-row justify-center items-center gap-3 mb-3">
+        {/* Total Products */}
+        <Card className="flex-1 flex flex-col items-center justify-center py-1 px-1 min-w-0">
+          {/* Mobile: ícono y número */}
+          <div className="flex flex-col items-center w-full md:hidden">
+            <Package className="h-5 w-5 text-muted-foreground mb-1" />
+            <div className="text-base font-bold p-2">
               {statsLoading ? (
-                <div className="h-8 w-16 bg-muted animate-pulse rounded"></div>
+                <div className="h-5 w-8 bg-muted animate-pulse rounded"></div>
               ) : (
                 stats.totalProducts.toLocaleString()
               )}
             </div>
-            <p className="text-xs text-muted-foreground">{t("home.stats.productsInDatabase")}</p>
-          </CardContent>
+          </div>
+          {/* Desktop: ícono, texto y número alineados a la izquierda, con más padding */}
+          <div className="hidden md:flex flex-row items-center w-full px-4 py-3">
+            <div className="flex flex-col flex-1 items-start">
+              <CardTitle className="text-xs font-medium mb-1">{t("home.stats.totalProducts")}</CardTitle>
+              <div className="text-base font-bold">
+                {statsLoading ? (
+                  <div className="h-5 w-8 bg-muted animate-pulse rounded"></div>
+                ) : (
+                  stats.totalProducts.toLocaleString()
+                )}
+              </div>
+            </div>
+            <Package className="h-4 w-4 text-muted-foreground ml-2" />
+          </div>
         </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t("home.stats.contributions")}</CardTitle>
-            <Activity className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
+        {/* Contributions */}
+        <Card className="flex-1 flex flex-col items-center justify-center py-1 px-1 min-w-0">
+          <div className="flex flex-col items-center w-full md:hidden">
+            <Activity className="h-5 w-5 text-muted-foreground mb-1" />
+            <div className="text-base font-bold p-2">
               {statsLoading ? (
-                <div className="h-8 w-16 bg-muted animate-pulse rounded"></div>
+                <div className="h-5 w-8 bg-muted animate-pulse rounded"></div>
               ) : (
                 stats.totalContributions.toLocaleString()
               )}
             </div>
-            <p className="text-xs text-muted-foreground">{t("home.stats.dataSubmissions")}</p>
-          </CardContent>
+          </div>
+          <div className="hidden md:flex flex-row items-center w-full px-4 py-3">
+            <div className="flex flex-col flex-1 items-start">
+              <CardTitle className="text-xs font-medium mb-1">{t("home.stats.contributions")}</CardTitle>
+              <div className="text-base font-bold">
+                {statsLoading ? (
+                  <div className="h-5 w-8 bg-muted animate-pulse rounded"></div>
+                ) : (
+                  stats.totalContributions.toLocaleString()
+                )}
+              </div>
+            </div>
+            <Activity className="h-4 w-4 text-muted-foreground ml-2" />
+          </div>
         </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t("home.stats.avgConfidence")}</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
+        {/* Avg. Confidence */}
+        <Card className="flex-1 flex flex-col items-center justify-center py-1 px-1 min-w-0">
+          <div className="flex flex-col items-center w-full md:hidden">
+            <TrendingUp className="h-5 w-5 text-muted-foreground mb-1" />
+            <div className="text-base font-bold p-2">
               {statsLoading ? (
-                <div className="h-8 w-16 bg-muted animate-pulse rounded"></div>
+                <div className="h-5 w-8 bg-muted animate-pulse rounded"></div>
               ) : (
                 `${stats.averageConfidence}%`
               )}
             </div>
-            <p className="text-xs text-muted-foreground">{t("home.stats.dataReliability")}</p>
-          </CardContent>
+          </div>
+          <div className="hidden md:flex flex-row items-center w-full px-4 py-3">
+            <div className="flex flex-col flex-1 items-start">
+              <CardTitle className="text-xs font-medium mb-1">{t("home.stats.avgConfidence")}</CardTitle>
+              <div className="text-base font-bold">
+                {statsLoading ? (
+                  <div className="h-5 w-8 bg-muted animate-pulse rounded"></div>
+                ) : (
+                  `${stats.averageConfidence}%`
+                )}
+              </div>
+            </div>
+            <TrendingUp className="h-4 w-4 text-muted-foreground ml-2" />
+          </div>
         </Card>
+      </div>
+
+      {/* Search Bar */}
+      <div className="mb-10 flex justify-center">
+        <div className="w-full max-w-xl">
+          <ProductSearch />
+        </div>
       </div>
 
       {/* Recently Added Products */}
