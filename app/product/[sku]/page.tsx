@@ -13,6 +13,8 @@ import { DimensionCard } from "@/components/dimension-card"
 import { getProduct, incrementProductViews, likeProduct, unlikeProduct, getUserById } from "@/lib/firestore"
 import { useAuth } from "@/hooks/useAuth"
 import { useLanguage } from "@/components/language-provider"
+import type { Product } from "@/lib/types"
+import { normalizeProduct } from "@/lib/product-normalizer"
 
 export default function ProductDetailPage({
   params,
@@ -20,7 +22,7 @@ export default function ProductDetailPage({
   params: Promise<{ sku: string }>
 }) {
   const resolvedParams = React.use(params)
-  const [product, setProduct] = useState<any>(null)
+  const [product, setProduct] = useState<Product | null>(null)
   const [loading, setLoading] = useState(true)
   const [isLiked, setIsLiked] = useState(false)
   const [likesCount, setLikesCount] = useState(0)
@@ -57,7 +59,7 @@ export default function ProductDetailPage({
       try {
         const productData = await getProduct(resolvedParams.sku)
         if (productData) {
-          setProduct(productData)
+          setProduct(normalizeProduct(productData))
           setLikesCount(productData.likes || 0)
 
           // Check if user liked this product
@@ -76,8 +78,10 @@ export default function ProductDetailPage({
             setLastModifiedByUser(modifiedUser)
           }
 
-          // Increment views
-          await incrementProductViews(resolvedParams.sku)
+          // Increment views solo si está logueado
+          if (isLoggedIn && user) {
+            await incrementProductViews(resolvedParams.sku)
+          }
         } else {
           notFound()
         }
@@ -90,10 +94,10 @@ export default function ProductDetailPage({
     }
 
     fetchProduct()
-  }, [resolvedParams.sku, user])
+  }, [resolvedParams.sku, user, isLoggedIn])
 
   const handleLike = async () => {
-    if (!isLoggedIn || !user) {
+    if (!isLoggedIn || !user || !product) {
       alert("Please sign in to like products")
       return
     }
@@ -207,10 +211,10 @@ export default function ProductDetailPage({
                 </span>
               </Button>
               <Badge
-                variant={product.confidence >= 90 ? "default" : "secondary"}
+                variant={product.confidence && product.confidence >= 90 ? "default" : "secondary"}
                 className="bg-primary/10 text-primary border-primary/20"
               >
-                {product.confidence}% {t("product.details.confidence")}
+                {product.confidence !== undefined ? `${product.confidence}%` : "N/A"} {t("product.details.confidence")}
               </Badge>
               <Badge variant="outline" className="flex items-center gap-1">
                 <Package className="h-3 w-3" />

@@ -16,6 +16,8 @@ import {
   arrayRemove,
 } from "firebase/firestore"
 import { db } from "./firebase"
+import type { Product } from "./types"
+import { normalizeProduct } from "./product-normalizer"
 
 // Product operations
 export const createProduct = async (productData: any, userId: string) => {
@@ -71,11 +73,11 @@ export const updateProduct = async (sku: string, productData: any, userId: strin
   }
 }
 
-export const getProduct = async (sku: string) => {
+export const getProduct = async (sku: string): Promise<Product | null> => {
   try {
     const productDoc = await getDoc(doc(db, "products", sku))
     if (productDoc.exists()) {
-      return { id: productDoc.id, ...productDoc.data() }
+      return normalizeProduct(productDoc)
     }
     return null
   } catch (error) {
@@ -84,7 +86,7 @@ export const getProduct = async (sku: string) => {
   }
 }
 
-export const getUserProducts = async (userId: string) => {
+export const getUserProducts = async (userId: string): Promise<Product[]> => {
   try {
     if (!userId) {
       return []
@@ -95,13 +97,7 @@ export const getUserProducts = async (userId: string) => {
 
     const userProductsSnapshot = await getDocs(userProductsQuery)
 
-    const userProducts = userProductsSnapshot.docs.map((doc) => {
-      const data = doc.data()
-      return {
-        id: doc.id,
-        ...data,
-      }
-    })
+    const userProducts = userProductsSnapshot.docs.map(normalizeProduct)
 
     // Sort by createdAt in JavaScript instead of Firestore
     userProducts.sort((a, b) => {
@@ -120,7 +116,7 @@ export const getUserProducts = async (userId: string) => {
       const allProductsSnapshot = await getDocs(allProductsQuery)
 
       const userProducts = allProductsSnapshot.docs
-        .map((doc) => ({ id: doc.id, ...doc.data() }))
+        .map((doc) => normalizeProduct(doc))
         .filter((product) => product.createdBy === userId)
         .sort((a, b) => {
           const aTime = a.createdAt?.toDate?.() || new Date(0)
@@ -136,32 +132,23 @@ export const getUserProducts = async (userId: string) => {
   }
 }
 
-export const getRecentProducts = async (limitCount = 10) => {
+export const getRecentProducts = async (limitCount = 10): Promise<Product[]> => {
   try {
-    // Try with orderBy first
     try {
       const q = query(collection(db, "products"), orderBy("createdAt", "desc"), limit(limitCount))
       const querySnapshot = await getDocs(q)
-      return querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }))
+      return querySnapshot.docs.map(normalizeProduct) as Product[]
     } catch (error) {
-      // Fallback: get all and sort manually
       const q = query(collection(db, "products"), limit(50))
       const querySnapshot = await getDocs(q)
-      const products = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }))
-
+      const products = querySnapshot.docs.map(normalizeProduct)
       return products
         .sort((a, b) => {
           const aTime = a.createdAt?.toDate?.() || new Date(0)
           const bTime = b.createdAt?.toDate?.() || new Date(0)
           return bTime.getTime() - aTime.getTime()
         })
-        .slice(0, limitCount)
+        .slice(0, limitCount) as Product[]
     }
   } catch (error) {
     console.error("Error getting recent products:", error)
@@ -169,14 +156,11 @@ export const getRecentProducts = async (limitCount = 10) => {
   }
 }
 
-export const getAllProducts = async () => {
+export const getAllProducts = async (): Promise<Product[]> => {
   try {
     const q = query(collection(db, "products"))
     const querySnapshot = await getDocs(q)
-    const products = querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }))
+    const products = querySnapshot.docs.map(normalizeProduct)
 
     // Sort manually
     return products.sort((a, b) => {
@@ -191,7 +175,7 @@ export const getAllProducts = async () => {
 }
 
 // Search products
-export const searchProducts = async (searchTerm: string, limitCount = 10) => {
+export const searchProducts = async (searchTerm: string, limitCount = 10): Promise<Product[]> => {
   try {
     if (!searchTerm.trim()) {
       return []
@@ -200,10 +184,7 @@ export const searchProducts = async (searchTerm: string, limitCount = 10) => {
     const q = query(collection(db, "products"), limit(50))
     const querySnapshot = await getDocs(q)
 
-    const allProducts = querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }))
+    const allProducts = querySnapshot.docs.map(normalizeProduct)
 
     const searchTermLower = searchTerm.toLowerCase()
     const filteredProducts = allProducts.filter((product) => {
@@ -215,7 +196,7 @@ export const searchProducts = async (searchTerm: string, limitCount = 10) => {
       )
     })
 
-    return filteredProducts.slice(0, limitCount)
+    return filteredProducts.slice(0, limitCount) as Product[]
   } catch (error) {
     console.error("Error searching products:", error)
     return []

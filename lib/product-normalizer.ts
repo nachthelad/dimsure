@@ -1,3 +1,5 @@
+import type { Product } from "./types"
+
 // Database of known brands and their correct capitalization
 const BRAND_NORMALIZATIONS: Record<string, string> = {
   // Apple products
@@ -116,5 +118,29 @@ export function validateProductName(name: string): { isValid: boolean; suggestio
     isValid: errors.length === 0,
     suggestion: suggestion !== name ? suggestion : undefined,
     errors,
+  }
+}
+
+export function normalizeProduct(doc: any): Product {
+  const data = doc.data ? doc.data() : doc
+  return {
+    id: doc.id,
+    name: data.name ?? "",
+    sku: data.sku ?? "",
+    brand: data.brand ?? "",
+    category: data.category ?? "",
+    primaryDimensions: data.primaryDimensions ?? { length: 0, width: 0, height: 0 },
+    likes: data.likes ?? 0,
+    confidence: data.confidence ?? 0,
+    mainImage: data.mainImage ?? "",
+    likedBy: data.likedBy ?? [],
+    images: data.images ?? [],
+    views: data.views ?? 0,
+    description: data.description ?? "",
+    createdBy: data.createdBy ?? "",
+    lastModifiedBy: data.lastModifiedBy ?? "",
+    lastModified: data.lastModified ?? null,
+    createdAt: data.createdAt ?? null,
+    specifications: data.specifications ?? {},
   }
 }

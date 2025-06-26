@@ -9,15 +9,7 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { searchProducts } from "@/lib/firestore"
 import { useUnit } from "./unit-provider"
 import { useLanguage } from "./language-provider"
-
-interface Product {
-  id: string
-  name: string
-  sku: string
-  brand: string
-  category: string
-  primaryDimensions: { length: number; width: number; height: number }
-}
+import type { Product } from "@/lib/types"
 
 export function ProductSearch() {
   const [open, setOpen] = useState(false)
@@ -51,7 +43,7 @@ export function ProductSearch() {
   }, [searchTerm])
 
   const formatDimension = (value: number) => {
-    const converted = convertDimension(value, "cm")
+    const converted = convertDimension(value, "mm")
     return converted.toFixed(1)
   }
 
