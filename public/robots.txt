@@ -2,7 +2,7 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://dimsure.vercel.app/sitemap.xml
+Sitemap: https://dimsure.online/sitemap.xml
 
 # AdSense
 User-agent: Mediapartners-Google

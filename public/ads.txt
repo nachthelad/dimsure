@@ -1,4 +1,4 @@
-# ads.txt file for dimsure.vercel.app
+# ads.txt file for dimsure.online
 # This file is used to authorize digital advertising sellers
 
 # Google AdSense
