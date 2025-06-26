@@ -1,7 +1,8 @@
 "use client"
 
 import Link from "next/link"
-import { Package, Mail } from "lucide-react"
+import Image from "next/image"
+import { Mail } from "lucide-react"
 import { Separator } from "@/components/ui/separator"
 import { useLanguage } from "@/components/language-provider"
 import { APP_CONSTANTS } from "@/lib/constants"
@@ -18,7 +19,7 @@ export function Footer() {
           {/* Brand */}
           <div className="space-y-4">
             <Link href="/" className="flex items-center space-x-2">
-              <Package className="h-6 w-6 text-primary" />
+              <Image src="/android-chrome-192x192.png" alt="Dimsure Logo" width={24} height={24} className="h-6 w-6" />
               <span className="text-xl font-bold text-foreground">{t("site.name")}</span>
             </Link>
             <p className="text-sm text-muted-foreground">{t("footer.description")}</p>
