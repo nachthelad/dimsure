@@ -97,6 +97,7 @@ export default function RootLayout({
 
         {/* Additional meta tags for better SEO and AdSense */}
         <meta name="google-adsense-account" content="ca-pub-1027418154196814" />
+        <meta name="google-site-verification" content="c1efNuZhhG-SikmDFge_tg2KrONNix0vCkpjSnhCj_o" />
         <link rel="canonical" href={siteConfig.url} />
 
         {/* Favicon and app icons */}
