@@ -3,8 +3,8 @@ export const siteConfig = {
   name: "Dimsure",
   description:
     "A public, community-powered database of box dimensions for products. Optimize your packaging and logistics with verified data.",
-  url: "https://dimsure.vercel.app",
-  ogImage: "https://dimsure.vercel.app/og-image.png",
+  url: "https://dimsure.online",
+  ogImage: "https://dimsure.online/og-image.png",
   creator: "Dimsure Team",
   keywords: [
     "packaging dimensions",
@@ -16,6 +16,6 @@ export const siteConfig = {
     "shipping calculator",
   ],
   links: {
-    twitter: "https://twitter.com/dimsure",
+    twitter: "https://twitter.com/dimsure_app_app",
   },
 }

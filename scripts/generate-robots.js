@@ -1,5 +1,5 @@
 const siteConfig = {
-  url: "https://dimsure.vercel.app",
+  url: "https://dimsure.online",
 }
 
 const generateRobots = () => {
