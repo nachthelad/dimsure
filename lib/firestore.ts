@@ -480,3 +480,59 @@ export const getProductComments = async (productSku: string) => {
     throw error
   }
 }
+
+// --- Brand and Category helpers ---
+
+// Busca marcas que coincidan (case-insensitive, empieza por...)
+export const searchBrands = async (search: string): Promise<string[]> => {
+  const q = query(collection(db, "brands"));
+  const snapshot = await getDocs(q);
+  const searchLower = search.trim().toLowerCase();
+  return snapshot.docs
+    .map(doc => doc.data().name as string)
+    .filter(name => name.toLowerCase().startsWith(searchLower));
+};
+
+// Busca categorías que coincidan (case-insensitive, empieza por...)
+export const searchCategories = async (search: string): Promise<any[]> => {
+  const q = query(collection(db, "categories"));
+  const snapshot = await getDocs(q);
+  const searchLower = search.trim().toLowerCase();
+  return snapshot.docs
+    .map(doc => doc.data())
+    .filter(cat => cat.name.toLowerCase().startsWith(searchLower));
+};
+
+// Obtiene todas las marcas
+export const getAllBrands = async (): Promise<string[]> => {
+  const q = query(collection(db, "brands"));
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map(doc => doc.data().name as string);
+};
+
+// Obtiene todas las categorías
+export const getAllCategories = async (): Promise<string[]> => {
+  const q = query(collection(db, "categories"));
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map(doc => doc.data().name as string);
+};
+
+// Crea una marca si no existe (case-insensitive)
+export const createBrandIfNotExists = async (name: string): Promise<string> => {
+  const nameNorm = name.trim();
+  const all = await getAllBrands();
+  const found = all.find(b => b.toLowerCase() === nameNorm.toLowerCase());
+  if (found) return found; // Devuelve el nombre normalizado existente
+  await addDoc(collection(db, "brands"), { name: nameNorm });
+  return nameNorm;
+};
+
+// Crea una categoría si no existe (case-insensitive)
+export const createCategoryIfNotExists = async (name: string): Promise<string> => {
+  const nameNorm = name.trim();
+  const all = await getAllCategories();
+  const found = all.find(c => c.toLowerCase() === nameNorm.toLowerCase());
+  if (found) return found;
+  await addDoc(collection(db, "categories"), { name: nameNorm });
+  return nameNorm;
+};

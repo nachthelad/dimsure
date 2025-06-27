@@ -14,14 +14,16 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { useUnit } from "@/components/unit-provider"
 import { useAuth } from "@/hooks/useAuth"
 import { createProduct } from "@/lib/firestore"
-import { uploadProductImage, validateImageFile } from "@/lib/storage"
+import { optimizeAndUploadImage, validateImageFile } from "@/lib/storage"
 import { normalizeProductName, normalizeBrandName, validateProductName } from "@/lib/product-normalizer"
 import { useLanguage } from "@/components/language-provider"
 import { toast } from "@/hooks/use-toast"
+import { searchBrands, createBrandIfNotExists, searchCategories, createCategoryIfNotExists } from "@/lib/firestore"
+import { useRef } from "react"
 
 export default function AddProductPage() {
   const { isLoggedIn, userData, loading, user } = useAuth()
-  const { t } = useLanguage()
+  const { t, locale } = useLanguage()
   const router = useRouter()
   const { unit } = useUnit()
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -41,6 +43,11 @@ export default function AddProductPage() {
     weight: "",
     image: null as File | null,
   })
+  const [brandOptions, setBrandOptions] = useState<string[]>([])
+  const [categoryOptions, setCategoryOptions] = useState<any[]>([])
+  const brandInputRef = useRef<HTMLInputElement>(null)
+  const categoryInputRef = useRef<HTMLInputElement>(null)
+  const [selectedCategory, setSelectedCategory] = useState<any | null>(null)
 
   useEffect(() => {
     if (!loading && !isLoggedIn) {
@@ -82,6 +89,42 @@ export default function AddProductPage() {
     setImagePreview("")
   }
 
+  const handleBrandInput = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setFormData((prev) => ({ ...prev, brand: value }));
+    if (value.length > 0) {
+      const found = await searchBrands(value);
+      setBrandOptions(found);
+    } else {
+      setBrandOptions([]);
+    }
+  };
+
+  const handleCategoryInput = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setFormData((prev) => ({ ...prev, category: value }));
+    setSelectedCategory(null);
+    if (value.length > 0) {
+      const found = await searchCategories(value);
+      setCategoryOptions(found);
+    } else {
+      setCategoryOptions([]);
+    }
+  };
+
+  const handleBrandSelect = (name: string) => {
+    setFormData((prev) => ({ ...prev, brand: name }));
+    setBrandOptions([]);
+    if (brandInputRef.current) brandInputRef.current.value = name;
+  };
+
+  const handleCategorySelect = (cat: any) => {
+    setFormData((prev) => ({ ...prev, category: cat.name }));
+    setSelectedCategory(cat);
+    setCategoryOptions([]);
+    if (categoryInputRef.current) categoryInputRef.current.value = cat.translations?.[locale] || cat.name;
+  };
+
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-8 max-w-2xl">
@@ -113,7 +156,7 @@ export default function AddProductPage() {
       if (formData.image) {
         setIsUploadingImage(true)
         try {
-          imageUrl = await uploadProductImage(formData.image, formData.sku.toUpperCase())
+          imageUrl = await optimizeAndUploadImage(formData.image, "products", formData.sku.toUpperCase())
           toast({
             title: t("addProduct.form.imageUploaded"),
             description: t("addProduct.form.imageUploadedDesc"),
@@ -256,39 +299,71 @@ export default function AddProductPage() {
 
             <div className="space-y-2">
               <Label htmlFor="brand">{t("addProduct.form.brand")} *</Label>
+              <div className="relative">
+                <Input
+                  id="brand"
+                  type="text"
+                  placeholder={t("addProduct.form.brandPlaceholder")}
+                  value={formData.brand}
+                  onChange={handleBrandInput}
+                  ref={brandInputRef}
+                  autoComplete="off"
+                  required
+                />
+                {brandOptions.length > 0 && (
+                  <ul className="absolute z-10 bg-background border border-border rounded w-full mt-1 max-h-40 overflow-auto shadow">
+                    {brandOptions.map((option) => (
+                      <li
+                        key={option}
+                        className="px-3 py-2 cursor-pointer hover:bg-primary/10"
+                        onClick={() => handleBrandSelect(option)}
+                      >
+                        {option}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="sku">{t("addProduct.form.sku")} *</Label>
               <Input
-                id="brand"
+                id="sku"
                 type="text"
-                placeholder={t("addProduct.form.brandPlaceholder")}
-                value={formData.brand}
-                onChange={(e) => setFormData((prev) => ({ ...prev, brand: e.target.value }))}
+                placeholder={t("addProduct.form.skuPlaceholder")}
+                value={formData.sku}
+                onChange={(e) => setFormData((prev) => ({ ...prev, sku: e.target.value }))}
                 required
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="sku">{t("addProduct.form.sku")} *</Label>
-                <Input
-                  id="sku"
-                  type="text"
-                  placeholder={t("addProduct.form.skuPlaceholder")}
-                  value={formData.sku}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, sku: e.target.value }))}
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="category">{t("addProduct.form.category")} *</Label>
+            <div className="space-y-2">
+              <Label htmlFor="category">{t("addProduct.form.category")} *</Label>
+              <div className="relative">
                 <Input
                   id="category"
                   type="text"
                   placeholder={t("addProduct.form.categoryPlaceholder")}
-                  value={formData.category}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, category: e.target.value }))}
+                  value={selectedCategory ? (selectedCategory.translations?.[locale] || selectedCategory.name) : formData.category}
+                  onChange={handleCategoryInput}
+                  ref={categoryInputRef}
+                  autoComplete="off"
                   required
                 />
+                {categoryOptions.length > 0 && (
+                  <ul className="absolute z-10 bg-background border border-border rounded w-full mt-1 max-h-40 overflow-auto shadow">
+                    {categoryOptions.map((option) => (
+                      <li
+                        key={option.name}
+                        className="px-3 py-2 cursor-pointer hover:bg-primary/10"
+                        onClick={() => handleCategorySelect(option)}
+                      >
+                        {option.translations?.[locale] || option.name}
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
             </div>
 
