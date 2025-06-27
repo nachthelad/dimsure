@@ -1,23 +1,11 @@
 "use client"
-import { useState } from "react"
+import React, { useState } from "react"
 import { useAuth } from "@/hooks/useAuth"
 import { db } from "@/lib/firebase"
 import { collection, addDoc, serverTimestamp } from "firebase/firestore"
-import { uploadBlogImage, validateImageFile } from "@/lib/storage"
-import ToolbarPlugin from "./ToolbarPlugin";
-import { LexicalComposer } from "@lexical/react/LexicalComposer";
-import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
-import { ContentEditable } from "@lexical/react/LexicalContentEditable";
-import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
-import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
-import { $generateHtmlFromNodes } from "@lexical/html";
-import { ListPlugin } from '@lexical/react/LexicalListPlugin';
-import { LinkPlugin } from '@lexical/react/LexicalLinkPlugin';
-import { ListNode, ListItemNode } from '@lexical/list';
-import { LinkNode } from '@lexical/link';
+import { optimizeAndUploadImage, validateImageFile } from "@/lib/storage"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-
 
 function slugify(text: string) {
   return text
@@ -27,23 +15,6 @@ function slugify(text: string) {
 }
 
 const MAX_CONTENT_LENGTH = 10000;
-
-// Lexical config
-const initialConfig = {
-  namespace: "BlogEditor",
-  theme: {
-    paragraph: "mb-2",
-    text: {
-      bold: "font-bold",
-      italic: "italic",
-      underline: "underline",
-    },
-  },
-  onError(error: Error) {
-    throw error;
-  },
-  nodes: [ListNode, ListItemNode, LinkNode],
-};
 
 export default function BlogAdminPage() {
   const { user, loading } = useAuth()
@@ -72,7 +43,7 @@ export default function BlogAdminPage() {
     }
     setUploadingImage(true)
     try {
-      const url = await uploadBlogImage(file)
+      const url = await optimizeAndUploadImage(file, "blog")
       setCoverImageFile(file)
       setCoverImageUrl(url)
     } catch (err) {
@@ -105,14 +76,6 @@ export default function BlogAdminPage() {
       alert("Error al guardar el artículo")
     }
     setSubmitting(false)
-  }
-
-  // Convert Lexical state to HTML and set as content
-  function onChange(editorState: any, editor: any) {
-    editorState.read(() => {
-      const htmlString = $generateHtmlFromNodes(editor, null);
-      setContent(htmlString);
-    });
   }
 
   return (
@@ -152,26 +115,28 @@ export default function BlogAdminPage() {
               )}
             </div>
             <div>
-              <label className="block mb-1 font-medium">Contenido (máx {MAX_CONTENT_LENGTH} caracteres)</label>
-              <div className="border rounded bg-background">
-                <LexicalComposer initialConfig={initialConfig}>
-                  <div className="border-b bg-muted px-2 py-1 rounded-t">
-                    <ToolbarPlugin />
-                  </div>
-                  <RichTextPlugin
-                    contentEditable={
-                      <ContentEditable
-                        className="prose prose-invert min-h-[200px] w-full bg-background text-foreground p-4 focus:outline-none rounded-b"
-                      />
-                    }
-                    ErrorBoundary={({ children }) => <>{children}</>}
-                  />
-                  <HistoryPlugin />
-                  <ListPlugin />
-                  <LinkPlugin />
-                  <OnChangePlugin onChange={onChange} />
-                </LexicalComposer>
-              </div>
+              <label className="block mb-1 font-medium">Contenido (Markdown, máx {MAX_CONTENT_LENGTH} caracteres)</label>
+              <textarea
+                className="w-full border border-input bg-background p-2 rounded min-h-[200px] font-mono"
+                placeholder={
+                  `Ejemplo:
+# Título
+
+**Negrita** y _cursiva_ y [un link](https://ejemplo.com)
+
+- Lista
+- De
+- Elementos
+
+> Una cita
+
+código`
+                }
+                value={content}
+                onChange={e => setContent(e.target.value)}
+                maxLength={MAX_CONTENT_LENGTH}
+                required
+              />
               <div className="text-right text-xs text-gray-500 mt-1">
                 {content.length} / {MAX_CONTENT_LENGTH}
               </div>

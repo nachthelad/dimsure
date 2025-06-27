@@ -94,7 +94,7 @@ export const en = {
       subtitle: "Help the community by adding verified packaging dimensions for a new product.",
       form: {
         productName: "Product Name",
-        productNamePlaceholder: "e.g., Nintendo Switch OLED White",
+        productNamePlaceholder: "e.g., Switch OLED White",
         productNameHelp:
           "Enter the product name as you see it. The community will help improve naming consistency over time.",
         brand: "Brand",
@@ -102,7 +102,7 @@ export const en = {
         sku: "SKU",
         skuPlaceholder: "e.g., NSW-OLED-WHT",
         category: "Category",
-        categoryPlaceholder: "e.g., Gaming Consoles",
+        categoryPlaceholder: "e.g., Consoles",
         description: "Description",
         descriptionPlaceholder: "Brief description of the product and packaging...",
         boxDimensions: "Box Dimensions",
@@ -199,7 +199,7 @@ export const en = {
         verifiedDimensions: "Verified Dimensions",
       },
       actions: {
-        like: "Like This Entry",
+        like: "Like",
         liked: "Liked",
         suggestDifferent: "Suggest Different",
         share: "Share",

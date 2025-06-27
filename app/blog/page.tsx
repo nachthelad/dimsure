@@ -4,6 +4,8 @@ import Link from "next/link"
 import { db } from "@/lib/firebase"
 import { collection, getDocs, query, orderBy } from "firebase/firestore"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import ReactMarkdown from "react-markdown"
+import remarkGfm from "remark-gfm"
 
 export default function BlogPage() {
   const [loading, setLoading] = useState(true)
@@ -69,10 +71,11 @@ export default function BlogPage() {
                 </div>
               </CardHeader>
               <CardContent className="flex-1">
-                <div
-                  className="text-muted-foreground text-sm line-clamp-3"
-                  dangerouslySetInnerHTML={{ __html: post.content?.slice(0, 300) + (post.content?.length > 300 ? "..." : "") }}
-                />
+                <div className="text-muted-foreground text-sm line-clamp-3 prose prose-sm prose-invert max-w-none">
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {post.content?.slice(0, 300) + (post.content?.length > 300 ? "..." : "")}
+                  </ReactMarkdown>
+                </div>
               </CardContent>
             </Card>
           </Link>

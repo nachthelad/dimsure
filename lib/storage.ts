@@ -1,26 +1,28 @@
 import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage"
 import { storage } from "./firebase"
+import imageCompression from "browser-image-compression";
 
-// Upload image to Firebase Storage
-export const uploadProductImage = async (file: File, productSku: string): Promise<string> => {
+// Optimiza y sube imagen para productos o blog
+export const optimizeAndUploadImage = async (file: File, folder: string = "products", prefix: string = ""): Promise<string> => {
   try {
-    // Create a reference to the file location
-    const timestamp = Date.now()
-    const fileName = `${productSku}_${timestamp}_${file.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`
-    const imageRef = ref(storage, `products/${fileName}`)
-
-    // Upload the file
-    const snapshot = await uploadBytes(imageRef, file)
-
-    // Get the download URL
-    const downloadURL = await getDownloadURL(snapshot.ref)
-
-    return downloadURL
+    const options = {
+      maxSizeMB: 0.5,
+      maxWidthOrHeight: 1200,
+      useWebWorker: true,
+      fileType: "image/webp",
+    };
+    const compressedFile = await imageCompression(file, options);
+    const timestamp = Date.now();
+    const fileName = `${prefix ? prefix + "_" : ""}${timestamp}_${compressedFile.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
+    const imageRef = ref(storage, `${folder}/${fileName}`);
+    const snapshot = await uploadBytes(imageRef, compressedFile);
+    const downloadURL = await getDownloadURL(snapshot.ref);
+    return downloadURL;
   } catch (error) {
-    console.error("Error uploading image:", error)
-    throw new Error("Failed to upload image")
+    console.error("Error uploading image:", error);
+    throw new Error("Failed to upload image");
   }
-}
+};
 
 // Delete image from Firebase Storage
 export const deleteProductImage = async (imageUrl: string): Promise<void> => {
@@ -31,18 +33,6 @@ export const deleteProductImage = async (imageUrl: string): Promise<void> => {
   } catch (error) {
     console.error("Error deleting image:", error)
     throw new Error("Failed to delete image")
-  }
-}
-
-// Upload multiple images
-export const uploadMultipleImages = async (files: File[], productSku: string): Promise<string[]> => {
-  try {
-    const uploadPromises = files.map((file) => uploadProductImage(file, productSku))
-    const urls = await Promise.all(uploadPromises)
-    return urls
-  } catch (error) {
-    console.error("Error uploading multiple images:", error)
-    throw new Error("Failed to upload images")
   }
 }
 
@@ -68,18 +58,3 @@ export const validateImageFile = (file: File): { isValid: boolean; error?: strin
   return { isValid: true }
 }
 
-// Upload image to Firebase Storage for blog cover images
-export const uploadBlogImage = async (file: File): Promise<string> => {
-  try {
-    const timestamp = Date.now()
-    const fileName = `${timestamp}_${file.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`
-    const imageRef = ref(storage, `blog/${fileName}`)
-
-    const snapshot = await uploadBytes(imageRef, file)
-    const downloadURL = await getDownloadURL(snapshot.ref)
-    return downloadURL
-  } catch (error) {
-    console.error("Error uploading blog image:", error)
-    throw new Error("Failed to upload blog image")
-  }
-}

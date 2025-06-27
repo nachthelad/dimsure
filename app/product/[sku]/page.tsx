@@ -15,6 +15,8 @@ import { useAuth } from "@/hooks/useAuth"
 import { useLanguage } from "@/components/language-provider"
 import type { Product } from "@/lib/types"
 import { normalizeProduct } from "@/lib/product-normalizer"
+import { collection, query, where, getDocs } from "firebase/firestore"
+import { db } from "@/lib/firebase"
 
 export default function ProductDetailPage({
   params,
@@ -30,9 +32,10 @@ export default function ProductDetailPage({
   const [createdByUser, setCreatedByUser] = useState<any>(null)
   const [lastModifiedByUser, setLastModifiedByUser] = useState<any>(null)
   const { user, isLoggedIn } = useAuth()
-  const { t } = useLanguage()
+  const { t, locale } = useLanguage()
 
   const [shareSuccess, setShareSuccess] = useState(false)
+  const [categoryTranslation, setCategoryTranslation] = useState<string | null>(null)
 
   const handleShare = async () => {
     try {
@@ -96,6 +99,21 @@ export default function ProductDetailPage({
     fetchProduct()
   }, [resolvedParams.sku, user, isLoggedIn])
 
+  useEffect(() => {
+    async function fetchCategoryTranslation() {
+      if (!product?.category) return;
+      const q = query(collection(db, "categories"), where("name", "==", product.category));
+      const snapshot = await getDocs(q);
+      if (!snapshot.empty) {
+        const data = snapshot.docs[0].data();
+        setCategoryTranslation(data.translations?.[locale] || data.name);
+      } else {
+        setCategoryTranslation(product.category);
+      }
+    }
+    fetchCategoryTranslation();
+  }, [product?.category, locale]);
+
   const handleLike = async () => {
     if (!isLoggedIn || !user || !product) {
       alert("Please sign in to like products")
@@ -141,7 +159,7 @@ export default function ProductDetailPage({
       <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
         <span>{t("navigation.home")}</span>
         <span>/</span>
-        <span>{product.category}</span>
+        <span>{categoryTranslation || product.category}</span>
         <span>/</span>
         <span className="text-foreground">{product.name}</span>
       </div>
@@ -192,7 +210,7 @@ export default function ProductDetailPage({
           <div>
             <div className="flex items-center gap-2 mb-2">
               <Badge variant="outline">{product.brand}</Badge>
-              <Badge variant="secondary">{product.category}</Badge>
+              <Badge variant="secondary">{categoryTranslation || product.category}</Badge>
             </div>
             <h1 className="text-3xl font-bold text-foreground mb-2">{product.name}</h1>
             <p className="text-lg font-mono text-primary mb-4">SKU: {product.sku}</p>

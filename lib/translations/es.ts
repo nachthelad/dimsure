@@ -93,7 +93,7 @@ export const es = {
       subtitle: "Ayuda a la comunidad agregando dimensiones de embalaje verificadas para un nuevo producto.",
       form: {
         productName: "Nombre del Producto",
-        productNamePlaceholder: "ej., Nintendo Switch OLED Blanca",
+        productNamePlaceholder: "ej., Switch OLED Blanca",
         productNameHelp:
           "Ingresa el nombre del producto como lo ves. La comunidad ayudará a mejorar la consistencia de nombres con el tiempo.",
         brand: "Marca",
@@ -101,7 +101,7 @@ export const es = {
         sku: "SKU",
         skuPlaceholder: "ej., NSW-OLED-WHT",
         category: "Categoría",
-        categoryPlaceholder: "ej., Consolas de Videojuegos",
+        categoryPlaceholder: "ej., Consolas",
         description: "Descripción",
         descriptionPlaceholder: "Breve descripción del producto y embalaje...",
         boxDimensions: "Dimensiones de la Caja",
@@ -149,7 +149,7 @@ export const es = {
       stats: {
         totalProducts: "Total de Productos",
         productsSubmitted: "Productos enviados",
-        totalLikes: "Total de Me Gusta",
+        totalLikes: "Me Gusta",
         communityAppreciation: "Apreciación de la comunidad",
         totalViews: "Total de Visualizaciones",
         productPageVisits: "Visitas a páginas de productos",
@@ -191,7 +191,7 @@ export const es = {
     product: {
       details: {
         sku: "SKU:",
-        likes: "me gusta",
+        likes: "likes",
         views: "visualizaciones",
         confidence: "confianza",
         submittedBy: "Creado por",
