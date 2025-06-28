@@ -17,17 +17,17 @@ import { useLanguage } from "@/components/language-provider"
 
 interface UserProduct {
   id: string
-  name: string
-  sku: string
-  brand: string
-  category: string
-  primaryDimensions: { length: number; width: number; height: number }
-  likes: number
-  views: number
-  confidence: number
-  mainImage: string
-  createdAt: any
-  lastModified: any
+  name?: string
+  sku?: string
+  brand?: string
+  category?: string
+  primaryDimensions?: { length: number; width: number; height: number }
+  likes?: number
+  views?: number
+  confidence?: number
+  mainImage?: string
+  createdAt?: any
+  lastModified?: any
 }
 
 export default function MyContributionsPage() {
@@ -75,10 +75,10 @@ export default function MyContributionsPage() {
     } else {
       const filtered = products.filter(
         (product) =>
-          product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          product.sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          product.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          product.category.toLowerCase().includes(searchTerm.toLowerCase()),
+          product.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          product.sku?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          product.brand?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          product.category?.toLowerCase().includes(searchTerm.toLowerCase()),
       )
       setFilteredProducts(filtered)
     }
@@ -191,7 +191,7 @@ export default function MyContributionsPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {products.reduce((total, product) => total + (product.likes || 0), 0)}
+                {products.reduce((total, product) => total + (product.likes ?? 0), 0)}
               </div>
               <p className="text-xs text-muted-foreground">{t("myContributions.stats.communityAppreciation")}</p>
             </CardContent>
@@ -203,7 +203,7 @@ export default function MyContributionsPage() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {products.reduce((total, product) => total + (product.views || 0), 0)}
+                {products.reduce((total, product) => total + (product.views ?? 0), 0)}
               </div>
               <p className="text-xs text-muted-foreground">{t("myContributions.stats.productPageVisits")}</p>
             </CardContent>
@@ -247,7 +247,7 @@ export default function MyContributionsPage() {
                 <div className="flex items-start gap-4">
                   <Image
                     src={product.mainImage || "/placeholder.svg"}
-                    alt={product.name}
+                    alt={product.name || ""}
                     width={80}
                     height={80}
                     className="rounded-lg object-cover flex-shrink-0"
@@ -255,11 +255,11 @@ export default function MyContributionsPage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between mb-2">
                       <div>
-                        <h3 className="text-lg font-semibold text-foreground mb-1">{product.name}</h3>
+                        <h3 className="text-lg font-semibold text-foreground mb-1">{product.name || "Unknown"}</h3>
                         <div className="flex items-center gap-2 mb-2">
-                          <Badge variant="outline">{product.brand}</Badge>
-                          <Badge variant="secondary">{product.category}</Badge>
-                          <span className="text-sm font-mono text-primary">{product.sku}</span>
+                          <Badge variant="outline">{product.brand || "Unknown"}</Badge>
+                          <Badge variant="secondary">{product.category || "Unknown"}</Badge>
+                          <span className="text-sm font-mono text-primary">{product.sku || "Unknown"}</span>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
@@ -282,27 +282,27 @@ export default function MyContributionsPage() {
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <Package className="h-4 w-4" />
                         <span>
-                          {formatDimension(product.primaryDimensions.length)} ×{" "}
-                          {formatDimension(product.primaryDimensions.width)} ×{" "}
-                          {formatDimension(product.primaryDimensions.height)} {unit}
+                          {formatDimension(product.primaryDimensions?.length ?? 0)} ×{" "}
+                          {formatDimension(product.primaryDimensions?.width ?? 0)} ×{" "}
+                          {formatDimension(product.primaryDimensions?.height ?? 0)} {unit}
                         </span>
                       </div>
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <Heart className="h-4 w-4" />
                         <span>
-                          {product.likes || 0} {t("product.details.likes")}
+                          {product.likes ?? 0} {t("product.details.likes")}
                         </span>
                       </div>
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <Eye className="h-4 w-4" />
                         <span>
-                          {product.views || 0} {t("product.details.views")}
+                          {product.views ?? 0} {t("product.details.views")}
                         </span>
                       </div>
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <TrendingUp className="h-4 w-4" />
                         <span>
-                          {product.confidence}% {t("product.details.confidence")}
+                          {product.confidence ?? 0}% {t("product.details.confidence")}
                         </span>
                       </div>
                     </div>

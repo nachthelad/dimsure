@@ -48,6 +48,8 @@ export default function AddProductPage() {
   const brandInputRef = useRef<HTMLInputElement>(null)
   const categoryInputRef = useRef<HTMLInputElement>(null)
   const [selectedCategory, setSelectedCategory] = useState<any | null>(null)
+  const [images, setImages] = useState<File[]>([])
+  const [imagePreviews, setImagePreviews] = useState<string[]>([])
 
   useEffect(() => {
     if (!loading && !isLoggedIn) {
@@ -125,6 +127,24 @@ export default function AddProductPage() {
     if (categoryInputRef.current) categoryInputRef.current.value = cat.translations?.[locale] || cat.name;
   };
 
+  const handleImagesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length > 3) {
+      toast({ title: "Máximo 3 imágenes", variant: "destructive" });
+      return;
+    }
+    // Validar cada archivo
+    for (const file of files) {
+      const validation = validateImageFile(file);
+      if (!validation.isValid) {
+        toast({ title: "Imagen no válida", description: validation.error, variant: "destructive" });
+        return;
+      }
+    }
+    setImages(files);
+    setImagePreviews(files.map(file => URL.createObjectURL(file)));
+  };
+
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-8 max-w-2xl">
@@ -150,19 +170,19 @@ export default function AddProductPage() {
         throw new Error(t("addProduct.validation.loginRequired"))
       }
 
-      let imageUrl = "/placeholder.svg?height=400&width=400"
-
-      // Upload image if provided
-      if (formData.image) {
-        setIsUploadingImage(true)
+      let imageUrls: string[] = [];
+      if (images.length > 0) {
+        setIsUploadingImage(true);
         try {
-          imageUrl = await optimizeAndUploadImage(formData.image, "products", formData.sku.toUpperCase())
+          imageUrls = await Promise.all(
+            images.map(file => optimizeAndUploadImage(file, "products", formData.sku.toUpperCase()))
+          );
           toast({
             title: t("addProduct.form.imageUploaded"),
             description: t("addProduct.form.imageUploadedDesc"),
           })
-        } catch (imageError) {
-          console.error("Image upload failed:", imageError)
+        } catch (err) {
+          console.error("Image upload failed:", err)
           toast({
             title: t("addProduct.form.imageUploadFailed"),
             description: t("addProduct.form.imageUploadFailedDesc"),
@@ -170,7 +190,7 @@ export default function AddProductPage() {
           })
           // Continue without image
         } finally {
-          setIsUploadingImage(false)
+          setIsUploadingImage(false);
         }
       }
 
@@ -201,8 +221,8 @@ export default function AddProductPage() {
           unit: "mm",
         },
         weight: formData.weight ? Number.parseFloat(formData.weight) : null,
-        images: imageUrl !== "/placeholder.svg?height=400&width=400" ? [imageUrl] : [],
-        mainImage: imageUrl,
+        images: imageUrls,
+        mainImage: imageUrls[0] || "/placeholder.svg?height=400&width=400",
         specifications: {
           weight: formData.weight ? `${formData.weight}g` : "Not specified",
         },
@@ -445,16 +465,17 @@ export default function AddProductPage() {
                   <input
                     id="image"
                     type="file"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    className="hidden"
+                    accept="image/jpeg,image/png,image/webp"
+                    multiple
+                    onChange={handleImagesChange}
                     disabled={isUploadingImage}
+                    className="hidden"
                   />
                   <label htmlFor="image" className="cursor-pointer">
                     <Upload className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
                     <p className="text-sm text-muted-foreground">{t("addProduct.form.imageUpload")}</p>
-                    <p className="text-xs text-muted-foreground">{t("addProduct.form.imageFormats")}</p>
-                    <p className="text-xs text-muted-foreground mt-1">{t("addProduct.form.imageSize")}</p>
+                    <p className="text-sm text-muted-foreground">{t("addProduct.form.maxImages")}</p>
+                    <p className="text-sm text-muted-foreground">{t("addProduct.form.imageFormats")}</p>
                   </label>
                 </div>
               ) : (
