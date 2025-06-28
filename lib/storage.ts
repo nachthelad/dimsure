@@ -6,7 +6,7 @@ import imageCompression from "browser-image-compression";
 export const optimizeAndUploadImage = async (file: File, folder: string = "products", prefix: string = ""): Promise<string> => {
   try {
     const options = {
-      maxSizeMB: 0.5,
+      maxSizeMB: 1,
       maxWidthOrHeight: 1200,
       useWebWorker: true,
       fileType: "image/webp",
