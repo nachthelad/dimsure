@@ -16,6 +16,6 @@ export const siteConfig = {
     "shipping calculator",
   ],
   links: {
-    twitter: "https://twitter.com/dimsure_app_app",
+    twitter: "https://twitter.com/dimsure_app",
   },
 }

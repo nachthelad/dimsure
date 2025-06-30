@@ -125,6 +125,7 @@ export const es = {
         uploadingImage: "Subiendo imagen...",
         submittedBy: "Enviado por:",
         attribution: 'Tu contribución será atribuida a tu cuenta y aparecerá en "Mis Contribuciones".',
+        setAsMain: "Elegir como imagen principal",
         submit: "Enviar Producto",
         submitting: "Creando Producto...",
       },
@@ -211,6 +212,8 @@ export const es = {
         alternatives: "Dimensiones Alternativas",
         comments: "Comentarios",
         history: "Historial de Versiones",
+        previous: "Anterior",
+        next: "Siguiente",
       },
       specifications: {
         title: "Especificaciones del Producto",
