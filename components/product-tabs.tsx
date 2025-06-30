@@ -138,13 +138,13 @@ export const ProductTabs: React.FC<ProductTabsProps> = ({ product, createdByUser
           <button
             aria-label={t("product.tabs.previous")}
             onClick={() => setActiveTab((prev) => (prev === 0 ? TAB_KEYS.length - 1 : prev - 1))}
-            className="p-2 text-muted-foreground border border-border rounded transition-colors hover:bg-muted/70 disabled:opacity-50"
+            className="p-2 text-muted-foreground border rounded-lg transition-colors hover:bg-muted/70 disabled:opacity-50"
             disabled={TAB_KEYS.length <= 1}
           >
             <ChevronLeft className="h-6 w-6" />
           </button>
           <span
-            className="flex-1 text-center text-md font-semibold bg-muted rounded px-1 py-2 border border-border text-muted-foreground mx-2"
+            className="flex-1 text-center text-md font-semibold bg-muted rounded-lg px-1 py-2 border text-muted-foreground mx-2"
             style={{ letterSpacing: "0.01em" }}
           >
             {tabTitles[activeTab]}
@@ -152,7 +152,7 @@ export const ProductTabs: React.FC<ProductTabsProps> = ({ product, createdByUser
           <button
             aria-label={t("product.tabs.next")}
             onClick={() => setActiveTab((prev) => (prev === TAB_KEYS.length - 1 ? 0 : prev + 1))}
-            className="p-2 text-muted-foreground border border-border rounded transition-colors hover:bg-muted/70 disabled:opacity-50"
+            className="p-2 text-muted-foreground border rounded-lg transition-colors hover:bg-muted/70 disabled:opacity-50"
             disabled={TAB_KEYS.length <= 1}
           >
             <ChevronRight className="h-6 w-6" />
