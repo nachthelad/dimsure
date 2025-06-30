@@ -94,7 +94,7 @@ export function Footer() {
               </div>
               <div className="flex items-center gap-2 text-muted-foreground">
                 <a
-                  href="https://twitter.com/dimsure_app_app"
+                  href="https://twitter.com/dimsure_app"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-foreground transition-colors text-sm"

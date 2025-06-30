@@ -17,6 +17,7 @@ import type { Product } from "@/lib/types"
 import { normalizeProduct } from "@/lib/product-normalizer"
 import { collection, query, where, getDocs } from "firebase/firestore"
 import { db } from "@/lib/firebase"
+import ProductTabs from "@/components/product-tabs"
 
 export default function ProductDetailPage({
   params,
@@ -34,8 +35,13 @@ export default function ProductDetailPage({
   const { user, isLoggedIn } = useAuth()
   const { t, locale } = useLanguage()
 
+  const [mainImageSrc, setMainImageSrc] = useState<string | null>(null)
   const [shareSuccess, setShareSuccess] = useState(false)
   const [categoryTranslation, setCategoryTranslation] = useState<string | null>(null)
+
+  const handleGalleryImageClick = (imageUrl: string) => {
+    setMainImageSrc(imageUrl)
+  }
 
   const handleShare = async () => {
     try {
@@ -62,7 +68,9 @@ export default function ProductDetailPage({
       try {
         const productData = await getProduct(resolvedParams.sku)
         if (productData) {
-          setProduct(normalizeProduct(productData))
+          const normalizedProduct = normalizeProduct(productData)
+          setProduct(normalizedProduct)
+          setMainImageSrc(normalizedProduct.mainImage || null)
           setLikesCount(productData.likes || 0)
 
           // Check if user liked this product
@@ -171,7 +179,7 @@ export default function ProductDetailPage({
             <CardContent className="p-6">
               <div className="w-full h-[400px] bg-muted dark:bg-muted/50 rounded-lg overflow-hidden flex items-center justify-center">
                 <Image
-                  src={product.mainImage || "/placeholder.svg?height=400&width=400&text=Product+Image"}
+                  src={mainImageSrc || "/placeholder.svg?height=400&width=400&text=Product+Image"}
                   alt={product.name}
                   width={400}
                   height={400}
@@ -186,7 +194,11 @@ export default function ProductDetailPage({
           {product.images && product.images.length > 0 && (
             <div className="grid grid-cols-3 gap-2">
               {product.images.map((img: string, index: number) => (
-                <Card key={index} className="cursor-pointer hover:ring-2 hover:ring-primary">
+                <Card
+                  key={index}
+                  className="cursor-pointer hover:ring-2 hover:ring-primary"
+                  onClick={() => handleGalleryImageClick(img)}
+                >
                   <CardContent className="p-2">
                     <div className="w-full h-[100px] bg-muted dark:bg-muted/50 rounded overflow-hidden flex items-center justify-center">
                       <Image
@@ -279,7 +291,7 @@ export default function ProductDetailPage({
           <Separator />
 
           {/* Main Dimensions */}
-          <DimensionCard dimensions={product.primaryDimensions} title="Verified Dimensions" isPrimary={true} />
+          <DimensionCard dimensions={product.primaryDimensions} title={t("product.details.verifiedDimensions")} isPrimary={true} />
 
           {/* Action Buttons */}
           <div className="grid grid-cols-2 gap-3">
@@ -308,111 +320,12 @@ export default function ProductDetailPage({
         </div>
       </div>
 
-      {/* Detailed Information Tabs */}
-      <Tabs defaultValue="specifications" className="mb-8">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="specifications">{t("product.tabs.specifications")}</TabsTrigger>
-          <TabsTrigger value="alternatives">{t("product.tabs.alternatives")}</TabsTrigger>
-          <TabsTrigger value="comments">{t("product.tabs.comments")}</TabsTrigger>
-          <TabsTrigger value="history">{t("product.tabs.history")}</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="specifications" className="mt-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>{t("product.specifications.title")}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
-                {product.specifications &&
-                  Object.entries(product.specifications).map(([key, value]) => (
-                    <div key={key} className="flex justify-between py-2 border-b border-border last:border-0">
-                      <span className="font-medium text-muted-foreground">
-                        {key === "weight" ? t("product.specifications.weight") : `${key}:`}
-                      </span>
-                      <span className="text-foreground">
-                        {value === "Not specified" ? t("product.specifications.notSpecified") : (value as string)}
-                      </span>
-                    </div>
-                  ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="alternatives" className="mt-6">
-          <Card>
-            <CardContent className="text-center py-8">
-              <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">{t("product.alternatives.noAlternatives")}</h3>
-              <p className="text-muted-foreground">{t("product.alternatives.noAlternativesMessage")}</p>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="comments" className="mt-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>{t("product.comments.title")}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-8">
-                <MessageCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">{t("product.comments.noComments")}</h3>
-                <p className="text-muted-foreground">{t("product.comments.noCommentsMessage")}</p>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="history" className="mt-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>{t("product.history.title")}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-start gap-4 pb-4 border-b border-border">
-                  <div className="w-2 h-2 bg-primary rounded-full mt-2"></div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="font-semibold text-primary">
-                        {lastModifiedByUser?.publicTag ||
-                          lastModifiedByUser?.displayName ||
-                          createdByUser?.publicTag ||
-                          createdByUser?.displayName ||
-                          "@unknown"}
-                      </span>
-                      {product.lastModified && (
-                        <span className="text-sm text-muted-foreground">
-                          {new Date(product.lastModified.toDate()).toLocaleDateString()}
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-sm text-muted-foreground">{t("product.history.updated")}</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-4">
-                  <div className="w-2 h-2 bg-muted rounded-full mt-2"></div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="font-semibold text-primary">
-                        {createdByUser?.publicTag || createdByUser?.displayName || "@unknown"}
-                      </span>
-                      {product.createdAt && (
-                        <span className="text-sm text-muted-foreground">
-                          {new Date(product.createdAt.toDate()).toLocaleDateString()}
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-sm text-muted-foreground">{t("product.history.initialSubmission")}</p>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+      <ProductTabs
+        product={product}
+        createdByUser={createdByUser}
+        lastModifiedByUser={lastModifiedByUser}
+        t={t}
+      />
     </div>
   )
 }

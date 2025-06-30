@@ -50,6 +50,7 @@ export default function AddProductPage() {
   const [selectedCategory, setSelectedCategory] = useState<any | null>(null)
   const [images, setImages] = useState<File[]>([])
   const [imagePreviews, setImagePreviews] = useState<string[]>([])
+  const [mainImageIndex, setMainImageIndex] = useState<number>(0)
 
   useEffect(() => {
     if (!loading && !isLoggedIn) {
@@ -128,21 +129,28 @@ export default function AddProductPage() {
   };
 
   const handleImagesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    if (files.length > 3) {
-      toast({ title: "Máximo 3 imágenes", variant: "destructive" });
-      return;
-    }
-    // Validar cada archivo
-    for (const file of files) {
-      const validation = validateImageFile(file);
-      if (!validation.isValid) {
-        toast({ title: "Imagen no válida", description: validation.error, variant: "destructive" });
-        return;
+    const newFiles = Array.from(e.target.files || []);
+    // Filtrar duplicados por nombre y tamaño
+    const allFiles = [...images];
+    for (const file of newFiles) {
+      if (allFiles.length >= 3) break;
+      // Evitar duplicados por nombre y tamaño
+      if (!allFiles.some(f => f.name === file.name && f.size === file.size)) {
+        const validation = validateImageFile(file);
+        if (!validation.isValid) {
+          toast({ title: "Imagen no válida", description: validation.error, variant: "destructive" });
+          continue;
+        }
+        allFiles.push(file);
       }
     }
-    setImages(files);
-    setImagePreviews(files.map(file => URL.createObjectURL(file)));
+    if (allFiles.length > 3) {
+      toast({ title: "Máximo 3 imágenes", variant: "destructive" });
+      allFiles.length = 3;
+    }
+    setImages(allFiles);
+    setImagePreviews(allFiles.map(file => URL.createObjectURL(file)));
+    if (allFiles.length === 1) setMainImageIndex(0);
   };
 
   if (loading) {
@@ -174,8 +182,14 @@ export default function AddProductPage() {
       if (images.length > 0) {
         setIsUploadingImage(true);
         try {
+          // Ordenar las imágenes para que la principal esté primero
+          const orderedImages = [...images];
+          if (mainImageIndex > 0) {
+            const [mainImg] = orderedImages.splice(mainImageIndex, 1);
+            orderedImages.unshift(mainImg);
+          }
           imageUrls = await Promise.all(
-            images.map(file => optimizeAndUploadImage(file, "products", formData.sku.toUpperCase()))
+            orderedImages.map(file => optimizeAndUploadImage(file, "products", formData.sku.toUpperCase()))
           );
           toast({
             title: t("addProduct.form.imageUploaded"),
@@ -460,61 +474,77 @@ export default function AddProductPage() {
             <div className="space-y-4">
               <Label htmlFor="image">{t("addProduct.form.productImage")}</Label>
 
-              {!imagePreview ? (
-                <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary/50 transition-colors">
-                  <input
-                    id="image"
-                    type="file"
-                    accept="image/jpeg,image/png,image/webp"
-                    multiple
-                    onChange={handleImagesChange}
-                    disabled={isUploadingImage}
-                    className="hidden"
-                  />
-                  <label htmlFor="image" className="cursor-pointer">
-                    <Upload className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-                    <p className="text-sm text-muted-foreground">{t("addProduct.form.imageUpload")}</p>
-                    <p className="text-sm text-muted-foreground">{t("addProduct.form.maxImages")}</p>
-                    <p className="text-sm text-muted-foreground">{t("addProduct.form.imageFormats")}</p>
-                  </label>
-                </div>
-              ) : (
-                <div className="relative">
-                  <div className="border rounded-lg p-4 bg-muted/50">
-                    <div className="flex items-start gap-4">
-                      <div className="relative">
-                        <img
-                          src={imagePreview || "/placeholder.svg"}
-                          alt="Preview"
-                          className="w-24 h-24 object-cover rounded-lg"
-                        />
-                        <Button
-                          type="button"
-                          variant="destructive"
-                          size="sm"
-                          className="absolute -top-2 -right-2 h-6 w-6 rounded-full p-0"
-                          onClick={removeImage}
-                          disabled={isUploadingImage}
+              <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary/50 transition-colors">
+                <input
+                  id="image"
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  multiple
+                  onChange={handleImagesChange}
+                  disabled={isUploadingImage}
+                  className="hidden"
+                />
+                <label htmlFor="image" className="cursor-pointer">
+                  <Upload className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+                  <p className="text-sm text-muted-foreground">{t("addProduct.form.imageUpload")}</p>
+                  <p className="text-sm text-muted-foreground">{t("addProduct.form.maxImages")}</p>
+                  <p className="text-sm text-muted-foreground">{t("addProduct.form.imageFormats")}</p>
+                </label>
+                {images.length > 0 && (
+                  <>
+                    <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                      {images.map((file, idx) => (
+                        <div
+                          key={idx}
+                          className={`relative border rounded-lg p-2 bg-muted/50 flex flex-col items-center cursor-pointer select-none ${mainImageIndex === idx ? 'ring-2 ring-primary' : ''}`}
+                          onClick={() => setMainImageIndex(idx)}
+                          tabIndex={0}
+                          role="button"
+                          aria-pressed={mainImageIndex === idx}
                         >
-                          <X className="h-3 w-3" />
-                        </Button>
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <ImageIcon className="h-4 w-4 text-primary" />
-                          <span className="text-sm font-medium">{formData.image?.name}</span>
+                          <img
+                            src={imagePreviews[idx] || "/placeholder.svg"}
+                            alt={file.name}
+                            className="w-20 h-20 object-cover rounded mb-2"
+                          />
+                          <span className="text-xs font-medium mb-1 truncate max-w-[80px]">{file.name}</span>
+                          <div className="flex items-center gap-1">
+                            <input
+                              type="radio"
+                              name="mainImage"
+                              checked={mainImageIndex === idx}
+                              readOnly
+                              className="accent-primary hidden"
+                            />
+                            <span className="text-xs">{t("addProduct.form.setAsMain")}</span>
+                          </div>
+                          <Button
+                            type="button"
+                            variant="destructive"
+                            size="icon"
+                            className="absolute top-1 right-1 h-5 w-5 rounded-full p-0"
+                            onClick={e => {
+                              e.stopPropagation();
+                              const newImages = images.filter((_, i) => i !== idx);
+                              const newPreviews = imagePreviews.filter((_, i) => i !== idx);
+                              setImages(newImages);
+                              setImagePreviews(newPreviews);
+                              if (mainImageIndex === idx) setMainImageIndex(0);
+                              else if (mainImageIndex > idx) setMainImageIndex(mainImageIndex - 1);
+                            }}
+                            disabled={isUploadingImage}
+                          >
+                            <X className="h-3 w-3" />
+                          </Button>
                         </div>
-                        <p className="text-xs text-muted-foreground">
-                          {formData.image && `${(formData.image.size / 1024 / 1024).toFixed(2)} MB`}
-                        </p>
-                        <Badge variant="secondary" className="mt-2">
-                          {t("addProduct.form.imageReady")}
-                        </Badge>
-                      </div>
+                      ))}
                     </div>
-                  </div>
-                </div>
-              )}
+                    <div className="flex justify-center mt-4">
+                      <Badge variant="secondary">{t("addProduct.form.imageReady")}</Badge>
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
 
             <div className="bg-primary/10 p-4 rounded-lg">

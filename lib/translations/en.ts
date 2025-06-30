@@ -126,6 +126,7 @@ export const en = {
         uploadingImage: "Uploading image...",
         submittedBy: "Submitted by:",
         attribution: 'Your contribution will be attributed to your account and will appear in "My Contributions".',
+        setAsMain: "Set as main picture",
         submit: "Submit Product",
         submitting: "Creating Product...",
       },
@@ -211,6 +212,8 @@ export const en = {
         alternatives: "Alternative Dimensions",
         comments: "Comments",
         history: "Version History",
+        previous: "Previous",
+        next: "Next",
       },
       specifications: {
         title: "Product Specifications",
