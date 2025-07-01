@@ -36,22 +36,23 @@ export const deleteProductImage = async (imageUrl: string): Promise<void> => {
   }
 }
 
-// Validate image file
+// Image file validation
 export const validateImageFile = (file: File): { isValid: boolean; error?: string } => {
-  const maxSize = 5 * 1024 * 1024 // 5MB
-  const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"]
-
+  // Check file type
+  const allowedTypes = ['image/jpeg', 'image/png', 'image/webp']
   if (!allowedTypes.includes(file.type)) {
     return {
       isValid: false,
-      error: "Only JPEG, PNG, and WebP images are allowed",
+      error: 'Invalid file type. Please upload JPG, PNG, or WebP images only.'
     }
   }
 
+  // Check file size (5MB limit)
+  const maxSize = 5 * 1024 * 1024 // 5MB in bytes
   if (file.size > maxSize) {
     return {
       isValid: false,
-      error: "Image size must be less than 5MB",
+      error: 'File too large. Please upload images smaller than 5MB.'
     }
   }
 

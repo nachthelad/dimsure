@@ -13,8 +13,8 @@ import { Textarea } from "@/components/ui/textarea"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { useUnit } from "@/components/unit-provider"
 import { useAuth } from "@/hooks/useAuth"
-import { createProduct } from "@/lib/firestore"
-import { optimizeAndUploadImage, validateImageFile } from "@/lib/storage"
+import { createProduct, uploadProductImage } from "@/lib/firestore"
+import { validateImageFile } from "@/lib/storage"
 import { normalizeProductName, normalizeBrandName, validateProductName } from "@/lib/product-normalizer"
 import { useLanguage } from "@/components/language-provider"
 import { toast } from "@/hooks/use-toast"
@@ -189,7 +189,7 @@ export default function AddProductPage() {
             orderedImages.unshift(mainImg);
           }
           imageUrls = await Promise.all(
-            orderedImages.map(file => optimizeAndUploadImage(file, "products", formData.sku.toUpperCase()))
+            orderedImages.map((file, index) => uploadProductImage(file, formData.sku.toUpperCase(), index))
           );
           toast({
             title: t("addProduct.form.imageUploaded"),
@@ -208,6 +208,10 @@ export default function AddProductPage() {
         }
       }
 
+      // Ensure brand and category exist in database
+      const finalBrand = await createBrandIfNotExists(formData.brand)
+      const finalCategory = await createCategoryIfNotExists(formData.category)
+
       // Validar y normalizar el nombre aquí
       const validation = validateProductName(formData.name)
       let finalName = formData.name
@@ -225,8 +229,8 @@ export default function AddProductPage() {
       const productData = {
         name: normalizeProductName(finalName),
         sku: formData.sku.toUpperCase(),
-        brand: normalizeBrandName(formData.brand),
-        category: formData.category,
+        brand: finalBrand,
+        category: finalCategory,
         description: formData.description,
         primaryDimensions: {
           length: parseAndConvert(formData.length),

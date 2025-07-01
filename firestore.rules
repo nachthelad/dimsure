@@ -2,6 +2,12 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
+    // Helper function to check if user is admin
+    function isAdmin() {
+      return request.auth != null && 
+        request.auth.token.email in ['nachthelad.dev@gmail.com', 'nacho.vent@gmail.com'];
+    }
+
     // Allow read/write access to all documents for authenticated users
     match /{document=**} {
       allow read, write: if request.auth != null;
@@ -10,7 +16,15 @@ service cloud.firestore {
     // Allow read access to products for everyone
     match /products/{productId} {
       allow read: if true;
-      allow write: if request.auth != null;
+      allow create: if request.auth != null;
+      allow update: if request.auth != null && (
+        // Allow creator to update their own products
+        request.auth.uid == resource.data.createdBy ||
+        // Allow admins to update any product
+        isAdmin()
+      );
+      allow delete: if request.auth != null && 
+        (request.auth.uid == resource.data.createdBy || isAdmin());
     }
     
     // Allow read access to users for authenticated users
@@ -21,11 +35,66 @@ service cloud.firestore {
     // Allow read/write access to comments for authenticated users
     match /comments/{commentId} {
       allow read: if true;
-      allow write: if request.auth != null;
+      allow create: if request.auth != null;
+      allow update: if request.auth != null && request.auth.uid == resource.data.authorId;
+      allow delete: if request.auth != null && request.auth.uid == resource.data.authorId;
     }
+
+    // Allow read access to categories for authenticated users
+    match /categories/{categoryId} {
+      allow read: if true;
+      allow create: if request.auth != null;
+      allow update: if false;
+      allow delete: if false;
+    }
+
+    // Allow read access to brands for authenticated users
+    match /brands/{brandId} {
+      allow read: if true;
+      allow create: if request.auth != null;
+      allow update: if false;
+      allow delete: if false;
+    }
+
+    // Likes collection
+    match /likes/{likeId} {
+      allow read: if true;
+      allow create, update, delete: if request.auth != null;
+    }
+
+    // Blog posts collection
     match /blogPosts/{postId} {
-      allow read: if true; // Todos pueden leer
-      allow write: if request.auth != null && request.auth.token.email == "nacho.vent@gmail.com";
+      allow read: if true;
+      allow create, update, delete: if request.auth != null;
+    }
+
+    // Allow read access to disputes for authenticated users
+    match /disputes/{disputeId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null && 
+        request.auth.uid == request.resource.data.createdBy;
+      allow update: if request.auth != null && (
+        // Allow creator to update their own disputes
+        request.auth.uid == resource.data.createdBy ||
+        // Allow voting on disputes (only updating votes field)
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['votes']) &&
+         resource.data.votes.userVotes.get(request.auth.uid, null) != 
+         request.resource.data.votes.userVotes.get(request.auth.uid, null)) ||
+        // Allow admins to update dispute status and resolution
+        (isAdmin() && 
+         request.resource.data.diff(resource.data).affectedKeys().hasAny(['status', 'resolution', 'lastModified']))
+      );
+      allow delete: if false; // Disputes should not be deleted
+    }
+
+    // Rules for dispute evidence images
+    match /disputes/evidence/{fileName} {
+      allow read: if request.auth != null; // Only authenticated users can view evidence
+      allow write: if request.auth != null
+        && request.resource.size < 5 * 1024 * 1024 // Max 5MB
+        && request.resource.contentType.matches('image/.*')
+        && resource == null; // Only allow creating new files
+      allow delete: if request.auth != null;
     }
   }
 }

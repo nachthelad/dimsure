@@ -15,9 +15,10 @@ import {
   arrayUnion,
   arrayRemove,
 } from "firebase/firestore"
-import { db } from "./firebase"
+import { db, storage } from "./firebase"
 import type { Product } from "./types"
 import { normalizeProduct } from "./product-normalizer"
+import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage"
 
 // Product operations
 export const createProduct = async (productData: any, userId: string) => {
@@ -70,6 +71,86 @@ export const updateProduct = async (sku: string, productData: any, userId: strin
   } catch (error) {
     console.error("Error updating product:", error)
     throw error
+  }
+}
+
+// Update individual product field
+export const updateProductField = async (sku: string, field: string, value: any, userId: string) => {
+  try {
+    const productRef = doc(db, "products", sku)
+    
+    const updateData: any = {
+      [field]: value,
+      lastModified: serverTimestamp(),
+      lastModifiedBy: userId,
+    }
+
+    await updateDoc(productRef, updateData)
+    return true
+  } catch (error) {
+    console.error(`Error updating product field ${field}:`, error)
+    throw error
+  }
+}
+
+// Image upload functions
+export const uploadProductImage = async (file: File, productSku: string, imageIndex: number): Promise<string> => {
+  try {
+    const fileName = `${productSku}_${imageIndex}_${Date.now()}`
+    const imageRef = ref(storage, `products/${productSku}/${fileName}`)
+    
+    const snapshot = await uploadBytes(imageRef, file)
+    const downloadURL = await getDownloadURL(snapshot.ref)
+    
+    return downloadURL
+  } catch (error) {
+    console.error("Error uploading image:", error)
+    throw error
+  }
+}
+
+// Evidence image upload function
+export const uploadEvidenceImage = async (file: File, disputeId: string, userId: string): Promise<string> => {
+  try {
+    const fileName = `evidence_${disputeId}_${userId}_${Date.now()}`
+    const imageRef = ref(storage, `disputes/evidence/${fileName}`)
+    
+    const snapshot = await uploadBytes(imageRef, file)
+    const downloadURL = await getDownloadURL(snapshot.ref)
+    
+    return downloadURL
+  } catch (error) {
+    console.error("Error uploading evidence image:", error)
+    throw error
+  }
+}
+
+export const updateProductImages = async (sku: string, images: string[], mainImageIndex: number, userId: string) => {
+  try {
+    const productRef = doc(db, "products", sku)
+    
+    const updateData = {
+      images,
+      mainImage: images[mainImageIndex] || images[0] || "",
+      lastModified: serverTimestamp(),
+      lastModifiedBy: userId,
+    }
+
+    await updateDoc(productRef, updateData)
+    return true
+  } catch (error) {
+    console.error("Error updating product images:", error)
+    throw error
+  }
+}
+
+export const deleteProductImage = async (imageUrl: string) => {
+  try {
+    const imageRef = ref(storage, imageUrl)
+    await deleteObject(imageRef)
+  } catch (error) {
+    console.error("Error deleting image:", error)
+    // Don't throw error - image might already be deleted
   }
 }
 
@@ -498,9 +579,15 @@ export const searchCategories = async (search: string): Promise<any[]> => {
   const q = query(collection(db, "categories"));
   const snapshot = await getDocs(q);
   const searchLower = search.trim().toLowerCase();
-  return snapshot.docs
-    .map(doc => doc.data())
-    .filter(cat => cat.name.toLowerCase().startsWith(searchLower));
+    return snapshot.docs
+    .map(doc => ({ id: doc.id, ...doc.data() }))
+    .filter((cat: any) => {
+      // Search in category name and translations
+      const nameMatch = cat.name?.toLowerCase().startsWith(searchLower);
+      const enMatch = cat.translations?.en?.toLowerCase().startsWith(searchLower);
+      const esMatch = cat.translations?.es?.toLowerCase().startsWith(searchLower);
+      return nameMatch || enMatch || esMatch;
+    });
 };
 
 // Obtiene todas las marcas
@@ -527,12 +614,193 @@ export const createBrandIfNotExists = async (name: string): Promise<string> => {
   return nameNorm;
 };
 
+// Simple translation function for common categories
+const getBasicTranslation = (englishName: string): string => {
+  const translations: Record<string, string> = {
+    'gaming': 'Juegos',
+    'accessories': 'Accesorios',
+    'headphones': 'Auriculares',
+    'speakers': 'Altavoces',
+    'cameras': 'Cámaras',
+    'monitors': 'Monitores',
+    'keyboards': 'Teclados',
+    'mice': 'Ratones',
+    'storage': 'Almacenamiento',
+    'networking': 'Redes',
+    'wearables': 'Wearables',
+    'audio': 'Audio',
+    'video': 'Video',
+    'tools': 'Herramientas',
+    'software': 'Software',
+    'toys': 'Juguetes',
+    'sports': 'Deportes',
+    'automotive': 'Automotriz',
+    'home': 'Hogar',
+    'kitchen': 'Cocina',
+  }
+  
+  const lowerName = englishName.toLowerCase()
+  return translations[lowerName] || englishName.toLowerCase()
+}
+
 // Crea una categoría si no existe (case-insensitive)
 export const createCategoryIfNotExists = async (name: string): Promise<string> => {
-  const nameNorm = name.trim();
-  const all = await getAllCategories();
-  const found = all.find(c => c.toLowerCase() === nameNorm.toLowerCase());
-  if (found) return found;
-  await addDoc(collection(db, "categories"), { name: nameNorm });
-  return nameNorm;
-};
+  try {
+    const nameNorm = name.trim()
+    
+    // First check if category already exists
+    const q = query(collection(db, "categories"))
+    const snapshot = await getDocs(q)
+    
+    // Check if category exists (case-insensitive)
+    for (const doc of snapshot.docs) {
+      const data = doc.data()
+      if (data.name.toLowerCase() === nameNorm.toLowerCase()) {
+        return data.name // Return existing normalized name
+      }
+    }
+    
+    // Create new category with translations
+    const spanishTranslation = getBasicTranslation(nameNorm)
+    
+    await addDoc(collection(db, "categories"), {
+      name: nameNorm,
+      translations: {
+        en: nameNorm,
+        es: spanishTranslation
+      },
+      createdAt: serverTimestamp(),
+    })
+    
+    return nameNorm
+  } catch (error) {
+    console.error("Error creating category:", error)
+    throw error
+  }
+}
+
+// Dispute operations
+export const createDispute = async (disputeData: any) => {
+  try {
+    const disputeRef = await addDoc(collection(db, "disputes"), {
+      ...disputeData,
+      createdAt: serverTimestamp(),
+      votes: {
+        upvotes: 0,
+        downvotes: 0,
+        userVotes: {}
+      },
+      status: disputeData.status || 'open'
+    })
+    return disputeRef.id
+  } catch (error) {
+    console.error("Error creating dispute:", error)
+    throw error
+  }
+}
+
+export const getDisputes = async () => {
+  try {
+    const q = query(collection(db, "disputes"), orderBy("createdAt", "desc"))
+    const querySnapshot = await getDocs(q)
+    
+        const disputes = []
+    for (const docSnapshot of querySnapshot.docs) {
+      const data = docSnapshot.data()
+      
+      // Get the user's public tag
+      let createdByTag = "@unknown"
+      if (data.createdBy) {
+        try {
+          const userRef = doc(db, "users", data.createdBy)
+          const userDoc = await getDoc(userRef)
+          if (userDoc.exists()) {
+            const userData = userDoc.data() as any
+            createdByTag = userData?.publicTag || userData?.displayName || "@unknown"
+          }
+        } catch (error) {
+          console.error("Error getting user data for dispute:", error)
+        }
+      }
+      
+      disputes.push({
+        id: docSnapshot.id,
+        ...data,
+        createdByTag
+      })
+    }
+    
+    return disputes
+  } catch (error) {
+    console.error("Error getting disputes:", error)
+    throw error
+  }
+}
+
+export const voteOnDispute = async (disputeId: string, userId: string, voteType: 'up' | 'down') => {
+  try {
+    const disputeRef = doc(db, "disputes", disputeId)
+    const disputeDoc = await getDoc(disputeRef)
+    
+    if (!disputeDoc.exists()) {
+      throw new Error("Dispute not found")
+    }
+    
+    const data = disputeDoc.data()
+    const currentVotes = data.votes || { upvotes: 0, downvotes: 0, userVotes: {} }
+    const userVotes = currentVotes.userVotes || {}
+    const previousVote = userVotes[userId]
+    
+    // Remove previous vote if exists
+    if (previousVote === 'up') {
+      currentVotes.upvotes = Math.max(0, currentVotes.upvotes - 1)
+    } else if (previousVote === 'down') {
+      currentVotes.downvotes = Math.max(0, currentVotes.downvotes - 1)
+    }
+    
+    // Add new vote if different from previous or no previous vote
+    if (previousVote !== voteType) {
+      if (voteType === 'up') {
+        currentVotes.upvotes += 1
+      } else {
+        currentVotes.downvotes += 1
+      }
+      userVotes[userId] = voteType
+    } else {
+      // Remove vote if clicking same vote type
+      delete userVotes[userId]
+    }
+    
+    currentVotes.userVotes = userVotes
+    
+    await updateDoc(disputeRef, {
+      votes: currentVotes
+    })
+    
+  } catch (error) {
+    console.error("Error voting on dispute:", error)
+    throw error
+  }
+}
+
+export const updateDisputeStatus = async (disputeId: string, status: string, resolution?: any) => {
+  try {
+    const disputeRef = doc(db, "disputes", disputeId)
+    const updateData: any = {
+      status,
+      lastModified: serverTimestamp()
+    }
+    
+    if (resolution) {
+      updateData.resolution = {
+        ...resolution,
+        resolvedAt: serverTimestamp()
+      }
+    }
+    
+    await updateDoc(disputeRef, updateData)
+  } catch (error) {
+    console.error("Error updating dispute status:", error)
+    throw error
+  }
+}
