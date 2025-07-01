@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { DimensionCard } from "@/components/dimension-card"
+import { DisputeModal } from "@/components/dispute-modal"
 import { getProduct, incrementProductViews, likeProduct, unlikeProduct, getUserById } from "@/lib/firestore"
 import { useAuth } from "@/hooks/useAuth"
 import { useLanguage } from "@/components/language-provider"
@@ -39,6 +40,10 @@ export default function ProductDetailPage({
   const [shareSuccess, setShareSuccess] = useState(false)
   const [categoryTranslation, setCategoryTranslation] = useState<string | null>(null)
 
+  // Dispute modal state
+  const [isDisputeDialogOpen, setIsDisputeDialogOpen] = useState(false)
+  const [disputeInitialData, setDisputeInitialData] = useState<any>(null)
+
   const handleGalleryImageClick = (imageUrl: string) => {
     setMainImageSrc(imageUrl)
   }
@@ -61,6 +66,24 @@ export default function ProductDetailPage({
       setShareSuccess(true)
       setTimeout(() => setShareSuccess(false), 2000)
     }
+  }
+
+  const handleSuggestDifferent = () => {
+    if (!isLoggedIn) {
+      alert("Please sign in to suggest corrections")
+      return
+    }
+    
+    // Prepare initial data for the dispute modal
+    const initialData = {
+      title: `Suggested correction for ${product?.name || 'product'}`,
+      productSku: product?.sku || "",
+      product: product, // Pass the full product object
+      disputeType: 'measurement' as const
+    }
+    
+    setDisputeInitialData(initialData)
+    setIsDisputeDialogOpen(true)
   }
 
   useEffect(() => {
@@ -304,7 +327,7 @@ export default function ProductDetailPage({
               <Heart className={`h-4 w-4 ${isLiked ? "fill-current" : ""}`} />
               {isLiked ? t("product.actions.liked") : t("product.actions.like")}
             </Button>
-            <Button variant="outline" className="flex items-center gap-2">
+            <Button variant="outline" className="flex items-center gap-2" onClick={handleSuggestDifferent}>
               <Edit className="h-4 w-4" />
               {t("product.actions.suggestDifferent")}
             </Button>
@@ -319,6 +342,13 @@ export default function ProductDetailPage({
           </div>
         </div>
       </div>
+
+      <DisputeModal
+        isOpen={isDisputeDialogOpen}
+        onOpenChange={setIsDisputeDialogOpen}
+        initialData={disputeInitialData}
+        mode="suggest"
+      />
 
       <ProductTabs
         product={product}
