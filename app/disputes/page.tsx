@@ -2,12 +2,13 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { MessageSquare, Scale, Users, Loader2, Plus, Clock, ThumbsUp, ThumbsDown, AlertTriangle, CheckCircle, XCircle, Settings } from "lucide-react"
+import { MessageSquare, Scale, Users, Loader2, Plus, Clock, ThumbsUp, ThumbsDown, AlertTriangle, CheckCircle, XCircle, Settings, Filter, Search } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Input } from "@/components/ui/input"
+import { Skeleton } from "@/components/ui/skeleton"
 import { useAuth } from "@/hooks/useAuth"
 import { useLanguage } from "@/components/language-provider"
 import { getDisputes, voteOnDispute, updateDisputeStatus } from "@/lib/firestore"
@@ -49,8 +50,12 @@ export default function DisputesPage() {
   const { t } = useLanguage()
   const router = useRouter()
   const [disputes, setDisputes] = useState<Dispute[]>([])
+  const [filteredDisputes, setFilteredDisputes] = useState<Dispute[]>([])
   const [disputesLoading, setDisputesLoading] = useState(true)
-  const [selectedTab, setSelectedTab] = useState("all")
+  const [statusFilter, setStatusFilter] = useState<string>("all")
+  const [typeFilter, setTypeFilter] = useState<string>("all")
+  const [showMyReports, setShowMyReports] = useState(false)
+  const [searchTerm, setSearchTerm] = useState("")
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
 
   // Check if current user is admin
@@ -67,6 +72,38 @@ export default function DisputesPage() {
       loadDisputes()
     }
   }, [isLoggedIn])
+
+  // Filter disputes based on all filters
+  useEffect(() => {
+    let filtered = disputes
+
+    // Filter by status
+    if (statusFilter !== "all") {
+      filtered = filtered.filter(dispute => dispute.status === statusFilter)
+    }
+
+    // Filter by type
+    if (typeFilter !== "all") {
+      filtered = filtered.filter(dispute => dispute.disputeType === typeFilter)
+    }
+
+    // Filter by my reports
+    if (showMyReports) {
+      filtered = filtered.filter(dispute => dispute.createdBy === user?.uid)
+    }
+
+    // Filter by search term
+    if (searchTerm.trim()) {
+      filtered = filtered.filter(dispute =>
+        dispute.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        dispute.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        dispute.productName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        dispute.productSku?.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    }
+
+    setFilteredDisputes(filtered)
+  }, [disputes, statusFilter, typeFilter, showMyReports, searchTerm, user?.uid])
 
   const loadDisputes = async () => {
     try {
@@ -152,17 +189,74 @@ export default function DisputesPage() {
     }
   }
 
-  const filteredDisputes = disputes.filter(dispute => {
-    if (selectedTab === "all") return true
-    if (selectedTab === "my-disputes") return dispute.createdBy === user?.uid
-    return dispute.status === selectedTab
-  })
-
-  if (loading) {
+  if (loading || disputesLoading) {
     return (
       <div className="container mx-auto px-4 py-8 max-w-6xl">
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        <div className="mb-8">
+          {/* Header Skeleton */}
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6">
+            <div>
+              <Skeleton className="h-10 w-64 mb-2" />
+              <Skeleton className="h-6 w-96" />
+            </div>
+            <Skeleton className="h-10 w-32" />
+          </div>
+
+          {/* Stats Cards Skeleton */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            {[...Array(4)].map((_, i) => (
+              <Card key={i}>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <Skeleton className="h-4 w-20" />
+                  <Skeleton className="h-4 w-4" />
+                </CardHeader>
+                <CardContent>
+                  <Skeleton className="h-8 w-12" />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+
+        {/* Filters Skeleton */}
+        <div className="mb-6 space-y-4">
+          <Skeleton className="h-10 w-80" />
+          <div className="flex gap-3">
+            <Skeleton className="h-10 flex-1 sm:w-40" />
+            <Skeleton className="h-10 flex-1 sm:w-40" />
+            <Skeleton className="h-10 flex-1 sm:w-32" />
+          </div>
+        </div>
+
+        {/* Disputes List Skeleton */}
+        <div className="space-y-4">
+          {[...Array(3)].map((_, i) => (
+            <Card key={i}>
+              <CardContent className="p-6">
+                <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-wrap items-center gap-2 mb-2">
+                      <Skeleton className="h-6 w-48" />
+                      <Skeleton className="h-5 w-16" />
+                      <Skeleton className="h-5 w-20" />
+                    </div>
+                    <Skeleton className="h-4 w-64 mb-2" />
+                    <Skeleton className="h-4 w-full mb-4" />
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+                        <Skeleton className="h-4 w-32" />
+                        <Skeleton className="h-4 w-24" />
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Skeleton className="h-8 w-12" />
+                        <Skeleton className="h-8 w-12" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
       </div>
     )
@@ -174,159 +268,285 @@ export default function DisputesPage() {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-4xl font-bold text-foreground mb-2">
-            {t("disputes.title")}
-            {isAdmin && (
-              <Badge variant="destructive" className="ml-2">{t("disputes.admin")}</Badge>
-            )}
-          </h1>
-          <p className="text-xl text-muted-foreground">{t("disputes.subtitle")}</p>
+      {/* Header */}
+      <div className="mb-8">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6">
+          <div>
+            <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-2">
+              {t("disputes.title")}
+              {isAdmin && (
+                <Badge variant="destructive" className="ml-2">{t("disputes.admin")}</Badge>
+              )}
+            </h1>
+            <p className="text-lg sm:text-xl text-muted-foreground">{t("disputes.subtitle")}</p>
+          </div>
+          
+          <Button onClick={() => setIsCreateDialogOpen(true)} className="w-full sm:w-auto">
+            <Plus className="h-4 w-4 mr-2" />
+            {t("disputes.reportIssue")}
+          </Button>
         </div>
-        
-        <Button onClick={() => setIsCreateDialogOpen(true)}>
-          <Plus className="h-4 w-4 mr-2" />
-          {t("disputes.reportIssue")}
-        </Button>
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Disputes</CardTitle>
+              <MessageSquare className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{disputes.length}</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Open</CardTitle>
+              <AlertTriangle className="h-4 w-4 text-yellow-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {disputes.filter(d => d.status === 'open').length}
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">In Review</CardTitle>
+              <Clock className="h-4 w-4 text-blue-500" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {disputes.filter(d => d.status === 'in_review').length}
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">My Reports</CardTitle>
+              <Users className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {disputes.filter(d => d.createdBy === user?.uid).length}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
 
-      <Tabs value={selectedTab} onValueChange={setSelectedTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-6">
-          <TabsTrigger value="all">{t("disputes.tabs.all")}</TabsTrigger>
-          <TabsTrigger value="open">{t("disputes.tabs.open")}</TabsTrigger>
-          <TabsTrigger value="in_review">{t("disputes.tabs.inReview")}</TabsTrigger>
-          <TabsTrigger value="resolved">{t("disputes.tabs.resolved")}</TabsTrigger>
-          <TabsTrigger value="rejected">{t("disputes.tabs.rejected")}</TabsTrigger>
-          <TabsTrigger value="my-disputes">{t("disputes.tabs.myReports")}</TabsTrigger>
-        </TabsList>
+      {/* Filters */}
+      <div className="mb-6 space-y-4">
+        {/* Search Bar */}
+        <div className="relative max-w-md">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search disputes..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10"
+          />
+        </div>
 
-        <TabsContent value={selectedTab} className="space-y-4">
-          {disputesLoading ? (
-            <div className="flex items-center justify-center h-32">
-              <Loader2 className="h-6 w-6 animate-spin" />
-            </div>
-          ) : filteredDisputes.length === 0 ? (
-            <Card>
-              <CardContent className="text-center py-12">
-                <MessageSquare className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">{t("disputes.empty.noDisputes")}</h3>
-                <p className="text-muted-foreground">
-                  {selectedTab === "my-disputes" 
-                    ? t("disputes.empty.noReportsYet")
-                    : t("disputes.empty.noMatchingFilter")}
-                </p>
-              </CardContent>
-            </Card>
-          ) : (
-            filteredDisputes.map((dispute) => (
-              <Card key={dispute.id} className="hover:shadow-md transition-shadow">
-                <CardContent className="p-6">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        <h3 className="text-lg font-semibold">{dispute.title || t("disputes.dispute.untitled")}</h3>
-                        <Badge className={getStatusColor(dispute.status)}>
-                          {getStatusIcon(dispute.status)}
-                          <span className="ml-1 capitalize">{dispute.status?.replace('_', ' ') || 'unknown'}</span>
-                        </Badge>
-                        <Badge variant="outline" className={getDisputeTypeColor(dispute.disputeType)}>
-                          {dispute.disputeType || 'Other'}
-                        </Badge>
-                      </div>
-                      
-                      <p className="text-sm text-muted-foreground mb-2">
-                        {t("disputes.dispute.product")} <span className="font-mono">{dispute.productSku || 'N/A'}</span> - {dispute.productName || t("disputes.dispute.unknownProduct")}
-                      </p>
-                      
-                      <p className="text-muted-foreground mb-4">{dispute.description || t("disputes.dispute.noDescription")}</p>
-                      
-                                              {dispute.evidence && (
-                          <div className="bg-muted/50 p-3 rounded-lg mb-4">
-                            {(dispute.disputeType === 'measurement' || dispute.disputeType === 'weight') && (
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-                                <div>
-                                  <span className="font-medium">{t("disputes.dispute.evidence.current")} </span>
-                                  <span className="font-mono">{dispute.evidence.currentValue}</span>
-                                </div>
-                                <div>
-                                  <span className="font-medium">{t("disputes.dispute.evidence.proposed")} </span>
-                                  <span className="font-mono">{dispute.evidence.proposedValue}</span>
-                                </div>
-                              </div>
-                            )}
-                            {dispute.evidence.reasoning && (
-                              <div className="mt-2 text-sm">
-                                <span className="font-medium">{t("disputes.dispute.evidence.evidence")} </span>
-                                {dispute.evidence.reasoning}
-                              </div>
-                            )}
-                            {dispute.evidence.imageUrl && (
-                              <div className="mt-3">
-                                <p className="text-sm font-medium mb-2">{t("disputes.dispute.evidence.evidenceImage")}</p>
-                                <img
-                                  src={dispute.evidence.imageUrl}
-                                  alt="Evidence"
-                                  className="max-w-full max-h-48 rounded-lg object-cover border"
-                                />
-                              </div>
-                            )}
-                          </div>
-                        )}
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                      <span>{t("disputes.dispute.createdBy")} {dispute.createdByTag || '@unknown'}</span>
-                      <span>{dispute.createdAt ? new Date(dispute.createdAt.toDate ? dispute.createdAt.toDate() : dispute.createdAt).toLocaleDateString() : t("disputes.dispute.unknownDate")}</span>
+        {/* Filter Controls */}
+        <div className="flex gap-3 sm:gap-4 sm:items-center">
+          <div className="flex gap-3 flex-1 sm:flex-none">
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="flex-1 sm:w-40">
+                <SelectValue placeholder="Filter by status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Status</SelectItem>
+                <SelectItem value="open">Open</SelectItem>
+                <SelectItem value="in_review">In Review</SelectItem>
+                <SelectItem value="resolved">Resolved</SelectItem>
+                <SelectItem value="rejected">Rejected</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Select value={typeFilter} onValueChange={setTypeFilter}>
+              <SelectTrigger className="flex-1 sm:w-40">
+                <SelectValue placeholder="Filter by type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Types</SelectItem>
+                <SelectItem value="measurement">Measurement</SelectItem>
+                <SelectItem value="description">Description</SelectItem>
+                <SelectItem value="category">Category</SelectItem>
+                <SelectItem value="image">Image</SelectItem>
+                <SelectItem value="weight">Weight</SelectItem>
+                <SelectItem value="other">Other</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <Button 
+            variant={showMyReports ? "default" : "outline"}
+            onClick={() => setShowMyReports(!showMyReports)}
+            className="flex-1 sm:flex-none sm:w-auto"
+          >
+            <Users className="h-4 w-4 mr-2" />
+            My Reports
+          </Button>
+        </div>
+
+        {/* Active Filters Display */}
+        {(searchTerm || statusFilter !== "all" || typeFilter !== "all" || showMyReports) && (
+          <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
+            <span>Showing {filteredDisputes.length} of {disputes.length} disputes</span>
+            {statusFilter !== "all" && (
+              <Badge variant="secondary">Status: {statusFilter}</Badge>
+            )}
+            {typeFilter !== "all" && (
+              <Badge variant="secondary">Type: {typeFilter}</Badge>
+            )}
+            {showMyReports && (
+              <Badge variant="secondary">My Reports Only</Badge>
+            )}
+            {searchTerm && (
+              <Badge variant="secondary">Search: "{searchTerm}"</Badge>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Disputes List */}
+      {filteredDisputes.length === 0 ? (
+        <Card>
+          <CardContent className="text-center py-12">
+            <MessageSquare className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-lg font-semibold mb-2">
+              {disputes.length === 0 ? t("disputes.empty.noDisputes") : "No disputes match your filters"}
+            </h3>
+            <p className="text-muted-foreground mb-4">
+              {disputes.length === 0 
+                ? t("disputes.empty.noReportsYet")
+                : "Try adjusting your filters or search term"
+              }
+            </p>
+            {(statusFilter !== "all" || typeFilter !== "all" || showMyReports || searchTerm) && (
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  setStatusFilter("all")
+                  setTypeFilter("all")
+                  setShowMyReports(false)
+                  setSearchTerm("")
+                }}
+              >
+                Clear All Filters
+              </Button>
+            )}
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="space-y-4">
+          {filteredDisputes.map((dispute) => (
+            <Card key={dispute.id} className="hover:shadow-md transition-shadow">
+              <CardContent className="p-6">
+                <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-wrap items-center gap-2 mb-2">
+                      <h3 className="text-lg font-semibold">{dispute.title || t("disputes.dispute.untitled")}</h3>
+                      <Badge className={getStatusColor(dispute.status)}>
+                        {getStatusIcon(dispute.status)}
+                        <span className="ml-1 capitalize">{dispute.status?.replace('_', ' ') || 'unknown'}</span>
+                      </Badge>
+                      <Badge variant="outline" className={getDisputeTypeColor(dispute.disputeType)}>
+                        {dispute.disputeType || 'Other'}
+                      </Badge>
                     </div>
                     
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleVote(dispute.id, 'up')}
-                        className="flex items-center gap-1"
-                      >
-                        <ThumbsUp className="h-3 w-3" />
-                        {dispute.votes?.upvotes || 0}
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleVote(dispute.id, 'down')}
-                        className="flex items-center gap-1"
-                      >
-                        <ThumbsDown className="h-3 w-3" />
-                        {dispute.votes?.downvotes || 0}
-                      </Button>
+                    <p className="text-sm text-muted-foreground mb-2">
+                      {t("disputes.dispute.product")} <span className="font-mono">{dispute.productSku || 'N/A'}</span> - {dispute.productName || t("disputes.dispute.unknownProduct")}
+                    </p>
+                    
+                    <p className="text-muted-foreground mb-4">{dispute.description || t("disputes.dispute.noDescription")}</p>
+                    
+                    {dispute.evidence && (
+                      <div className="bg-muted/50 p-3 rounded-lg mb-4">
+                        {(dispute.disputeType === 'measurement' || dispute.disputeType === 'weight') && (
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                            <div>
+                              <span className="font-medium">{t("disputes.dispute.evidence.current")} </span>
+                              <span className="font-mono">{dispute.evidence.currentValue}</span>
+                            </div>
+                            <div>
+                              <span className="font-medium">{t("disputes.dispute.evidence.proposed")} </span>
+                              <span className="font-mono">{dispute.evidence.proposedValue}</span>
+                            </div>
+                          </div>
+                        )}
+                        {dispute.evidence.reasoning && (
+                          <div className="mt-2 text-sm">
+                            <span className="font-medium">{t("disputes.dispute.evidence.evidence")} </span>
+                            {dispute.evidence.reasoning}
+                          </div>
+                        )}
+                        {dispute.evidence.imageUrl && (
+                          <div className="mt-3">
+                            <p className="text-sm font-medium mb-2">{t("disputes.dispute.evidence.evidenceImage")}</p>
+                            <img
+                              src={dispute.evidence.imageUrl}
+                              alt="Evidence"
+                              className="max-w-full max-h-48 rounded-lg object-cover border"
+                            />
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-muted-foreground">
+                        <span>{t("disputes.dispute.createdBy")} {dispute.createdByTag || '@unknown'}</span>
+                        <span>{dispute.createdAt ? new Date(dispute.createdAt.toDate ? dispute.createdAt.toDate() : dispute.createdAt).toLocaleDateString() : t("disputes.dispute.unknownDate")}</span>
+                      </div>
                       
-                      {/* Admin Controls */}
-                      {isAdmin && (
-                        <div className="flex items-center gap-2 ml-4 border-l pl-4">
-                          <Settings className="h-4 w-4 text-muted-foreground" />
-                          <Select value={dispute.status || 'open'} onValueChange={(value) => handleStatusChange(dispute.id, value)}>
-                            <SelectTrigger className="w-32 h-8">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="open">Open</SelectItem>
-                              <SelectItem value="in_review">In Review</SelectItem>
-                              <SelectItem value="resolved">Resolved</SelectItem>
-                              <SelectItem value="rejected">Rejected</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      )}
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleVote(dispute.id, 'up')}
+                          className="flex items-center gap-1"
+                        >
+                          <ThumbsUp className="h-3 w-3" />
+                          {dispute.votes?.upvotes || 0}
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleVote(dispute.id, 'down')}
+                          className="flex items-center gap-1"
+                        >
+                          <ThumbsDown className="h-3 w-3" />
+                          {dispute.votes?.downvotes || 0}
+                        </Button>
+                        
+                        {/* Admin Controls */}
+                        {isAdmin && (
+                          <div className="flex items-center gap-2 ml-4 border-l pl-4">
+                            <Settings className="h-4 w-4 text-muted-foreground" />
+                            <Select value={dispute.status || 'open'} onValueChange={(value) => handleStatusChange(dispute.id, value)}>
+                              <SelectTrigger className="w-32 h-8">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="open">Open</SelectItem>
+                                <SelectItem value="in_review">In Review</SelectItem>
+                                <SelectItem value="resolved">Resolved</SelectItem>
+                                <SelectItem value="rejected">Rejected</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            ))
-          )}
-        </TabsContent>
-      </Tabs>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
 
       <DisputeModal
         isOpen={isCreateDialogOpen}

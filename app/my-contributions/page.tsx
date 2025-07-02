@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Skeleton } from "@/components/ui/skeleton"
 import Link from "next/link"
 import Image from "next/image"
 import { useAuth } from "@/hooks/useAuth"
@@ -121,8 +122,77 @@ export default function MyContributionsPage() {
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-8 max-w-6xl">
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        <div className="mb-8">
+          {/* Header Skeleton */}
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-4">
+            <div>
+              <Skeleton className="h-9 w-64 mb-2" />
+              <Skeleton className="h-6 w-96" />
+            </div>
+            <Skeleton className="h-11 w-32" />
+          </div>
+
+          {/* Stats Cards Skeleton */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            {[...Array(3)].map((_, i) => (
+              <Card key={i}>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="h-4 w-4" />
+                </CardHeader>
+                <CardContent>
+                  <Skeleton className="h-8 w-12 mb-1" />
+                  <Skeleton className="h-3 w-32" />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+
+        {/* Search Bar Skeleton */}
+        <div className="mb-6">
+          <Skeleton className="h-10 w-80" />
+        </div>
+
+        {/* Products List Skeleton */}
+        <div className="space-y-4">
+          {[...Array(3)].map((_, i) => (
+            <Card key={i} className="hover:shadow-md transition-shadow">
+              <CardContent className="p-6">
+                <div className="flex flex-col sm:flex-row items-start gap-4">
+                  <Skeleton className="w-20 h-20 rounded-lg self-center sm:self-start" />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between mb-2">
+                      <div className="flex-1 min-w-0">
+                        <Skeleton className="h-6 w-48 mb-1" />
+                        <div className="flex flex-wrap items-center gap-2 mb-2">
+                          <Skeleton className="h-5 w-16" />
+                          <Skeleton className="h-5 w-20" />
+                          <Skeleton className="h-5 w-24" />
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 sm:flex-shrink-0">
+                        <Skeleton className="h-8 w-16" />
+                        <Skeleton className="h-8 w-16" />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-3">
+                      <Skeleton className="h-5 w-32" />
+                      <Skeleton className="h-5 w-20" />
+                      <Skeleton className="h-5 w-24" />
+                      <Skeleton className="h-5 w-28" />
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <Skeleton className="h-4 w-32" />
+                      <Skeleton className="h-4 w-40" />
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
       </div>
     )
@@ -135,14 +205,14 @@ export default function MyContributionsPage() {
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
       <div className="mb-8">
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-4">
           <div>
-            <h1 className="text-4xl font-bold text-foreground mb-2">{t("myContributions.title")}</h1>
-            <p className="text-xl text-muted-foreground">{t("myContributions.subtitle")}</p>
+            <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-2">{t("myContributions.title")}</h1>
+            <p className="text-lg sm:text-xl text-muted-foreground">{t("myContributions.subtitle")}</p>
           </div>
           <div className="flex gap-2">
             <Link href="/add-product">
-              <Button size="lg">
+              <Button size="lg" className="w-full sm:w-auto">
                 <Plus className="h-5 w-5 mr-2" />
                 {t("myContributions.actions.addNew")}
               </Button>
@@ -236,41 +306,77 @@ export default function MyContributionsPage() {
 
       {/* Products List */}
       {isLoadingProducts ? (
-        <div className="flex items-center justify-center h-64">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <div className="space-y-4">
+          {[...Array(3)].map((_, i) => (
+            <Card key={i} className="hover:shadow-md transition-shadow">
+              <CardContent className="p-6">
+                <div className="flex flex-col sm:flex-row items-start gap-4">
+                  <Skeleton className="w-20 h-20 rounded-lg self-center sm:self-start" />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between mb-2">
+                      <div className="flex-1 min-w-0">
+                        <Skeleton className="h-6 w-48 mb-1" />
+                        <div className="flex flex-wrap items-center gap-2 mb-2">
+                          <Skeleton className="h-5 w-16" />
+                          <Skeleton className="h-5 w-20" />
+                          <Skeleton className="h-5 w-24" />
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 sm:flex-shrink-0">
+                        <Skeleton className="h-8 w-16" />
+                        <Skeleton className="h-8 w-16" />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-3">
+                      <Skeleton className="h-5 w-32" />
+                      <Skeleton className="h-5 w-20" />
+                      <Skeleton className="h-5 w-24" />
+                      <Skeleton className="h-5 w-28" />
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <Skeleton className="h-4 w-32" />
+                      <Skeleton className="h-4 w-40" />
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
       ) : filteredProducts.length > 0 ? (
         <div className="space-y-4">
           {filteredProducts.map((product) => (
             <Card key={product.id} className="hover:shadow-md transition-shadow">
               <CardContent className="p-6">
-                <div className="flex items-start gap-4">
+                <div className="flex flex-col sm:flex-row items-start gap-4">
                   <Image
                     src={product.mainImage || "/placeholder.svg"}
                     alt={product.name || ""}
                     width={80}
                     height={80}
-                    className="rounded-lg object-cover flex-shrink-0"
+                    className="rounded-lg object-cover flex-shrink-0 self-center sm:self-start"
                   />
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between mb-2">
-                      <div>
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between mb-2">
+                      <div className="flex-1 min-w-0">
                         <h3 className="text-lg font-semibold text-foreground mb-1">{product.name || "Unknown"}</h3>
-                        <div className="flex items-center gap-2 mb-2">
+                        <div className="flex flex-wrap items-center gap-2 mb-2">
                           <Badge variant="outline">{product.brand || "Unknown"}</Badge>
                           <Badge variant="secondary">{product.category || "Unknown"}</Badge>
                           <span className="text-sm font-mono text-primary">{product.sku || "Unknown"}</span>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 sm:flex-shrink-0">
                         <Link href={`/edit-product/${product.sku}`}>
-                          <Button variant="outline" size="sm">
+                          <Button variant="outline" size="sm" className="flex-1 sm:flex-none">
                             <Edit className="h-4 w-4 mr-1" />
                             {t("myContributions.actions.edit")}
                           </Button>
                         </Link>
                         <Link href={`/product/${product.sku}`}>
-                          <Button variant="default" size="sm">
+                          <Button variant="default" size="sm" className="flex-1 sm:flex-none">
                             <Eye className="h-4 w-4 mr-1" />
                             {t("myContributions.actions.view")}
                           </Button>
@@ -278,7 +384,7 @@ export default function MyContributionsPage() {
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-3">
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <Package className="h-4 w-4" />
                         <span>

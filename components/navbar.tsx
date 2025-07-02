@@ -3,9 +3,10 @@
 import Link from "next/link"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
+import { useEffect, useState } from "react"
 import { Package, Plus, User, MessageSquare, BookOpen, Menu } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetTitle, SheetTrigger, SheetDescription } from "@/components/ui/sheet"
 import { Separator } from "@/components/ui/separator"
 import { cn } from "@/lib/utils"
 import { AuthButton } from "@/components/auth-button"
@@ -16,6 +17,12 @@ import { useLanguage } from "@/components/language-provider"
 export function Navbar() {
   const pathname = usePathname()
   const { t } = useLanguage()
+  const [isSheetOpen, setIsSheetOpen] = useState(false)
+
+  // Close sheet when pathname changes
+  useEffect(() => {
+    setIsSheetOpen(false)
+  }, [pathname])
 
   const navigation = [
     { name: t("navigation.addProduct"), href: "/add-product", icon: Plus },
@@ -66,7 +73,7 @@ export function Navbar() {
           <div className="xl:hidden flex items-center space-x-2">
             <LanguageToggle />
             <ThemeToggle />
-            <Sheet>
+            <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon">
                   <Menu className="h-6 w-6" />
@@ -74,6 +81,9 @@ export function Navbar() {
               </SheetTrigger>
               <SheetContent side="right" className="w-64">
                 <SheetTitle>Menu</SheetTitle>
+                <SheetDescription>
+                  Navigate through the application
+                </SheetDescription>
                 <div className="flex flex-col space-y-2 mt-8">
                   {navigation.map((item) => {
                     const Icon = item.icon
@@ -82,6 +92,7 @@ export function Navbar() {
                         <Button
                           variant={pathname === item.href ? "default" : "ghost"}
                           className="w-full justify-start space-x-2"
+                          onClick={() => setIsSheetOpen(false)}
                         >
                           <Icon className="h-4 w-4" />
                           <span>{item.name}</span>
