@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { Package, TrendingUp, Activity } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
 import { ProductCard } from "@/components/product-card"
 import { ProductSearch } from "@/components/product-search"
 import { getRecentProducts, getDatabaseStats } from "@/lib/firestore"
@@ -48,6 +49,69 @@ export default function HomePage() {
     fetchData()
   }, [])
 
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-8 max-w-6xl">
+        {/* Hero Section Skeleton */}
+        <div className="text-center mb-8">
+          <div className="mb-3">
+            <Skeleton className="h-9 md:h-12 w-80 mx-auto mb-2" />
+            <Skeleton className="h-9 md:h-12 w-64 mx-auto" />
+          </div>
+          <Skeleton className="h-6 w-96 mx-auto" />
+        </div>
+
+        {/* Stats Cards Skeleton */}
+        <div className="w-full max-w-xl mx-auto flex flex-row justify-center items-center gap-3 mb-3">
+          {[...Array(3)].map((_, i) => (
+            <Card key={i} className="flex-1 flex flex-col items-center justify-center py-1 px-1 min-w-0">
+              {/* Mobile skeleton */}
+              <div className="flex flex-col items-center w-full md:hidden">
+                <Skeleton className="h-5 w-5 mb-1" />
+                <Skeleton className="h-6 w-8" />
+              </div>
+              {/* Desktop skeleton */}
+              <div className="hidden md:flex flex-row items-center w-full px-4 py-3">
+                <div className="flex flex-col flex-1 items-start">
+                  <Skeleton className="h-3 w-20 mb-1" />
+                  <Skeleton className="h-6 w-12" />
+                </div>
+                <Skeleton className="h-4 w-4 ml-2" />
+              </div>
+            </Card>
+          ))}
+        </div>
+
+        {/* Search Bar Skeleton */}
+        <div className="mb-10 flex justify-center">
+          <div className="w-full max-w-xl">
+            <Skeleton className="h-12 w-full rounded-lg" />
+          </div>
+        </div>
+
+        {/* Recently Added Products Skeleton */}
+        <div>
+          <div className="mb-6">
+            <Skeleton className="h-8 w-64 mb-2" />
+            <Skeleton className="h-5 w-80" />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[...Array(4)].map((_, i) => (
+              <Card key={i}>
+                <CardContent className="p-4">
+                  <Skeleton className="h-16 w-full rounded mb-2" />
+                  <Skeleton className="h-4 w-full mb-1" />
+                  <Skeleton className="h-3 w-3/4" />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
       {/* Hero Section */}
@@ -69,7 +133,7 @@ export default function HomePage() {
             <Package className="h-5 w-5 text-muted-foreground mb-1" />
             <div className="text-base font-bold p-2">
               {statsLoading ? (
-                <div className="h-5 w-8 bg-muted animate-pulse rounded"></div>
+                <Skeleton className="h-6 w-8" />
               ) : (
                 stats.totalProducts.toLocaleString()
               )}
@@ -81,7 +145,7 @@ export default function HomePage() {
               <CardTitle className="text-xs font-medium mb-1">{t("home.stats.totalProducts")}</CardTitle>
               <div className="text-base font-bold">
                 {statsLoading ? (
-                  <div className="h-5 w-8 bg-muted animate-pulse rounded"></div>
+                  <Skeleton className="h-6 w-12" />
                 ) : (
                   stats.totalProducts.toLocaleString()
                 )}
@@ -96,7 +160,7 @@ export default function HomePage() {
             <Activity className="h-5 w-5 text-muted-foreground mb-1" />
             <div className="text-base font-bold p-2">
               {statsLoading ? (
-                <div className="h-5 w-8 bg-muted animate-pulse rounded"></div>
+                <Skeleton className="h-6 w-8" />
               ) : (
                 stats.totalContributions.toLocaleString()
               )}
@@ -107,7 +171,7 @@ export default function HomePage() {
               <CardTitle className="text-xs font-medium mb-1">{t("home.stats.contributions")}</CardTitle>
               <div className="text-base font-bold">
                 {statsLoading ? (
-                  <div className="h-5 w-8 bg-muted animate-pulse rounded"></div>
+                  <Skeleton className="h-6 w-12" />
                 ) : (
                   stats.totalContributions.toLocaleString()
                 )}
@@ -122,7 +186,7 @@ export default function HomePage() {
             <TrendingUp className="h-5 w-5 text-muted-foreground mb-1" />
             <div className="text-base font-bold p-2">
               {statsLoading ? (
-                <div className="h-5 w-8 bg-muted animate-pulse rounded"></div>
+                <Skeleton className="h-6 w-8" />
               ) : (
                 `${stats.averageConfidence}%`
               )}
@@ -133,7 +197,7 @@ export default function HomePage() {
               <CardTitle className="text-xs font-medium mb-1">{t("home.stats.avgConfidence")}</CardTitle>
               <div className="text-base font-bold">
                 {statsLoading ? (
-                  <div className="h-5 w-8 bg-muted animate-pulse rounded"></div>
+                  <Skeleton className="h-6 w-12" />
                 ) : (
                   `${stats.averageConfidence}%`
                 )}
@@ -161,11 +225,11 @@ export default function HomePage() {
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[...Array(4)].map((_, i) => (
-              <Card key={i} className="animate-pulse">
+              <Card key={i}>
                 <CardContent className="p-4">
-                  <div className="h-16 bg-muted rounded mb-2"></div>
-                  <div className="h-4 bg-muted rounded mb-1"></div>
-                  <div className="h-3 bg-muted rounded"></div>
+                  <Skeleton className="h-16 w-full rounded mb-2" />
+                  <Skeleton className="h-4 w-full mb-1" />
+                  <Skeleton className="h-3 w-3/4" />
                 </CardContent>
               </Card>
             ))}

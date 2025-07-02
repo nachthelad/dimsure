@@ -4,18 +4,28 @@ import Link from "next/link"
 import { db } from "@/lib/firebase"
 import { collection, getDocs, query, orderBy } from "firebase/firestore"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 
+interface Post {
+  id: string
+  title?: string
+  slug?: string
+  content?: string
+  coverImage?: string
+  createdAt?: any
+}
+
 export default function BlogPage() {
   const [loading, setLoading] = useState(true)
-  const [posts, setPosts] = useState<any[]>([])
+  const [posts, setPosts] = useState<Post[]>([])
 
   useEffect(() => {
     async function fetchPosts() {
       const q = query(collection(db, "blogPosts"), orderBy("createdAt", "desc"))
       const snapshot = await getDocs(q)
-      const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+      const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Post[]
       setPosts(data)
       setLoading(false)
     }
@@ -25,8 +35,38 @@ export default function BlogPage() {
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-8 max-w-4xl">
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        {/* Header Skeleton */}
+        <div className="text-center mb-12">
+          <Skeleton className="h-10 w-64 mx-auto mb-4" />
+          <Skeleton className="h-6 w-96 mx-auto" />
+        </div>
+
+        {/* Blog Posts Grid Skeleton */}
+        <div className="grid gap-8 md:grid-cols-2">
+          {[...Array(4)].map((_, i) => (
+            <Card key={i} className="h-full flex flex-col">
+              {/* Cover Image Skeleton */}
+              <Skeleton className="w-full h-48 rounded-t" />
+              
+              <CardHeader>
+                {/* Title Skeleton */}
+                <Skeleton className="h-7 w-full mb-2" />
+                <Skeleton className="h-7 w-3/4" />
+                
+                {/* Date Skeleton */}
+                <Skeleton className="h-4 w-24 mt-2" />
+              </CardHeader>
+              
+              <CardContent className="flex-1">
+                {/* Content Preview Skeleton */}
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-3/4" />
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
       </div>
     )
@@ -73,7 +113,7 @@ export default function BlogPage() {
               <CardContent className="flex-1">
                 <div className="text-muted-foreground text-sm line-clamp-3 prose prose-sm prose-invert max-w-none">
                   <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                    {post.content?.slice(0, 300) + (post.content?.length > 300 ? "..." : "")}
+                    {post.content?.slice(0, 300) + ((post.content?.length || 0) > 300 ? "..." : "")}
                   </ReactMarkdown>
                 </div>
               </CardContent>
