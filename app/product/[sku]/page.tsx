@@ -3,12 +3,11 @@
 import React, { useState, useEffect } from "react"
 import { notFound } from "next/navigation"
 import Image from "next/image"
-import { Clock, User, Edit, Package, MessageCircle, Share2, Flag, Heart } from "lucide-react"
+import { Clock, User, Edit, Package, Share2, Flag, Heart } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { DimensionCard } from "@/components/dimension-card"
 import { DisputeModal } from "@/components/dispute-modal"
 import { getProduct, incrementProductViews, likeProduct, unlikeProduct, getUserById } from "@/lib/firestore"
@@ -76,7 +75,7 @@ export default function ProductDetailPage({
     
     // Prepare initial data for the dispute modal
     const initialData = {
-      title: `Suggested correction for ${product?.name || 'product'}`,
+      title: t('product.suggestedCorrectionTitle', { productName: product?.name || 'product' }),
       productSku: product?.sku || "",
       product: product, // Pass the full product object
       disputeType: 'measurement' as const

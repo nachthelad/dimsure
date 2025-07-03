@@ -13,6 +13,7 @@ import { AuthButton } from "@/components/auth-button"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { LanguageToggle } from "@/components/language-toggle"
 import { useLanguage } from "@/components/language-provider"
+import { NotificationBell } from "@/components/notification-bell"
 
 export function Navbar() {
   const pathname = usePathname()
@@ -64,6 +65,7 @@ export function Navbar() {
               <Separator orientation="vertical" className="h-6" />
               <LanguageToggle />
               <ThemeToggle />
+              <NotificationBell />
               <Separator orientation="vertical" className="h-6" />
               <AuthButton />
             </div>
