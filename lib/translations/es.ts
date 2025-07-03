@@ -182,6 +182,8 @@ export const es = {
         mightNotBeLinked: "Si has agregado productos antes, podrían no estar vinculados a tu cuenta.",
         fixMyProducts: "Arreglar Mis Productos",
       },
+      disputeBadge: "En Disputa",
+      disputeNotification: "Se abrió una disputa para tu producto \"{{productName}}\".",
     },
     blog: {
       admin: {
@@ -235,6 +237,7 @@ export const es = {
         updated: "Dimensiones actualizadas y medidas verificadas",
         initialSubmission: "Envío inicial con dimensiones del producto",
       },
+      suggestedCorrectionTitle: "Corrección sugerida para {{productName}}",
     },
     about: {
       title: "Acerca de Dimsure",
@@ -685,5 +688,10 @@ export const es = {
       length: "Largo",
       width: "Ancho",
       height: "Alto",
+    },
+    notifications: {
+      title: "Notificaciones",
+      loading: "Cargando...",
+      empty: "No tenés notificaciones.",
     },
   }as const;

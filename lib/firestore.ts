@@ -19,6 +19,8 @@ import { db, storage } from "./firebase"
 import type { Product } from "./types"
 import { normalizeProduct } from "./product-normalizer"
 import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage"
+import { en } from "@/lib/translations/en"
+import { es } from "@/lib/translations/es"
 
 // Product operations
 export const createProduct = async (productData: any, userId: string) => {
@@ -680,6 +682,33 @@ export const createCategoryIfNotExists = async (name: string): Promise<string> =
 }
 
 // Dispute operations
+
+// Crea una notificación para una disputa
+type NotificationMessage = { en: string; es: string };
+const createNotificationForDispute = async ({ userId, productId, disputeId, message, status }: {
+  userId: string,
+  productId: string,
+  disputeId: string,
+  message: NotificationMessage,
+  status: string,
+}) => {
+  try {
+    await addDoc(collection(db, "notifications"), {
+      userId,
+      type: "dispute",
+      productId,
+      disputeId,
+      message,
+      read: false,
+      createdAt: serverTimestamp(),
+      status,
+    })
+  } catch (error) {
+    console.error("Error creating notification for dispute:", error)
+    // No lanzar error para no interrumpir el flujo principal
+  }
+}
+
 export const createDispute = async (disputeData: any) => {
   try {
     const disputeRef = await addDoc(collection(db, "disputes"), {
@@ -692,6 +721,32 @@ export const createDispute = async (disputeData: any) => {
       },
       status: disputeData.status || 'open'
     })
+
+    // Obtener el producto relacionado para notificar al creador
+    if (disputeData.productSku) {
+      try {
+        const productDoc = await getDoc(doc(db, "products", disputeData.productSku))
+        if (productDoc.exists()) {
+          const productData = productDoc.data()
+          const creatorId = productData.createdBy
+          if (creatorId) {
+            await createNotificationForDispute({
+              userId: creatorId,
+              productId: disputeData.productSku,
+              disputeId: disputeRef.id,
+              message: {
+                en: en.myContributions.disputeNotification.replace("{{productName}}", productData.name || disputeData.productSku),
+                es: es.myContributions.disputeNotification.replace("{{productName}}", productData.name || disputeData.productSku),
+              },
+              status: 'In Review',
+            })
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching product for dispute notification:", error)
+      }
+    }
+
     return disputeRef.id
   } catch (error) {
     console.error("Error creating dispute:", error)
@@ -802,5 +857,33 @@ export const updateDisputeStatus = async (disputeId: string, status: string, res
   } catch (error) {
     console.error("Error updating dispute status:", error)
     throw error
+  }
+}
+
+// Obtiene las notificaciones de un usuario ordenadas por fecha descendente
+export const getUserNotifications = async (userId: string) => {
+  try {
+    const q = query(
+      collection(db, "notifications"),
+      where("userId", "==", userId),
+      orderBy("createdAt", "desc")
+    )
+    const snapshot = await getDocs(q)
+    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+  } catch (error) {
+    console.error("Error getting user notifications:", error)
+    return []
+  }
+}
+
+// Obtener disputas de un producto por sku
+export const getProductDisputes = async (productSku: string) => {
+  try {
+    const q = query(collection(db, "disputes"), where("productSku", "==", productSku))
+    const snapshot = await getDocs(q)
+    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+  } catch (error) {
+    console.error("Error getting product disputes:", error)
+    return []
   }
 }
