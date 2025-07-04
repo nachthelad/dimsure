@@ -109,7 +109,7 @@ export function Navbar() {
             </div>
             <Separator className="my-3 w-full" />
             <div className="flex justify-center w-full px-2">
-              <AuthButton />
+              <AuthButton expandedSidebar={sidebarForceOpen} />
             </div>
           </div>
         </div>
