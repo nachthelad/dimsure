@@ -9,12 +9,12 @@ import { APP_CONSTANTS } from "@/lib/constants"
 import { FaXTwitter } from "react-icons/fa6"
 
 export function Footer() {
-  const { t } = useLanguage()
+  const { t, locale } = useLanguage()
   const currentYear = new Date().getFullYear()
 
   return (
-    <footer className="bg-muted/30 border-t border-border mt-16">
-      <div className="container mx-auto px-4 py-12">
+    <footer className="bg-muted/30 border-t border-border mt-16 w-full">
+      <div className="max-w-none w-full px-4 py-12 mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="space-y-4">

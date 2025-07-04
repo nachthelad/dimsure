@@ -110,10 +110,12 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
           <LanguageProvider>
             <UnitProvider>
-              <div className="min-h-screen bg-background">
+              <div className="min-h-screen bg-background xl:flex">
                 <Navbar />
-                <main>{children}</main>
-                <Footer />
+                <div className="flex-1 flex flex-col min-h-screen xl:ml-20">
+                  <main className="flex-1">{children}</main>
+                  <Footer />
+                </div>
                 <CookieConsent />
                 <AccountReactivation />
               </div>

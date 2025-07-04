@@ -34,22 +34,22 @@ export function UserNameModal({ isOpen, onClose, currentTag, userId, forceModal 
 
   const handleSave = async () => {
     if (!username.trim()) {
-      setError(t("auth.editUsername.errors.required"))
+      setError(t("auth.profile.errors.required"))
       return
     }
 
     if (username.length < 3) {
-      setError(t("auth.editUsername.errors.tooShort"))
+      setError(t("auth.profile.errors.tooShort"))
       return
     }
 
     if (username.length > 20) {
-      setError(t("auth.editUsername.errors.tooLong"))
+      setError(t("auth.profile.errors.tooLong"))
       return
     }
 
     if (!/^[a-zA-Z0-9_]+$/.test(username)) {
-      setError(t("auth.editUsername.errors.invalidChars"))
+      setError(t("auth.profile.errors.invalidChars"))
       return
     }
 
@@ -65,13 +65,13 @@ export function UserNameModal({ isOpen, onClose, currentTag, userId, forceModal 
       }, 600) 
     } catch (error: any) {
       if (error.code === "permission-denied") {
-        setError(t("auth.editUsername.errors.permissionDenied"))
+        setError(t("auth.profile.errors.permissionDenied"))
       } else if (error.code === "not-found") {
-        setError(t("auth.editUsername.errors.notFound"))
+        setError(t("auth.profile.errors.notFound"))
       } else if (error.message?.includes("Missing or insufficient permissions")) {
-        setError(t("auth.editUsername.errors.insufficientPermissions"))
+        setError(t("auth.profile.errors.insufficientPermissions"))
       } else {
-        setError(t("auth.editUsername.errors.updateFailed", { error: error.message || "Unknown error" }))
+        setError(t("auth.profile.errors.updateFailed", { error: error.message || "Unknown error" }))
       }
     } finally {
       setIsLoading(false)
@@ -82,13 +82,13 @@ export function UserNameModal({ isOpen, onClose, currentTag, userId, forceModal 
     <Dialog open={isOpen}>
       <DialogContent className="sm:max-w-[425px]" hideCloseButton={forceModal} disableOutsideClick={forceModal}>
         <DialogHeader>
-          <DialogTitle>{t("auth.editUsername.title")}</DialogTitle>
-          <DialogDescription>{t("auth.editUsername.description")}</DialogDescription>
+          <DialogTitle>{t("auth.profile.title")}</DialogTitle>
+          <DialogDescription>{t("auth.profile.description")}</DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="username" className="text-left">
-              {t("auth.editUsername.username")}
+              {t("auth.profile.username")}
             </Label>
             <div className="col-span-3 flex items-center">
               <span className="text-muted-foreground mr-1">@</span>
@@ -96,7 +96,7 @@ export function UserNameModal({ isOpen, onClose, currentTag, userId, forceModal 
                 id="username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder={t("auth.editUsername.placeholder")}
+                placeholder={t("auth.profile.placeholder")}
                 className="flex-1"
                 maxLength={20}
               />
@@ -105,15 +105,15 @@ export function UserNameModal({ isOpen, onClose, currentTag, userId, forceModal 
           {error && (
             <div className="text-sm text-red-500 text-center bg-red-50 dark:bg-red-950/20 p-2 rounded">{error}</div>
           )}
-          <div className="text-xs text-muted-foreground">{t("auth.editUsername.requirements")}</div>
+          <div className="text-xs text-muted-foreground">{t("auth.profile.requirements")}</div>
         </div>
         <DialogFooter>
           <Button onClick={handleSave} disabled={isLoading || wasSaved}>
             {isLoading
-              ? t("auth.editUsername.saving")
+              ? t("auth.profile.saving")
               : wasSaved
-                ? t("auth.editUsername.saved")
-                : t("auth.editUsername.save")}
+                ? t("auth.profile.saved")
+                : t("auth.profile.save")}
           </Button>
         </DialogFooter>
       </DialogContent>

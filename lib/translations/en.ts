@@ -36,9 +36,10 @@ export const en = {
         profile: "Profile",
         units: "Units",
         signOut: "Sign Out",
+        language: "Language",
       },
-      editUsername: {
-        title: "Choose username",
+      profile: {
+        title: "Profile",
         description: "This name will be visible to others.",
         username: "Username",
         placeholder: "e.g. LogisticsLover",
