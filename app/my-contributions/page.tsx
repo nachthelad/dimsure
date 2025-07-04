@@ -12,7 +12,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import Link from "next/link"
 import Image from "next/image"
 import { useAuth } from "@/hooks/useAuth"
-import { getUserProducts, fixOrphanProducts } from "@/lib/firestore"
+import { getUserProducts } from "@/lib/firestore"
 import { useUnit } from "@/components/unit-provider"
 import { useLanguage } from "@/components/language-provider"
 
@@ -40,7 +40,6 @@ export default function MyContributionsPage() {
   const [filteredProducts, setFilteredProducts] = useState<UserProduct[]>([])
   const [searchTerm, setSearchTerm] = useState("")
   const [isLoadingProducts, setIsLoadingProducts] = useState(true)
-  const [isFixingOrphans, setIsFixingOrphans] = useState(false)
 
   useEffect(() => {
     if (!loading && !isLoggedIn) {
@@ -84,26 +83,6 @@ export default function MyContributionsPage() {
       setFilteredProducts(filtered)
     }
   }, [searchTerm, products])
-
-  const handleFixOrphans = async () => {
-    if (!user) return
-
-    setIsFixingOrphans(true)
-    try {
-      const fixedCount = await fixOrphanProducts(user.uid)
-      if (fixedCount > 0) {
-        alert(`Fixed ${fixedCount} products! Refreshing your contributions...`)
-        await fetchUserProducts()
-      } else {
-        alert("No orphan products found to fix.")
-      }
-    } catch (error) {
-      console.error("Error fixing orphans:", error)
-      alert("Error fixing orphan products. Please try again.")
-    } finally {
-      setIsFixingOrphans(false)
-    }
-  }
 
   const formatDimension = (value: number) => {
     const converted = convertDimension(value, "mm")
@@ -219,28 +198,6 @@ export default function MyContributionsPage() {
             </Link>
           </div>
         </div>
-
-        {/* No products found - show fix option */}
-        {!isLoadingProducts && products.length === 0 && (
-          <Alert className="mb-6">
-            <AlertDescription>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium">{t("myContributions.orphanProducts.notFound")}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {t("myContributions.orphanProducts.mightNotBeLinked")}
-                  </p>
-                </div>
-                <Button onClick={handleFixOrphans} disabled={isFixingOrphans}>
-                  <Package className="h-4 w-4 mr-2" />
-                  {isFixingOrphans
-                    ? t("myContributions.actions.fixing")
-                    : t("myContributions.orphanProducts.fixMyProducts")}
-                </Button>
-              </div>
-            </AlertDescription>
-          </Alert>
-        )}
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
