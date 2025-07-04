@@ -13,6 +13,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { UnitToggle } from "@/components/unit-toggle"
 import { useRouter } from "next/navigation"
 import { Timestamp } from "firebase/firestore"
+import { LanguageToggle } from "@/components/language-toggle"
 
 export default function ProfilePage() {
   const { user, userData, isLoggedIn, loading } = useAuth()
@@ -78,30 +79,30 @@ export default function ProfilePage() {
     setError("")
     setSuccess("")
     if (!username.trim()) {
-      setError(t("auth.editUsername.errors.required"))
+      setError(t("auth.profile.errors.required"))
       return
     }
     if (username.length < 3) {
-      setError(t("auth.editUsername.errors.tooShort"))
+      setError(t("auth.profile.errors.tooShort"))
       return
     }
     if (username.length > 20) {
-      setError(t("auth.editUsername.errors.tooLong"))
+      setError(t("auth.profile.errors.tooLong"))
       return
     }
     if (!/^[a-zA-Z0-9_]+$/.test(username)) {
-      setError(t("auth.editUsername.errors.invalidChars"))
+      setError(t("auth.profile.errors.invalidChars"))
       return
     }
     setIsLoading(true)
     try {
       const newTag = `@${username.toLowerCase()}`
       await updateUserTag(user.uid, newTag, user?.email || undefined, user?.displayName || undefined)
-      setSuccess(t("auth.editUsername.save"))
+      setSuccess(t("auth.profile.save"))
       setUsernameLocked(true)
       setTimeout(() => router.push("/"), 800)
     } catch (error: any) {
-      setError(t("auth.editUsername.errors.updateFailed", { error: error.message || "Unknown error" }))
+      setError(t("auth.profile.errors.updateFailed", { error: error.message || "Unknown error" }))
     } finally {
       setIsLoading(false)
     }
@@ -111,7 +112,7 @@ export default function ProfilePage() {
     <div className="container mx-auto px-4 py-8 max-w-xl">
       <Card>
         <CardHeader>
-          <CardTitle>{t("auth.editUsername.title")}</CardTitle>
+          <CardTitle>{t("auth.profile.title")}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col items-center gap-6 mb-6">
@@ -123,37 +124,41 @@ export default function ProfilePage() {
               {user.email}
             </div>
             <div className="flex flex-col items-center gap-2">
-              <Label htmlFor="username">{t("auth.editUsername.username")}</Label>
+              <Label htmlFor="username">{t("auth.profile.username")}</Label>
               <div className="flex items-center gap-1 w-full">
                 <span className="text-muted-foreground">@</span>
                 <Input
                   id="username"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  placeholder={usernameLocked ? userData?.publicTag?.replace("@", "") || "" : t("auth.editUsername.placeholder")}
+                  placeholder={usernameLocked ? userData?.publicTag?.replace("@", "") || "" : t("auth.profile.placeholder")}
                   className="flex-1"
                   maxLength={20}
                   disabled={usernameLocked}
                 />
                 <Button onClick={handleSave} disabled={isLoading || usernameLocked} className="ml-2">
                   {isLoading
-                    ? t("auth.editUsername.saving")
+                    ? t("auth.profile.saving")
                     : usernameLocked
-                      ? t("auth.editUsername.saved")
-                      : t("auth.editUsername.save")}
+                      ? t("auth.profile.saved")
+                      : t("auth.profile.save")}
                 </Button>
               </div>
               <div className="text-xs text-muted-foreground mt-2">
                 {usernameLocked ? (
                   daysLeft !== null && daysLeft > 0 && (
-                    <span>{t("auth.editUsername.daysLeft", { days: daysLeft })}</span>
+                    <span>{t("auth.profile.daysLeft", { days: daysLeft })}</span>
                   )
-                ) : t("auth.editUsername.requirements")}
+                ) : t("auth.profile.requirements")}
               </div>
             </div>
             <div className="flex flex-col items-center gap-2 w-full">
               <Label>{t("auth.userMenu.units")}</Label>
               <UnitToggle />
+            </div>
+            <div className="flex flex-col items-center gap-2 w-full mt-4">
+              <Label>{t("auth.userMenu.language") || "Idioma"}</Label>
+              <LanguageToggle />
             </div>
           </div>
           {error && <div className="text-sm text-red-500 text-center bg-red-50 dark:bg-red-950/20 p-2 rounded mb-2">{error}</div>}

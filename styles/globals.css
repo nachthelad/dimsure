@@ -92,3 +92,10 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+.no-shadow,
+.no-shadow:focus,
+.no-shadow:active,
+.no-shadow:hover {
+  box-shadow: none !important;
+}

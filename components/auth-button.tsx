@@ -88,14 +88,17 @@ export function AuthButton() {
       <>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="flex items-center gap-2 p-1.5">
-              <Avatar>
+            <Button
+              variant="ghost"
+              className="flex items-center gap-2 p-1.5 group no-shadow hover:bg-transparent focus:bg-transparent active:bg-transparent"
+            >
+              <Avatar className="transition-transform group-hover:scale-105">
                 <AvatarImage src={user.photoURL || undefined} alt={user.displayName || "User"} />
                 <AvatarFallback>{user.displayName?.[0]?.toUpperCase() || "U"}</AvatarFallback>
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-44">
+          <DropdownMenuContent align="end" className="w-44 no-shadow-menu">
             <DropdownMenuItem onClick={() => router.push("/profile")}> 
               <User className="mr-2 h-4 w-4" />
               <span>{t("auth.userMenu.profile") || "Profile"}</span>
@@ -124,7 +127,7 @@ export function AuthButton() {
     <Button
       onClick={handleSignIn}
       disabled={isSigningIn}
-      className="bg-primary hover:bg-primary/90 text-primary-foreground"
+      className="bg-primary text-primary-foreground"
     >
       {isSigningIn ? (
         <Loader2 className="h-4 w-4 mr-2 animate-spin" />

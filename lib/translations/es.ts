@@ -36,9 +36,10 @@ export const es = {
         profile: "Perfil",
         units: "Unidades",
         signOut: "Cerrar Sesión",
+        language: "Idioma",
       },
-      editUsername: {
-        title: "Elegir nombre de usuario",
+      profile: {
+        title: "Perfil",
         description: "Este nombre se mostrará públicamente.",
         username: "Nombre de usuario",
         placeholder: "ej. AmanteDeLaLogistica",

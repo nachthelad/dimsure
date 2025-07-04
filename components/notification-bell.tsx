@@ -11,7 +11,7 @@ import { doc, updateDoc, getDoc, doc as firestoreDoc } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 import { useLanguage } from "@/components/language-provider"
 
-export function NotificationBell() {
+export function NotificationBell({ setSidebarForceOpen }: { setSidebarForceOpen?: (open: boolean) => void }) {
   const { user, isLoggedIn } = useAuth()
   const { locale, t } = useLanguage()
   const [notifications, setNotifications] = useState<any[]>([])
@@ -67,6 +67,7 @@ export function NotificationBell() {
 
   const handleOpenChange = (isOpen: boolean) => {
     setOpen(isOpen)
+    if (setSidebarForceOpen) setSidebarForceOpen(isOpen)
     if (isOpen) fetchNotifications()
   }
 
