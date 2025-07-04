@@ -5,12 +5,12 @@ import { Button } from "@/components/ui/button"
 import { Shield, ArrowLeft, Loader2 } from "lucide-react"
 import Link from "next/link"
 import { signInWithGoogle } from "@/lib/auth"
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { useAuth } from "@/hooks/useAuth"
 import { toast } from "@/hooks/use-toast"
 import { useLanguage } from "@/components/language-provider"
 
-export default function LoginPage() {
+function LoginPageInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const redirectTo = searchParams.get("redirect") || "/"
@@ -117,5 +117,13 @@ export default function LoginPage() {
         </CardContent>
       </Card>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginPageInner />
+    </Suspense>
   )
 }
