@@ -89,6 +89,19 @@ export default function RootLayout({
 
         {/* Additional meta tags for better SEO and AdSense */}
         <meta name="google-adsense-account" content="ca-pub-1027418154196814" />
+        <Script
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
+          strategy="afterInteractive"
+          crossOrigin="anonymous"
+        />
+        <Script id="adsense-init" strategy="afterInteractive">
+          {`
+            (adsbygoogle = window.adsbygoogle || []).push({
+              google_ad_client: "ca-pub-1027418154196814",
+              enable_page_level_ads: true
+            });
+          `}
+        </Script>
         <meta name="google-site-verification" content="c1efNuZhhG-SikmDFge_tg2KrONNix0vCkpjSnhCj_o" />
         <link rel="canonical" href={siteConfig.url} />
 
