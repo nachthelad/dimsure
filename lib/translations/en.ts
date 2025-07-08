@@ -693,4 +693,10 @@ export const en = {
       loading: "Loading...",
       empty: "You have no notifications.",
     },
+    notFound: {
+      title: "404 - Page Not Found",
+      description: "Sorry, the page you are looking for does not exist or has been moved.",
+      backToHome: "Back to Home",
+      imageAlt: "Page not found"
+    },
   } as const;
