@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, notFound } from "next/navigation"
 import { ArrowLeft, Save, Loader2, Package, Edit, X, Check } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -68,7 +68,7 @@ export default function EditProductPage({
         // Load product
         const productData = await getProduct(resolvedParams.sku)
         if (!productData) {
-          router.push("/404")
+          notFound()
           return
         }
         
@@ -116,7 +116,7 @@ export default function EditProductPage({
         
       } catch (error) {
         console.error("Error loading product data:", error)
-        router.push("/404")
+        notFound()
       } finally {
         setIsLoadingProduct(false)
       }

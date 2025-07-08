@@ -695,4 +695,10 @@ export const es = {
       loading: "Cargando...",
       empty: "No tenés notificaciones.",
     },
+    notFound: {
+      title: "404 - Página no encontrada",
+      description: "Lo sentimos, la página que buscas no existe o fue movida.",
+      backToHome: "Volver al inicio",
+      imageAlt: "Página no encontrada"
+    },
   }as const;

@@ -1,6 +1,6 @@
 "use client"
 import { useEffect, useState } from "react"
-import { useParams } from "next/navigation"
+import { useParams, notFound } from "next/navigation"
 import { db } from "@/lib/firebase"
 import { collection, query, where, getDocs } from "firebase/firestore"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
@@ -38,16 +38,7 @@ export default function BlogPostPage() {
   }
 
   if (!post) {
-    return (
-      <div className="container mx-auto px-4 py-8 max-w-2xl text-center">
-        <h1 className="text-3xl font-bold mb-4">Artículo no encontrado</h1>
-        <Button asChild className="mt-4">
-          <Link href="/blog">
-            <ArrowLeft className="mr-2 h-4 w-4" /> Volver al blog
-          </Link>
-        </Button>
-      </div>
-    )
+    notFound()
   }
 
   return (
