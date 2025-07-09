@@ -3,7 +3,7 @@
 import type React from "react"
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { Upload, Package, CheckCircle, Lightbulb, AlertCircle, X, ImageIcon } from "lucide-react"
+import { Upload, Package, CheckCircle, Lightbulb, AlertCircle, X, ImageIcon, Info } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -20,6 +20,8 @@ import { useLanguage } from "@/components/language-provider"
 import { toast } from "@/hooks/use-toast"
 import { searchBrands, createBrandIfNotExists, searchCategories, createCategoryIfNotExists } from "@/lib/firestore"
 import { useRef } from "react"
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip"
+import { Skeleton } from "@/components/ui/skeleton"
 
 export default function AddProductPage() {
   const { isLoggedIn, userData, loading, user } = useAuth()
@@ -51,6 +53,7 @@ export default function AddProductPage() {
   const [images, setImages] = useState<File[]>([])
   const [imagePreviews, setImagePreviews] = useState<string[]>([])
   const [mainImageIndex, setMainImageIndex] = useState<number>(0)
+  const [moderationResults, setModerationResults] = useState<any[]>([]);
 
   useEffect(() => {
     if (!loading && !isLoggedIn) {
@@ -153,11 +156,35 @@ export default function AddProductPage() {
     if (allFiles.length === 1) setMainImageIndex(0);
   };
 
+  // Handler para pegar dimensiones en el campo Length
+  const handleLengthPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    const text = e.clipboardData.getData('text');
+    // Buscar 3 números separados por x, espacio o coma
+    const match = text.match(/(\d+(?:\.\d+)?)[ x,]+(\d+(?:\.\d+)?)[ x,]+(\d+(?:\.\d+)?)/);
+    if (match) {
+      setFormData((prev) => ({
+        ...prev,
+        length: match[1],
+        width: match[2],
+        height: match[3],
+      }));
+      e.preventDefault();
+    }
+  };
+
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-8 max-w-2xl">
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        {/* Header Skeleton */}
+        <div className="mb-8">
+          <Skeleton className="h-9 w-64 mb-2" />
+          <Skeleton className="h-6 w-96" />
+        </div>
+        {/* Form Skeleton */}
+        <div className="space-y-6">
+          {[...Array(6)].map((_, i) => (
+            <Skeleton key={i} className="h-12 w-full" />
+          ))}
         </div>
       </div>
     )
@@ -171,6 +198,7 @@ export default function AddProductPage() {
     e.preventDefault()
     setIsSubmitting(true)
     setError("")
+    setModerationResults([])
 
     try {
       // Validate user is logged in
@@ -179,10 +207,12 @@ export default function AddProductPage() {
       }
 
       let imageUrls: string[] = [];
+      let productStatus: 'approved' | 'pending' = 'pending'; // Siempre pending
+      const moderationDetails: any[] = [];
       if (images.length > 0) {
         setIsUploadingImage(true);
         try {
-          // Ordenar las imágenes para que la principal esté primero
+          // Subir imágenes sin moderación automática
           const orderedImages = [...images];
           if (mainImageIndex > 0) {
             const [mainImg] = orderedImages.splice(mainImageIndex, 1);
@@ -206,6 +236,9 @@ export default function AddProductPage() {
         } finally {
           setIsUploadingImage(false);
         }
+      } else {
+        moderationDetails.push({ name: 'N/A', error: 'No se subieron imágenes para moderar.' });
+        setModerationResults(moderationDetails);
       }
 
       // Ensure brand and category exist in database
@@ -244,6 +277,8 @@ export default function AddProductPage() {
         specifications: {
           weight: formData.weight ? `${formData.weight}g` : "Not specified",
         },
+        status: productStatus, // Siempre pending
+        moderationResults: moderationDetails,
       }
 
       const createdSku = await createProduct(productData, user.uid)
@@ -290,284 +325,294 @@ export default function AddProductPage() {
   const displayName = userData?.publicTag || user?.displayName || user?.email || "@newuser"
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-2xl">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-foreground mb-2">{t("addProduct.title")}</h1>
-        <p className="text-muted-foreground">{t("addProduct.subtitle")}</p>
-      </div>
+    <TooltipProvider>
+      <div className="container mx-auto px-4 py-8 max-w-2xl">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-foreground mb-2">{t("addProduct.title")}</h1>
+          <p className="text-muted-foreground">{t("addProduct.subtitle")}</p>
+        </div>
 
-      {/* User Info - Clean version */}
-      <Alert className="mb-6">
-        <Package className="h-4 w-4" />
-        <AlertDescription>
-          <p className="text-sm">
-            <strong>{t("addProduct.form.submittedBy")}</strong> {displayName}
-          </p>
-        </AlertDescription>
-      </Alert>
+        {/* User Info - Clean version */}
+        <Alert className="mb-6">
+          <Package className="h-4 w-4" />
+          <AlertDescription>
+            <p className="text-sm">
+              <strong>{t("addProduct.form.submittedBy")}</strong> {displayName}
+            </p>
+          </AlertDescription>
+        </Alert>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Package className="h-5 w-5" />
-            {t("addProduct.title")}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {error && (
-            <Alert className="mb-6" variant="destructive">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Package className="h-5 w-5" />
+              {t("addProduct.title")}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {error && (
+              <Alert className="mb-6" variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="name">{t("addProduct.form.productName")} *</Label>
-              <Input
-                id="name"
-                type="text"
-                placeholder={t("addProduct.form.productNamePlaceholder")}
-                value={formData.name}
-                onChange={(e) => handleNameChange(e.target.value)}
-                required
-              />
-              <p className="text-xs text-muted-foreground">{t("addProduct.form.productNameHelp")}</p>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="brand">{t("addProduct.form.brand")} *</Label>
-              <div className="relative">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="name">{t("addProduct.form.productName")} *</Label>
                 <Input
-                  id="brand"
+                  id="name"
                   type="text"
-                  placeholder={t("addProduct.form.brandPlaceholder")}
-                  value={formData.brand}
-                  onChange={handleBrandInput}
-                  ref={brandInputRef}
-                  autoComplete="off"
+                  placeholder={t("addProduct.form.productNamePlaceholder")}
+                  value={formData.name}
+                  onChange={(e) => handleNameChange(e.target.value)}
                   required
                 />
-                {brandOptions.length > 0 && (
-                  <ul className="absolute z-10 bg-background border border-border rounded w-full mt-1 max-h-40 overflow-auto shadow">
-                    {brandOptions.map((option) => (
-                      <li
-                        key={option}
-                        className="px-3 py-2 cursor-pointer hover:bg-primary/10"
-                        onClick={() => handleBrandSelect(option)}
-                      >
-                        {option}
-                      </li>
-                    ))}
-                  </ul>
-                )}
+                <p className="text-xs text-muted-foreground">{t("addProduct.form.productNameHelp")}</p>
               </div>
-            </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="sku">{t("addProduct.form.sku")} *</Label>
-              <Input
-                id="sku"
-                type="text"
-                placeholder={t("addProduct.form.skuPlaceholder")}
-                value={formData.sku}
-                onChange={(e) => setFormData((prev) => ({ ...prev, sku: e.target.value }))}
-                required
-              />
-            </div>
+              <div className="space-y-2">
+                <Label htmlFor="brand">{t("addProduct.form.brand")} *</Label>
+                <div className="relative">
+                  <Input
+                    id="brand"
+                    type="text"
+                    placeholder={t("addProduct.form.brandPlaceholder")}
+                    value={formData.brand}
+                    onChange={handleBrandInput}
+                    ref={brandInputRef}
+                    autoComplete="off"
+                    required
+                  />
+                  {brandOptions.length > 0 && (
+                    <ul className="absolute z-10 bg-background border border-border rounded w-full mt-1 max-h-40 overflow-auto shadow">
+                      {brandOptions.map((option) => (
+                        <li
+                          key={option}
+                          className="px-3 py-2 cursor-pointer hover:bg-primary/10"
+                          onClick={() => handleBrandSelect(option)}
+                        >
+                          {option}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="category">{t("addProduct.form.category")} *</Label>
-              <div className="relative">
+              <div className="space-y-2">
+                <Label htmlFor="sku">{t("addProduct.form.sku")} *</Label>
                 <Input
-                  id="category"
+                  id="sku"
                   type="text"
-                  placeholder={t("addProduct.form.categoryPlaceholder")}
-                  value={selectedCategory ? (selectedCategory.translations?.[locale] || selectedCategory.name) : formData.category}
-                  onChange={handleCategoryInput}
-                  ref={categoryInputRef}
-                  autoComplete="off"
+                  placeholder={t("addProduct.form.skuPlaceholder")}
+                  value={formData.sku}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, sku: e.target.value }))}
                   required
                 />
-                {categoryOptions.length > 0 && (
-                  <ul className="absolute z-10 bg-background border border-border rounded w-full mt-1 max-h-40 overflow-auto shadow">
-                    {categoryOptions.map((option) => (
-                      <li
-                        key={option.name}
-                        className="px-3 py-2 cursor-pointer hover:bg-primary/10"
-                        onClick={() => handleCategorySelect(option)}
-                      >
-                        {option.translations?.[locale] || option.name}
-                      </li>
-                    ))}
-                  </ul>
-                )}
               </div>
-            </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="description">{t("addProduct.form.description")}</Label>
-              <Textarea
-                id="description"
-                placeholder={t("addProduct.form.descriptionPlaceholder")}
-                value={formData.description}
-                onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
-                rows={3}
-              />
-            </div>
+              <div className="space-y-2">
+                <Label htmlFor="category">{t("addProduct.form.category")} *</Label>
+                <div className="relative">
+                  <Input
+                    id="category"
+                    type="text"
+                    placeholder={t("addProduct.form.categoryPlaceholder")}
+                    value={selectedCategory ? (selectedCategory.translations?.[locale] || selectedCategory.name) : formData.category}
+                    onChange={handleCategoryInput}
+                    ref={categoryInputRef}
+                    autoComplete="off"
+                    required
+                  />
+                  {categoryOptions.length > 0 && (
+                    <ul className="absolute z-10 bg-background border border-border rounded w-full mt-1 max-h-40 overflow-auto shadow">
+                      {categoryOptions.map((option) => (
+                        <li
+                          key={option.name}
+                          className="px-3 py-2 cursor-pointer hover:bg-primary/10"
+                          onClick={() => handleCategorySelect(option)}
+                        >
+                          {option.translations?.[locale] || option.name}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              </div>
 
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <Label>
+              <div className="space-y-2">
+                <Label htmlFor="description">{t("addProduct.form.description")}</Label>
+                <Textarea
+                  id="description"
+                  placeholder={t("addProduct.form.descriptionPlaceholder")}
+                  value={formData.description}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
+                  rows={3}
+                />
+              </div>
+
+              {/* Dimensiones y peso en una sola fila */}
+              <div className="space-y-2">
+                <Label className="flex items-center gap-1">
                   {t("addProduct.form.boxDimensions")} * {unit === "mm" ? t("addProduct.form.inMillimeters") : t("addProduct.form.inInches")}
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span tabIndex={0} className="outline-none">
+                        <Info className="h-4 w-4 text-muted-foreground cursor-pointer" />
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent side="top">{t("addProduct.form.dimensionsHelp")}
+                    </TooltipContent>
+                  </Tooltip>
                 </Label>
-                <Badge variant="secondary">{unit}</Badge>
-              </div>
-              <div className="grid grid-cols-3 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="length">{t("addProduct.form.length")}</Label>
+                <div className="flex gap-2 items-end">
                   <Input
                     id="length"
                     type="number"
                     step="1"
-                    placeholder="0"
+                    placeholder={t("addProduct.form.length")}
                     value={formData.length}
                     onChange={(e) => setFormData((prev) => ({ ...prev, length: e.target.value }))}
+                    onPaste={handleLengthPaste}
                     required
+                    className="w-24"
                   />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="width">{t("addProduct.form.width")}</Label>
+                  <span className="text-muted-foreground">x</span>
                   <Input
                     id="width"
                     type="number"
                     step="1"
-                    placeholder="0"
+                    placeholder={t("addProduct.form.width")}
                     value={formData.width}
                     onChange={(e) => setFormData((prev) => ({ ...prev, width: e.target.value }))}
                     required
+                    className="w-24"
                   />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="height">{t("addProduct.form.height")}</Label>
+                  <span className="text-muted-foreground">x</span>
                   <Input
                     id="height"
                     type="number"
                     step="1"
-                    placeholder="0"
+                    placeholder={t("addProduct.form.height")}
                     value={formData.height}
                     onChange={(e) => setFormData((prev) => ({ ...prev, height: e.target.value }))}
                     required
+                    className="w-24"
                   />
                 </div>
+                {/* Peso debajo de dimensiones */}
+                <div className="mt-6">
+                  <Label htmlFor="weight">{t("addProduct.form.packageWeight")}</Label>
+                  <div className="relative w-24 mt-1">
+                    <Input
+                      id="weight"
+                      type="number"
+                      placeholder={t("addProduct.form.weightPlaceholder")}
+                      value={formData.weight}
+                      onChange={(e) => setFormData((prev) => ({ ...prev, weight: e.target.value }))}
+                      className="pr-7"
+                    />
+                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">g</span>
+                  </div>
+                </div>
               </div>
-            </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="weight">{t("addProduct.form.packageWeight")}</Label>
-              <Input
-                id="weight"
-                type="number"
-                placeholder={t("addProduct.form.weightPlaceholder")}
-                value={formData.weight}
-                onChange={(e) => setFormData((prev) => ({ ...prev, weight: e.target.value }))}
-              />
-            </div>
+              {/* Enhanced Image Upload Section */}
+              <div className="space-y-4">
+                <Label htmlFor="image">{t("addProduct.form.productImage")}</Label>
 
-            {/* Enhanced Image Upload Section */}
-            <div className="space-y-4">
-              <Label htmlFor="image">{t("addProduct.form.productImage")}</Label>
-
-              <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary/50 transition-colors">
-                <input
-                  id="image"
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp"
-                  multiple
-                  onChange={handleImagesChange}
-                  disabled={isUploadingImage}
-                  className="hidden"
-                />
-                <label htmlFor="image" className="cursor-pointer">
-                  <Upload className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-                  <p className="text-sm text-muted-foreground">{t("addProduct.form.imageUpload")}</p>
-                  <p className="text-sm text-muted-foreground">{t("addProduct.form.maxImages")}</p>
-                  <p className="text-sm text-muted-foreground">{t("addProduct.form.imageFormats")}</p>
-                </label>
-                {images.length > 0 && (
-                  <>
-                    <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-4">
-                      {images.map((file, idx) => (
-                        <div
-                          key={idx}
-                          className={`relative border rounded-lg p-2 bg-muted/50 flex flex-col items-center cursor-pointer select-none ${mainImageIndex === idx ? 'ring-2 ring-primary' : ''}`}
-                          onClick={() => setMainImageIndex(idx)}
-                          tabIndex={0}
-                          role="button"
-                          aria-pressed={mainImageIndex === idx}
-                        >
-                          <img
-                            src={imagePreviews[idx] || "/placeholder.svg"}
-                            alt={file.name}
-                            className="w-20 h-20 object-cover rounded mb-2"
-                          />
-                          <span className="text-xs font-medium mb-1 truncate max-w-[80px]">{file.name}</span>
-                          <div className="flex items-center gap-1">
-                            <input
-                              type="radio"
-                              name="mainImage"
-                              checked={mainImageIndex === idx}
-                              readOnly
-                              className="accent-primary hidden"
-                            />
-                            <span className="text-xs">{t("addProduct.form.setAsMain")}</span>
-                          </div>
-                          <Button
-                            type="button"
-                            variant="destructive"
-                            size="icon"
-                            className="absolute top-1 right-1 h-5 w-5 rounded-full p-0"
-                            onClick={e => {
-                              e.stopPropagation();
-                              const newImages = images.filter((_, i) => i !== idx);
-                              const newPreviews = imagePreviews.filter((_, i) => i !== idx);
-                              setImages(newImages);
-                              setImagePreviews(newPreviews);
-                              if (mainImageIndex === idx) setMainImageIndex(0);
-                              else if (mainImageIndex > idx) setMainImageIndex(mainImageIndex - 1);
-                            }}
-                            disabled={isUploadingImage}
+                <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary/50 transition-colors">
+                  <input
+                    id="image"
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    multiple
+                    onChange={handleImagesChange}
+                    disabled={isUploadingImage}
+                    className="hidden"
+                  />
+                  <label htmlFor="image" className="cursor-pointer">
+                    <Upload className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
+                    <p className="text-sm text-muted-foreground">{t("addProduct.form.imageUpload")}</p>
+                    <p className="text-sm text-muted-foreground">{t("addProduct.form.maxImages")}</p>
+                    <p className="text-sm text-muted-foreground">{t("addProduct.form.imageFormats")}</p>
+                  </label>
+                  {images.length > 0 && (
+                    <>
+                      <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        {images.map((file, idx) => (
+                          <div
+                            key={idx}
+                            className={`relative border rounded-lg p-2 bg-muted/50 flex flex-col items-center cursor-pointer select-none ${mainImageIndex === idx ? 'ring-2 ring-primary' : ''}`}
+                            onClick={() => setMainImageIndex(idx)}
+                            tabIndex={0}
+                            role="button"
+                            aria-pressed={mainImageIndex === idx}
                           >
-                            <X className="h-3 w-3" />
-                          </Button>
-                        </div>
-                      ))}
-                    </div>
-                    <div className="flex justify-center mt-4">
-                      <Badge variant="secondary">{t("addProduct.form.imageReady")}</Badge>
-                    </div>
-                  </>
-                )}
+                            <img
+                              src={imagePreviews[idx] || "/placeholder.svg"}
+                              alt={file.name}
+                              className="w-20 h-20 object-cover rounded mb-2"
+                            />
+                            <span className="text-xs font-medium mb-1 truncate max-w-[80px]">{file.name}</span>
+                            <div className="flex items-center gap-1">
+                              <input
+                                type="radio"
+                                name="mainImage"
+                                checked={mainImageIndex === idx}
+                                readOnly
+                                className="accent-primary hidden"
+                              />
+                              <span className="text-xs">{t("addProduct.form.setAsMain")}</span>
+                            </div>
+                            <Button
+                              type="button"
+                              variant="destructive"
+                              size="icon"
+                              className="absolute top-1 right-1 h-5 w-5 rounded-full p-0"
+                              onClick={e => {
+                                e.stopPropagation();
+                                const newImages = images.filter((_, i) => i !== idx);
+                                const newPreviews = imagePreviews.filter((_, i) => i !== idx);
+                                setImages(newImages);
+                                setImagePreviews(newPreviews);
+                                if (mainImageIndex === idx) setMainImageIndex(0);
+                                else if (mainImageIndex > idx) setMainImageIndex(mainImageIndex - 1);
+                              }}
+                              disabled={isUploadingImage}
+                            >
+                              <X className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="flex justify-center mt-4">
+                        <Badge variant="secondary">{t("addProduct.form.imageReady")}</Badge>
+                      </div>
+                    </>
+                  )}
+                </div>
               </div>
-            </div>
 
-            <div className="bg-primary/10 p-4 rounded-lg">
-              <p className="text-sm text-foreground">
-                <strong>{t("addProduct.form.submittedBy")}</strong> {displayName}
-              </p>
-              <p className="text-xs text-muted-foreground mt-1">{t("addProduct.form.attribution")}</p>
-            </div>
+              <div className="bg-primary/10 p-4 rounded-lg">
+                <p className="text-sm text-foreground">
+                  <strong>{t("addProduct.form.submittedBy")}</strong> {displayName}
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">{t("addProduct.form.attribution")}</p>
+              </div>
 
-            <Button type="submit" className="w-full" size="lg" disabled={isSubmitting || isUploadingImage}>
-              {isUploadingImage
-                ? t("addProduct.form.uploadingImage")
-                : isSubmitting
-                  ? t("addProduct.form.submitting")
-                  : t("addProduct.form.submit")}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
-    </div>
+              <Button type="submit" className="w-full" size="lg" disabled={isSubmitting || isUploadingImage}>
+                {isUploadingImage
+                  ? t("addProduct.form.uploadingImage")
+                  : isSubmitting
+                    ? t("addProduct.form.submitting")
+                    : t("addProduct.form.submit")}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    </TooltipProvider>
   )
 }

@@ -5,6 +5,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { useUnit } from "./unit-provider"
 import { useLanguage } from "./language-provider"
+import { useState } from "react"
+import { Button } from "@/components/ui/button"
+import { Copy } from "lucide-react"
 
 interface DimensionCardProps {
   dimensions: { length: number; width: number; height: number }
@@ -54,13 +57,30 @@ export function DimensionCard({ dimensions, title, isPrimary = false }: Dimensio
             <div className="text-2xl font-bold text-foreground">{formatDimension(dimensions.height)}</div>
           </div>
         </div>
-        <div className="mt-4 text-center">
+        <div className="mt-4 text-center flex items-center justify-center gap-2">
           <span className="text-lg font-semibold text-foreground">
-            {formatDimension(dimensions.length)} × {formatDimension(dimensions.width)} ×{" "}
-            {formatDimension(dimensions.height)} {unit}
+            {formatDimension(dimensions.length)} × {formatDimension(dimensions.width)} × {formatDimension(dimensions.height)} {unit}
           </span>
+          <CopyDimensionsButton dimensions={dimensions} unit={unit} />
         </div>
       </CardContent>
     </Card>
   )
+}
+
+function CopyDimensionsButton({ dimensions, unit }: { dimensions: { length: number, width: number, height: number }, unit: string }) {
+  const [copied, setCopied] = useState(false);
+  const value = `${dimensions.length} × ${dimensions.width} × ${dimensions.height} ${unit}`;
+
+  const handleCopy = async () => {
+    await navigator.clipboard.writeText(value);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1200);
+  };
+
+  return (
+    <Button size="icon" variant="ghost" onClick={handleCopy} aria-label="Copy dimensions">
+      {copied ? <span className="text-green-600 text-xs font-medium">✓</span> : <Copy className="h-4 w-4" />}
+    </Button>
+  );
 }

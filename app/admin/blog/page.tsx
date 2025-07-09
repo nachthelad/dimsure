@@ -6,6 +6,7 @@ import { collection, addDoc, serverTimestamp } from "firebase/firestore"
 import { optimizeAndUploadImage, validateImageFile } from "@/lib/storage"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/components/language-provider"
 
 function slugify(text: string) {
   return text
@@ -17,7 +18,8 @@ function slugify(text: string) {
 const MAX_CONTENT_LENGTH = 10000;
 
 export default function BlogAdminPage() {
-  const { user, loading } = useAuth()
+  const { user, loading, userData } = useAuth()
+  const { t } = useLanguage();
   const [title, setTitle] = useState("")
   const [content, setContent] = useState("")
   const [coverImageFile, setCoverImageFile] = useState<File | null>(null)
@@ -27,8 +29,8 @@ export default function BlogAdminPage() {
   const [submitting, setSubmitting] = useState(false)
   const [success, setSuccess] = useState(false)
 
-  if (loading) return <div>Cargando...</div>
-  if (!user || user.email !== "nacho.vent@gmail.com") return <div>No autorizado</div>
+  if (loading) return <div>{t("blog.admin.loading")}</div>
+  if (!user || userData?.role !== "admin") return <div>{t("blog.admin.notAuthorized")}</div>
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -82,22 +84,22 @@ export default function BlogAdminPage() {
     <div className="max-w-4xl mx-auto py-8 px-2">
       <Card className="mx-auto max-w-2xl">
         <CardHeader>
-          <CardTitle>Nuevo artículo del blog</CardTitle>
+          <CardTitle>{t("blog.admin.newPostTitle")}</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label className="block mb-1 font-medium">Título</label>
+              <label className="block mb-1 font-medium">{t("blog.admin.titleLabel")}</label>
               <input
                 className="w-full border border-input bg-background p-2 rounded focus:outline-none focus:ring-2 focus:ring-primary"
-                placeholder="Título"
+                placeholder={t("blog.admin.titlePlaceholder")}
                 value={title}
                 onChange={e => setTitle(e.target.value)}
                 required
               />
             </div>
             <div>
-              <label className="block mb-1 font-medium">Imagen de portada (JPG, PNG, WebP, máx 5MB)</label>
+              <label className="block mb-1 font-medium">{t("blog.admin.coverImageLabel")}</label>
               <input
                 type="file"
                 accept="image/jpeg,image/png,image/webp"
@@ -105,33 +107,21 @@ export default function BlogAdminPage() {
                 disabled={uploadingImage}
                 className="w-full border border-input bg-background p-2 rounded"
               />
-              {uploadingImage && <div className="text-blue-600 mt-1">Subiendo imagen...</div>}
-              {imageError && <div className="text-red-600 mt-1">{imageError}</div>}
+              {uploadingImage && <div className="text-blue-600 mt-1">{t("blog.admin.uploadingImage")}</div>}
+              {imageError && <div className="text-red-600 mt-1">{t("blog.admin.imageError", { error: imageError })}</div>}
               {coverImageFile && coverImageUrl && (
                 <div className="mt-2">
                   <div className="text-sm text-gray-600">{coverImageFile.name}</div>
-                  <img src={coverImageUrl} alt="Preview" className="mt-1 max-h-40 rounded" />
+                  <img src={coverImageUrl} alt={t("blog.admin.coverImagePreviewAlt")}
+                    className="mt-1 max-h-40 rounded" />
                 </div>
               )}
             </div>
             <div>
-              <label className="block mb-1 font-medium">Contenido (Markdown, máx {MAX_CONTENT_LENGTH} caracteres)</label>
+              <label className="block mb-1 font-medium">{t("blog.admin.contentLabel", { max: MAX_CONTENT_LENGTH })}</label>
               <textarea
                 className="w-full border border-input bg-background p-2 rounded min-h-[200px] font-mono"
-                placeholder={
-                  `Ejemplo:
-# Título
-
-**Negrita** y _cursiva_ y [un link](https://ejemplo.com)
-
-- Lista
-- De
-- Elementos
-
-> Una cita
-
-código`
-                }
+                placeholder={t("blog.admin.contentPlaceholder")}
                 value={content}
                 onChange={e => setContent(e.target.value)}
                 maxLength={MAX_CONTENT_LENGTH}
@@ -145,9 +135,9 @@ export default function BlogAdminPage() {
               type="submit"
               disabled={submitting || uploadingImage || !title || !content || !coverImageUrl || content.length > MAX_CONTENT_LENGTH}
             >
-              {submitting ? "Publicando..." : "Publicar"}
+              {submitting ? t("blog.admin.publishing") : t("blog.admin.publish")}
             </Button>
-            {success && <div className="text-green-600 mt-2">¡Artículo publicado!</div>}
+            {success && <div className="text-green-600 mt-2">{t("blog.admin.success")}</div>}
           </form>
         </CardContent>
       </Card>

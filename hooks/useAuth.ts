@@ -13,6 +13,7 @@ export interface UserData {
   lastLoginAt?: any
   isActive?: boolean
   tagLastChanged?: any 
+  role?: string;
 }
 
 export function useAuth() {

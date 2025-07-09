@@ -90,29 +90,31 @@ export const es = {
       },
     },
     addProduct: {
+      loading: "Cargando...",
       title: "Agregar Nuevo Producto",
       subtitle: "Ayuda a la comunidad agregando dimensiones de embalaje verificadas para un nuevo producto.",
       form: {
         productName: "Nombre del Producto",
-        productNamePlaceholder: "ej., Switch OLED Blanca",
+        productNamePlaceholder: "Switch OLED Blanca",
         productNameHelp:
           "Ingresa el nombre del producto como lo ves. La comunidad ayudará a mejorar la consistencia de nombres con el tiempo.",
         brand: "Marca",
-        brandPlaceholder: "ej., Nintendo",
+        brandPlaceholder: "Nintendo",
         sku: "SKU",
-        skuPlaceholder: "ej., NSW-OLED-WHT",
+        skuPlaceholder: "NSW-OLED-WHT",
         category: "Categoría",
-        categoryPlaceholder: "ej., Consolas",
+        categoryPlaceholder: "Consolas",
         description: "Descripción",
         descriptionPlaceholder: "Breve descripción del producto y embalaje...",
         boxDimensions: "Dimensiones de la Caja",
         inMillimeters: "(en milímetros)",
         inInches: "(en pulgadas)",
-        length: "Largo (mm)",
-        width: "Ancho (mm)",
-        height: "Alto (mm)",
-        packageWeight: "Peso del Paquete (gramos)",
-        weightPlaceholder: "ej., 250",
+        length: "Largo",
+        width: "Ancho",
+        height: "Alto",
+        packageWeight: "Peso",
+        weightPlaceholder: "250",
+        dimensionsHelp: "Podés pegar dimensiones como '203 x 140 x 19' y se completarán automáticamente los tres campos",
         productImage: "Imagen del Producto (Opcional)",
         imageUpload: "Haz clic para subir una foto",
         imageFormats: "PNG, JPG hasta 5MB",
@@ -185,11 +187,24 @@ export const es = {
       },
       disputeBadge: "En Disputa",
       disputeNotification: "Se abrió una disputa para tu producto \"{{productName}}\".",
+      pendingApproval: "Este producto está pendiente de aprobación y no es visible públicamente.",
     },
     blog: {
       admin: {
         notAuthorized: "No autorizado",
-        loading: "Cargando..."
+        loading: "Cargando...",
+        newPostTitle: "Nuevo artículo del blog",
+        titleLabel: "Título",
+        titlePlaceholder: "Título",
+        coverImageLabel: "Imagen de portada (JPG, PNG, WebP, máx 5MB)",
+        uploadingImage: "Subiendo imagen...",
+        imageError: "Error de imagen: {{error}}",
+        coverImagePreviewAlt: "Vista previa",
+        contentLabel: "Contenido (Markdown, máx {{max}} caracteres)",
+        contentPlaceholder: `Ejemplo:\n# Título\n\n**Negrita** y _cursiva_ y [un link](https://ejemplo.com)\n\n- Lista\n- De\n- Elementos\n\n> Una cita\n\ncódigo`,
+        publishing: "Publicando...",
+        publish: "Publicar",
+        success: "¡Artículo publicado!"
       },
     },
     product: {
@@ -700,5 +715,26 @@ export const es = {
       description: "Lo sentimos, la página que buscas no existe o fue movida.",
       backToHome: "Volver al inicio",
       imageAlt: "Página no encontrada"
+    },
+    admin: {
+      products: {
+        title: "Moderación de Productos",
+        loading: "Cargando productos...",
+        filterByStatus: "Filtrar por estado:",
+        status: {
+          pending: "Pendientes",
+          approved: "Aprobados",
+          rejected: "Rechazados"
+        },
+        sku: "SKU",
+        brand: "Marca",
+        category: "Categoría",
+        dimensions: "Dimensiones",
+        moderationDetail: "Detalle de moderación",
+        approve: "Aprobar",
+        reject: "Rechazar",
+        imageAlt: "{{name}} imagen {{idx}}",
+        modalImageAlt: "Imagen grande"
+      },
     },
   }as const;
