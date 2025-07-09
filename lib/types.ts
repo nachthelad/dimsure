@@ -17,4 +17,6 @@ export interface Product {
   lastModified?: any
   createdAt?: any
   specifications?: Record<string, any>
+  status?: 'approved' | 'pending' | 'rejected'
+  moderationResults?: any[];
 }

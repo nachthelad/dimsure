@@ -183,8 +183,20 @@ export default function ProductDetailPage({
     notFound()
   }
 
+  // Lógica de visibilidad según status
+  const isOwner = user && product && product.createdBy === user.uid;
+  if (product && product.status !== 'approved' && !isOwner) {
+    notFound();
+  }
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
+      {/* Aviso si el producto está pendiente y el usuario es el creador */}
+      {product && product.status === 'pending' && isOwner && (
+        <div className="mb-6 p-4 bg-yellow-100 border-l-4 border-yellow-400 text-yellow-800 rounded">
+          {t("pendingApproval")}
+        </div>
+      )}
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
         <span>{t("navigation.home")}</span>
