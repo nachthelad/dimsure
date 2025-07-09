@@ -142,5 +142,6 @@ export function normalizeProduct(doc: any): Product {
     lastModified: data.lastModified ?? data.createdAt ?? new Date(),
     createdAt: data.createdAt ?? new Date(),
     specifications: data.specifications ?? {},
+    status: data.status ?? 'approved',
   }
 }

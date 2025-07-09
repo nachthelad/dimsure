@@ -60,8 +60,7 @@ export const en = {
           updateFailed: "Failed to update username: {{error}}"
         }
       }
-    }
-,    
+    },
     home: {
       hero: {
         title: "Measure it once.",
@@ -91,29 +90,31 @@ export const en = {
       },
     },
     addProduct: {
+      loading: "Loading...",
       title: "Add New Product",
       subtitle: "Help the community by adding verified packaging dimensions for a new product.",
       form: {
         productName: "Product Name",
-        productNamePlaceholder: "e.g., Switch OLED White",
+        productNamePlaceholder: "Switch OLED White",
         productNameHelp:
           "Enter the product name as you see it. The community will help improve naming consistency over time.",
         brand: "Brand",
-        brandPlaceholder: "e.g., Nintendo",
+        brandPlaceholder: "Nintendo",
         sku: "SKU",
-        skuPlaceholder: "e.g., NSW-OLED-WHT",
+        skuPlaceholder: "NSW-OLED-WHT",
         category: "Category",
-        categoryPlaceholder: "e.g., Consoles",
+        categoryPlaceholder: "Consoles",
         description: "Description",
         descriptionPlaceholder: "Brief description of the product and packaging...",
         boxDimensions: "Box Dimensions",
         inMillimeters: "(in millimeters)", 
         inInches: "(in inches)",
-        length: "Length (mm)",
-        width: "Width (mm)",
-        height: "Height (mm)",
-        packageWeight: "Package Weight (grams)",
-        weightPlaceholder: "e.g., 250",
+        length: "Length",
+        width: "Width",
+        height: "Height",
+        packageWeight: "Weight",
+        weightPlaceholder: "250",
+        dimensionsHelp: "You can paste dimensions like '203 x 140 x 19' and all three fields will be filled in automatically",
         productImage: "Product Image (Optional)",
         imageUpload: "Click to upload",
         imageFormats: "PNG, JPG up to 5MB",
@@ -189,7 +190,19 @@ export const en = {
     blog: {
       admin: {
         notAuthorized: "Not authorized",
-        loading: "Loading..."
+        loading: "Loading...",
+        newPostTitle: "New Blog Post",
+        titleLabel: "Title",
+        titlePlaceholder: "Title",
+        coverImageLabel: "Cover Image (JPG, PNG, WebP, max 5MB)",
+        uploadingImage: "Uploading image...",
+        imageError: "Image error: {{error}}",
+        coverImagePreviewAlt: "Preview",
+        contentLabel: "Content (Markdown, max {{max}} characters)",
+        contentPlaceholder: `Example:\n# Title\n\n**Bold** and _italic_ and [a link](https://example.com)\n\n- List\n- Of\n- Items\n\n> A quote\n\ncode`,
+        publishing: "Publishing...",
+        publish: "Publish",
+        success: "Post published!"
       },
     },
     product: {
@@ -699,4 +712,26 @@ export const en = {
       backToHome: "Back to Home",
       imageAlt: "Page not found"
     },
+    admin: {
+      products: {
+        title: "Product Moderation",
+        loading: "Loading products...",
+        filterByStatus: "Filter by status:",
+        status: {
+          pending: "Pending",
+          approved: "Approved",
+          rejected: "Rejected"
+        },
+        sku: "SKU",
+        brand: "Brand",
+        category: "Category",
+        dimensions: "Dimensions",
+        moderationDetail: "Moderation detail",
+        approve: "Approve",
+        reject: "Reject",
+        imageAlt: "{{name}} image {{idx}}",
+        modalImageAlt: "Large image"
+      },
+    },
+    pendingApproval: "This product is pending approval and is not publicly visible.",
   } as const;

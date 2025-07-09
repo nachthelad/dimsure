@@ -218,11 +218,11 @@ export const getUserProducts = async (userId: string): Promise<Product[]> => {
 export const getRecentProducts = async (limitCount = 10): Promise<Product[]> => {
   try {
     try {
-      const q = query(collection(db, "products"), orderBy("createdAt", "desc"), limit(limitCount))
+      const q = query(collection(db, "products"), where("status", "==", "approved"), orderBy("createdAt", "desc"), limit(limitCount))
       const querySnapshot = await getDocs(q)
       return querySnapshot.docs.map(normalizeProduct) as Product[]
     } catch (error) {
-      const q = query(collection(db, "products"), limit(50))
+      const q = query(collection(db, "products"), where("status", "==", "approved"), limit(50))
       const querySnapshot = await getDocs(q)
       const products = querySnapshot.docs.map(normalizeProduct)
       return products
@@ -241,7 +241,7 @@ export const getRecentProducts = async (limitCount = 10): Promise<Product[]> => 
 
 export const getAllProducts = async (): Promise<Product[]> => {
   try {
-    const q = query(collection(db, "products"))
+    const q = query(collection(db, "products"), where("status", "==", "approved"))
     const querySnapshot = await getDocs(q)
     const products = querySnapshot.docs.map(normalizeProduct)
 
@@ -257,6 +257,23 @@ export const getAllProducts = async (): Promise<Product[]> => {
   }
 }
 
+export const getAllProductsAdmin = async (): Promise<Product[]> => {
+  try {
+    const q = query(collection(db, "products"));
+    const querySnapshot = await getDocs(q);
+    const products = querySnapshot.docs.map(normalizeProduct);
+    // Sort manually
+    return products.sort((a, b) => {
+      const aTime = a.createdAt?.toDate?.() || new Date(0);
+      const bTime = b.createdAt?.toDate?.() || new Date(0);
+      return bTime.getTime() - aTime.getTime();
+    });
+  } catch (error) {
+    console.error("Error getting all products (admin):", error);
+    throw error;
+  }
+}
+
 // Search products
 export const searchProducts = async (searchTerm: string, limitCount = 10): Promise<Product[]> => {
   try {
@@ -264,7 +281,7 @@ export const searchProducts = async (searchTerm: string, limitCount = 10): Promi
       return []
     }
 
-    const q = query(collection(db, "products"), limit(50))
+    const q = query(collection(db, "products"), where("status", "==", "approved"), limit(50))
     const querySnapshot = await getDocs(q)
 
     const allProducts = querySnapshot.docs.map(normalizeProduct)
@@ -293,10 +310,11 @@ export const getDatabaseStats = async () => {
     const productsSnapshot = await getDocs(productsQuery)
     const products = productsSnapshot.docs.map((doc) => doc.data())
 
-    const totalProducts = products.length
+    const approvedProducts = products.filter(p => p.status === 'approved')
+    const totalProducts = approvedProducts.length
 
     let totalContributions = 0
-    products.forEach((product) => {
+    approvedProducts.forEach((product) => {
       totalContributions += 1
       if (product.lastModifiedBy && product.lastModifiedBy !== product.createdBy) {
         totalContributions += 1
@@ -306,7 +324,7 @@ export const getDatabaseStats = async () => {
     let totalConfidence = 0
     let productsWithConfidence = 0
 
-    products.forEach((product) => {
+    approvedProducts.forEach((product) => {
       if (product.confidence && typeof product.confidence === "number") {
         totalConfidence += product.confidence
         productsWithConfidence++
