@@ -46,6 +46,7 @@
     "@radix-ui/react-toggle": "latest",
     "@radix-ui/react-toggle-group": "latest",
     "@radix-ui/react-tooltip": "latest",
+    "@vercel/analytics": "^1.5.0",
     "autoprefixer": "^10.4.20",
     "axios": "^1.10.0",
     "browser-image-compression": "^2.0.2",

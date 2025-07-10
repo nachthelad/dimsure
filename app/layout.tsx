@@ -11,6 +11,8 @@ import { siteConfig } from "@/lib/site-config"
 import { Footer } from "@/components/footer"
 import { CookieConsent } from "@/components/cookie-consent"
 import { AccountReactivation } from "@/components/account-reactivation"
+import { Analytics } from "@vercel/analytics/next"
+
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -135,6 +137,7 @@ export default function RootLayout({
             </UnitProvider>
           </LanguageProvider>
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   )
