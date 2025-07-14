@@ -245,9 +245,12 @@ export const es = {
         noAlternativesMessage: "Este producto actualmente no tiene medidas alternativas enviadas por la comunidad.",
       },
       comments: {
-        title: "Comentarios de la Comunidad",
-        noComments: "Aún No Hay Comentarios",
-        noCommentsMessage: "Sé el primero en compartir tus pensamientos sobre estas dimensiones.",
+        title: "Comentarios",
+        noComments: "Aún no hay comentarios.",
+        loginToComment: "Debes iniciar sesión para ver y escribir comentarios.",
+        add: "Agregar comentario",
+        addPlaceholder: "Escribe tu comentario aquí...",
+        errorAdd: "No se pudo agregar el comentario. Intenta nuevamente.",
       },
       history: {
         title: "Historial de Versiones",

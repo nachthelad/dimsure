@@ -14,6 +14,7 @@ import {
   increment,
   arrayUnion,
   arrayRemove,
+  deleteDoc,
 } from "firebase/firestore"
 import { db, storage } from "./firebase"
 import type { Product } from "./types"
@@ -554,33 +555,85 @@ export const fixOrphanProducts = async (userId: string) => {
 }
 
 // Comment operations
-export const addComment = async (commentData: any) => {
+
+// Nuevo: comentarios por producto en subcolección
+export const addProductComment = async (productSku: string, commentData: any) => {
   try {
-    await addDoc(collection(db, "comments"), {
+    const commentsRef = collection(doc(db, "products", productSku), "comments");
+    await addDoc(commentsRef, {
       ...commentData,
       createdAt: serverTimestamp(),
-      likes: 0,
-      isEdited: false,
-    })
+      likes: [],
+      dislikes: [],
+    });
   } catch (error) {
-    console.error("Error adding comment:", error)
-    throw error
+    console.error("Error adding product comment:", error);
+    throw error;
   }
-}
+};
 
 export const getProductComments = async (productSku: string) => {
   try {
-    const q = query(collection(db, "comments"), where("productSku", "==", productSku), orderBy("createdAt", "desc"))
-    const querySnapshot = await getDocs(q)
+    const commentsRef = collection(doc(db, "products", productSku), "comments");
+    const q = query(commentsRef, orderBy("createdAt", "desc"));
+    const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
-    }))
+    }));
   } catch (error) {
-    console.error("Error getting comments:", error)
-    throw error
+    console.error("Error getting product comments:", error);
+    throw error;
   }
-}
+};
+
+export const likeProductComment = async (productSku: string, commentId: string, userId: string, alreadyLiked: boolean) => {
+  try {
+    const commentRef = doc(db, "products", productSku, "comments", commentId);
+    if (alreadyLiked) {
+      await updateDoc(commentRef, {
+        likes: arrayRemove(userId),
+      });
+    } else {
+      await updateDoc(commentRef, {
+        likes: arrayUnion(userId),
+        dislikes: arrayRemove(userId), // No puede tener ambos
+      });
+    }
+  } catch (error) {
+    console.error("Error liking product comment:", error);
+    throw error;
+  }
+};
+
+export const dislikeProductComment = async (productSku: string, commentId: string, userId: string, alreadyDisliked: boolean) => {
+  try {
+    const commentRef = doc(db, "products", productSku, "comments", commentId);
+    if (alreadyDisliked) {
+      await updateDoc(commentRef, {
+        dislikes: arrayRemove(userId),
+      });
+    } else {
+      await updateDoc(commentRef, {
+        dislikes: arrayUnion(userId),
+        likes: arrayRemove(userId), // No puede tener ambos
+      });
+    }
+  } catch (error) {
+    console.error("Error disliking product comment:", error);
+    throw error;
+  }
+};
+
+export const deleteProductComment = async (productSku: string, commentId: string) => {
+  try {
+    const commentRef = doc(db, "products", productSku, "comments", commentId);
+    await deleteDoc(commentRef);
+  } catch (error) {
+    console.error("Error deleting product comment:", error);
+    throw error;
+  }
+};
 
 // --- Brand and Category helpers ---
 
