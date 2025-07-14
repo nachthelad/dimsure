@@ -280,13 +280,19 @@ export function DisputeModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
+      <DialogContent
+        className="max-w-2xl w-full sm:max-w-lg md:max-w-xl lg:max-w-2xl p-0"
+        style={{ maxHeight: '90vh', display: 'flex', flexDirection: 'column' }}
+      >
+        <DialogHeader className="px-6 pt-6 pb-2">
           <DialogTitle>
             {mode === 'suggest' ? t("disputes.modal.suggestTitle") : t("disputes.modal.createTitle")}
           </DialogTitle>
         </DialogHeader>
-        <div className="space-y-4">
+        <div
+          className="space-y-4 px-6 pb-6 overflow-y-auto flex-1"
+          style={{ maxHeight: 'calc(90vh - 64px - 72px)' }} // 64px header aprox, 72px botones
+        >
           <div>
             <Label htmlFor="title">{t("disputes.modal.title")}</Label>
             <Input
@@ -450,16 +456,16 @@ export function DisputeModal({
             </div>
           </div>
 
-          <div className="flex justify-end gap-2">
-            <Button variant="outline" onClick={() => onOpenChange(false)}>
-              {t("disputes.modal.cancel")}
-            </Button>
-            <Button onClick={handleCreateDispute} disabled={isSubmitting || isUploadingImage}>
-              {isSubmitting ? t("disputes.modal.submitting") : 
-               isUploadingImage ? t("disputes.modal.uploading") : 
-               (mode === 'suggest' ? t("disputes.modal.submitSuggestion") : t("disputes.modal.submit"))}
-            </Button>
-          </div>
+        </div>
+        <div className="flex justify-end gap-2 pt-4 pb-4 px-6 border-t bg-background z-10">
+          <Button variant="outline" onClick={() => onOpenChange(false)}>
+            {t("disputes.modal.cancel")}
+          </Button>
+          <Button onClick={handleCreateDispute} disabled={isSubmitting || isUploadingImage}>
+            {isSubmitting ? t("disputes.modal.submitting") : 
+             isUploadingImage ? t("disputes.modal.uploading") : 
+             (mode === 'suggest' ? t("disputes.modal.submitSuggestion") : t("disputes.modal.submit"))}
+          </Button>
         </div>
       </DialogContent>
     </Dialog>
