@@ -236,6 +236,7 @@ export const en = {
         packageWeight: "Package Weight:",
         weight: "Weight:",
         notSpecified: "Not specified",
+        comment: "Submitter comments:",
       },
       alternatives: {
         noAlternatives: "No Alternative Dimensions",

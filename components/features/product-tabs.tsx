@@ -11,7 +11,7 @@ interface ProductTabsProps {
   t: (key: string) => string;
 }
 
-const TAB_KEYS = ["specifications", "alternatives", "comments", "history"];
+const TAB_KEYS = ["specifications", "comments", "history"];
 
 export const ProductTabs: React.FC<ProductTabsProps> = ({ product, createdByUser, lastModifiedByUser, t }) => {
   const [activeTab, setActiveTab] = useState(0);
@@ -21,7 +21,6 @@ export const ProductTabs: React.FC<ProductTabsProps> = ({ product, createdByUser
 
   const tabTitles = [
     t("product.tabs.specifications"),
-    t("product.tabs.alternatives"),
     t("product.tabs.comments"),
     t("product.tabs.history"),
   ];
@@ -35,33 +34,34 @@ export const ProductTabs: React.FC<ProductTabsProps> = ({ product, createdByUser
               <CardTitle>{t("product.specifications.title")}</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                {product.specifications &&
-                  Object.entries(product.specifications).map(([key, value]) => (
-                    <div key={key} className="flex justify-between py-2 border-b border-border last:border-0">
-                      <span className="font-medium text-muted-foreground">
-                        {key === "weight" ? t("product.specifications.weight") : `${key}:`}
-                      </span>
-                      <span className="text-foreground whitespace-nowrap truncate max-w-[120px] md:max-w-[180px]">
-                        {value === "Not specified" ? t("product.specifications.notSpecified") : (value as string)}
-                      </span>
-                    </div>
-                  ))}
+              <div className="space-y-4">
+                {/* Peso */}
+                <div>
+                  <span className="font-medium text-muted-foreground">
+                    {t("product.specifications.weight")}
+                  </span>
+                  <p className="text-foreground mt-1">
+                    {product.specifications && product.specifications.weight
+                      ? (product.specifications.weight === "Not specified"
+                        ? t("product.specifications.notSpecified")
+                        : product.specifications.weight)
+                      : t("product.specifications.notSpecified")}
+                  </p>
+                </div>
+                {/* Comentario del creador */}
+                <div>
+                  <span className="font-medium text-muted-foreground">
+                    {t("product.specifications.comment")}
+                  </span>
+                  <p className="text-foreground mt-1">
+                    {product.description || t("product.specifications.notSpecified")}
+                  </p>
+                </div>
               </div>
             </CardContent>
           </Card>
         );
       case 1:
-        return (
-          <Card>
-            <CardContent className="text-center py-8">
-              <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">{t("product.alternatives.noAlternatives")}</h3>
-              <p className="text-muted-foreground">{t("product.alternatives.noAlternativesMessage")}</p>
-            </CardContent>
-          </Card>
-        );
-      case 2:
         return (
           <Card>
             <CardHeader>
@@ -76,7 +76,7 @@ export const ProductTabs: React.FC<ProductTabsProps> = ({ product, createdByUser
             </CardContent>
           </Card>
         );
-      case 3:
+      case 2:
         return (
           <Card>
             <CardHeader>
@@ -163,7 +163,7 @@ export const ProductTabs: React.FC<ProductTabsProps> = ({ product, createdByUser
       {/* Desktop: tabs normales */}
       <div className="hidden md:block">
         <Tabs defaultValue={TAB_KEYS[0]}>
-          <TabsList className="w-full grid grid-cols-4 border-b border-border mb-2">
+          <TabsList className="w-full grid grid-cols-3 border-b border-border mb-2">
             {TAB_KEYS.map((key, idx) => (
               <TabsTrigger key={key} value={key}>{tabTitles[idx]}</TabsTrigger>
             ))}
@@ -171,7 +171,6 @@ export const ProductTabs: React.FC<ProductTabsProps> = ({ product, createdByUser
           <TabsContent value={TAB_KEYS[0]} className="mt-6">{renderTabContent(0)}</TabsContent>
           <TabsContent value={TAB_KEYS[1]} className="mt-6">{renderTabContent(1)}</TabsContent>
           <TabsContent value={TAB_KEYS[2]} className="mt-6">{renderTabContent(2)}</TabsContent>
-          <TabsContent value={TAB_KEYS[3]} className="mt-6">{renderTabContent(3)}</TabsContent>
         </Tabs>
       </div>
     </div>

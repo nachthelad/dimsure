@@ -286,7 +286,7 @@ export default function ProductDetailPage({
               </Badge>
             </div>
 
-            <p className="text-muted-foreground mb-6">{product.description}</p>
+            {/* Quitar descripción aquí, ya no se muestra en la vista principal */}
           </div>
 
           {/* Submission Info - Solo mostrar si está logueado */}

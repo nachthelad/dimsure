@@ -238,6 +238,7 @@ export const es = {
         packageWeight: "Peso del Paquete:",
         weight: "Peso:",
         notSpecified: "No especificado",
+        comment: "Comentarios del creador:",
       },
       alternatives: {
         noAlternatives: "Sin Dimensiones Alternativas",
