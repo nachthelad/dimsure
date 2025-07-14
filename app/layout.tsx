@@ -120,6 +120,11 @@ export default function RootLayout({
 
         {/* Web App Manifest */}
         <link rel="manifest" href="/site.webmanifest" />
+{/* Google Ads - Event snippet for Vista de una página conversion page */}
+<script>
+  gtag('event', 'conversion', {'send_to': 'AW-980303157/Me53CNDr45cZELX6uNMD'});
+</script>
+
       </head>
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
