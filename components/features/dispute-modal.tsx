@@ -11,7 +11,7 @@ import { Upload, X, Image as ImageIcon } from "lucide-react"
 import { getProduct, createDispute, uploadEvidenceImage } from "@/lib/firestore"
 import { validateImageFile } from "@/lib/storage"
 import { useAuth } from "@/hooks/useAuth"
-import { useLanguage } from "@/components/language-provider"
+import { useLanguage } from "@/components/layout/language-provider"
 import { toast } from "@/hooks/use-toast"
 import Image from "next/image"
 

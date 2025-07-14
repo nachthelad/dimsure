@@ -3,7 +3,7 @@
 import { Mail, MessageSquare, Clock, MapPin } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { useLanguage } from "@/components/language-provider"
+import { useLanguage } from "@/components/layout/language-provider"
 import { APP_CONSTANTS } from "@/lib/constants"
 
 export default function ContactPage() {

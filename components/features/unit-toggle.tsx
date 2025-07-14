@@ -2,8 +2,8 @@
 
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
-import { useUnit } from "./unit-provider"
-import { useLanguage } from "./language-provider"
+import { useUnit } from "@/components/layout/unit-provider"
+import { useLanguage } from "@/components/layout/language-provider"
 
 export function UnitToggle() {
   const { unit, setUnit } = useUnit()

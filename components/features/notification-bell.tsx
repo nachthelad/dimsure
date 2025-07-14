@@ -9,7 +9,7 @@ import { getUserNotifications } from "@/lib/firestore"
 import { cn } from "@/lib/utils"
 import { doc, updateDoc, getDoc, doc as firestoreDoc } from "firebase/firestore"
 import { db } from "@/lib/firebase"
-import { useLanguage } from "@/components/language-provider"
+import { useLanguage } from "@/components/layout/language-provider"
 
 export function NotificationBell({ setSidebarForceOpen }: { setSidebarForceOpen?: (open: boolean) => void }) {
   const { user, isLoggedIn } = useAuth()

@@ -8,7 +8,7 @@ import { signInWithGoogle } from "@/lib/auth"
 import { useState, useEffect, Suspense } from "react"
 import { useAuth } from "@/hooks/useAuth"
 import { toast } from "@/hooks/use-toast"
-import { useLanguage } from "@/components/language-provider"
+import { useLanguage } from "@/components/layout/language-provider"
 
 function LoginPageInner() {
   const router = useRouter()

@@ -4,7 +4,7 @@ import { Shield, Eye, Lock, Users, Database, Globe, UserCheck, Settings } from "
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
-import { useLanguage } from "@/components/language-provider"
+import { useLanguage } from "@/components/layout/language-provider"
 
 export default function PrivacyPage() {
   const { t } = useLanguage()

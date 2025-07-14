@@ -2,14 +2,14 @@
 
 import { useState, useEffect } from "react"
 import { Package, TrendingUp, Activity } from "lucide-react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
-import { ProductCard } from "@/components/product-card"
-import { ProductSearch } from "@/components/product-search"
+import { ProductCard } from "@/components/features/product-card"
+import { ProductSearch } from "@/components/features/product-search"
 import { getRecentProducts, getDatabaseStats } from "@/lib/firestore"
-import { useLanguage } from "@/components/language-provider"
+import { useLanguage } from "@/components/layout/language-provider"
 import type { Product } from "@/lib/types"
-import HeroSection from "@/components/hero-section"
+import HeroSection from "@/components/features/hero-section"
 
 interface DatabaseStats {
   totalProducts: number

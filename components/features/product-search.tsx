@@ -7,8 +7,8 @@ import { useRouter } from "next/navigation"
 import { Package } from "lucide-react"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
 import { searchProducts } from "@/lib/firestore"
-import { useUnit } from "./unit-provider"
-import { useLanguage } from "./language-provider"
+import { useUnit } from "@/components/layout/unit-provider"
+import { useLanguage } from "@/components/layout/language-provider"
 import type { Product } from "@/lib/types"
 
 export function ProductSearch() {
