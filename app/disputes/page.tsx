@@ -10,9 +10,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useAuth } from "@/hooks/useAuth"
-import { useLanguage } from "@/components/language-provider"
+import { useLanguage } from "@/components/layout/language-provider"
 import { getDisputes, voteOnDispute, updateDisputeStatus } from "@/lib/firestore"
-import { DisputeModal } from "@/components/dispute-modal"
+import { DisputeModal } from "@/components/features/dispute-modal"
 import { APP_CONSTANTS } from "@/lib/constants"
 
 interface Dispute {

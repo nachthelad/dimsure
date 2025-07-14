@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dialog"
 import { updateUserTag } from "@/lib/firestore"
 import { useAuth } from "@/hooks/useAuth"
-import { useLanguage } from "./language-provider"
+import { useLanguage } from "@/components/layout/language-provider"
 
 interface UserNameModalProps {
   isOpen: boolean

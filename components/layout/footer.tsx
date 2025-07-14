@@ -4,7 +4,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { Mail } from "lucide-react"
 import { Separator } from "@/components/ui/separator"
-import { useLanguage } from "@/components/language-provider"
+import { useLanguage } from "@/components/layout/language-provider"
 import { APP_CONSTANTS } from "@/lib/constants"
 import { FaXTwitter } from "react-icons/fa6"
 

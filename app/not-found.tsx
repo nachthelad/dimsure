@@ -2,7 +2,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { useLanguage } from "@/components/language-provider";
+import { useLanguage } from "@/components/layout/language-provider";
 
 export default function NotFound() {
   const { t } = useLanguage();

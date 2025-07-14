@@ -4,7 +4,7 @@ import { Package, Target, Users, Zap, Mail } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { useLanguage } from "@/components/language-provider"
+import { useLanguage } from "@/components/layout/language-provider"
 
 export default function AboutPage() {
   const { t } = useLanguage()

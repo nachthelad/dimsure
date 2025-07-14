@@ -9,11 +9,11 @@ import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTitle, SheetTrigger, SheetDescription } from "@/components/ui/sheet"
 import { Separator } from "@/components/ui/separator"
 import { cn } from "@/lib/utils"
-import { AuthButton } from "@/components/auth-button"
-import { ThemeToggle } from "@/components/theme-toggle"
-import { LanguageToggle } from "@/components/language-toggle"
-import { useLanguage } from "@/components/language-provider"
-import { NotificationBell } from "@/components/notification-bell"
+import { AuthButton } from "@/components/features/auth-button"
+import { ThemeToggle } from "@/components/features/theme-toggle"
+import { LanguageToggle } from "@/components/features/language-toggle"
+import { useLanguage } from "@/components/layout/language-provider"
+import { NotificationBell } from "@/components/features/notification-bell"
 
 export function Navbar() {
   const pathname = usePathname()

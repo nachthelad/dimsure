@@ -2,18 +2,18 @@
 
 import { useState, useEffect } from "react"
 import { useAuth } from "@/hooks/useAuth"
-import { useLanguage } from "@/components/language-provider"
-import { useUnit } from "@/components/unit-provider"
+import { useLanguage } from "@/components/layout/language-provider"
+import { useUnit } from "@/components/layout/unit-provider"
 import { updateUserTag } from "@/lib/firestore"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
-import { UnitToggle } from "@/components/unit-toggle"
+import { UnitToggle } from "@/components/features/unit-toggle"
 import { useRouter } from "next/navigation"
 import { Timestamp } from "firebase/firestore"
-import { LanguageToggle } from "@/components/language-toggle"
+import { LanguageToggle } from "@/components/features/language-toggle"
 
 export default function ProfilePage() {
   const { user, userData, isLoggedIn, loading } = useAuth()

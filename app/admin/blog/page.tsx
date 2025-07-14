@@ -6,7 +6,7 @@ import { collection, addDoc, serverTimestamp } from "firebase/firestore"
 import { optimizeAndUploadImage, validateImageFile } from "@/lib/storage"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useLanguage } from "@/components/language-provider"
+import { useLanguage } from "@/components/layout/language-provider"
 
 function slugify(text: string) {
   return text

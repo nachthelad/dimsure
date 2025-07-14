@@ -13,8 +13,8 @@ import Link from "next/link"
 import Image from "next/image"
 import { useAuth } from "@/hooks/useAuth"
 import { getUserProducts } from "@/lib/firestore"
-import { useUnit } from "@/components/unit-provider"
-import { useLanguage } from "@/components/language-provider"
+import { useUnit } from "@/components/layout/unit-provider"
+import { useLanguage } from "@/components/layout/language-provider"
 
 interface UserProduct {
   id: string

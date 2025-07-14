@@ -14,7 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import Link from "next/link"
 import Image from "next/image"
 import { useAuth } from "@/hooks/useAuth"
-import { useLanguage } from "@/components/language-provider"
+import { useLanguage } from "@/components/layout/language-provider"
 import { getProduct, updateProductField, getAllBrands, getAllCategories, uploadProductImage, updateProductImages } from "@/lib/firestore"
 import { APP_CONSTANTS } from "@/lib/constants"
 import type { Product } from "@/lib/types"
