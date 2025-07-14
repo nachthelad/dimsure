@@ -243,9 +243,12 @@ export const en = {
         noAlternativesMessage: "This product currently has no alternative measurements submitted by the community.",
       },
       comments: {
-        title: "Community Comments",
-        noComments: "No Comments Yet",
-        noCommentsMessage: "Be the first to share your thoughts about these dimensions.",
+        title: "Comments",
+        noComments: "No comments yet.",
+        loginToComment: "You must be logged in to view and write comments.",
+        add: "Add comment",
+        addPlaceholder: "Write your comment here...",
+        errorAdd: "Could not add comment. Please try again.",
       },
       history: {
         title: "Version History",

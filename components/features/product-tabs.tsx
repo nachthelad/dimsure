@@ -3,6 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Package, MessageCircle, ChevronLeft, ChevronRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { ProductComments } from "@/components/features/product-comments";
 
 interface ProductTabsProps {
   product: any;
@@ -63,18 +64,7 @@ export const ProductTabs: React.FC<ProductTabsProps> = ({ product, createdByUser
         );
       case 1:
         return (
-          <Card>
-            <CardHeader>
-              <CardTitle>{t("product.comments.title")}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-8">
-                <MessageCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">{t("product.comments.noComments")}</h3>
-                <p className="text-muted-foreground">{t("product.comments.noCommentsMessage")}</p>
-              </div>
-            </CardContent>
-          </Card>
+          <ProductComments productSku={product.sku} />
         );
       case 2:
         return (
