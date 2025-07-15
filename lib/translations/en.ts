@@ -558,6 +558,7 @@ export const en = {
         },
         createdBy: "By",
         unknownDate: "Unknown date",
+        pendingCreatorAction: "Pending creator action",
       },
       modal: {
         createTitle: "Report a Data Issue",

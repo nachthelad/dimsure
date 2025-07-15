@@ -43,6 +43,7 @@ interface Dispute {
     resolvedBy: string
     resolvedAt: any
   }
+  resolutionPendingAt?: any
 }
 
 export default function DisputesPage() {
@@ -440,111 +441,135 @@ export default function DisputesPage() {
         </Card>
       ) : (
         <div className="space-y-4">
-          {filteredDisputes.map((dispute) => (
-            <Card key={dispute.id} className="hover:shadow-md transition-shadow">
-              <CardContent className="p-6">
-                <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex flex-wrap items-center gap-2 mb-2">
-                      <h3 className="text-lg font-semibold">{dispute.title || t("disputes.dispute.untitled")}</h3>
-                      <Badge className={getStatusColor(dispute.status)}>
-                        {getStatusIcon(dispute.status)}
-                        <span className="ml-1 capitalize">{dispute.status?.replace('_', ' ') || 'unknown'}</span>
-                      </Badge>
-                      <Badge variant="outline" className={getDisputeTypeColor(dispute.disputeType)}>
-                        {dispute.disputeType || 'Other'}
-                      </Badge>
-                    </div>
-                    
-                    <p className="text-sm text-muted-foreground mb-2">
-                      {t("disputes.dispute.product")} <span className="font-mono">{dispute.productSku || 'N/A'}</span> - {dispute.productName || t("disputes.dispute.unknownProduct")}
-                    </p>
-                    
-                    <p className="text-muted-foreground mb-4">{dispute.description || t("disputes.dispute.noDescription")}</p>
-                    
-                    {dispute.evidence && (
-                      <div className="bg-muted/50 p-3 rounded-lg mb-4">
-                        {(dispute.disputeType === 'measurement' || dispute.disputeType === 'weight') && (
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-                            <div>
-                              <span className="font-medium">{t("disputes.dispute.evidence.current")} </span>
-                              <span className="font-mono">{dispute.evidence.currentValue}</span>
-                            </div>
-                            <div>
-                              <span className="font-medium">{t("disputes.dispute.evidence.proposed")} </span>
-                              <span className="font-mono">{dispute.evidence.proposedValue}</span>
-                            </div>
-                          </div>
+          {filteredDisputes.map((dispute, idx) => {
+            // Identificador legible tipo #001
+            const readableId = `#${(idx + 1).toString().padStart(3, '0')}`;
+            return (
+              <Card key={dispute.id} className="hover:shadow-md transition-shadow">
+                <CardContent className="p-6">
+                  <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-wrap items-center gap-2 mb-2">
+                        {/* Título como link a la página individual */}
+                        <a href={`/disputes/${dispute.id}`} className="text-lg font-semibold hover:underline focus:underline">
+                          {readableId} {dispute.title || t("disputes.dispute.untitled")}
+                        </a>
+                        <Badge className={getStatusColor(dispute.status)}>
+                          {getStatusIcon(dispute.status)}
+                          <span className="ml-1 capitalize">{dispute.status?.replace('_', ' ') || 'unknown'}</span>
+                        </Badge>
+                        <Badge variant="outline" className={getDisputeTypeColor(dispute.disputeType)}>
+                          {dispute.disputeType || 'Other'}
+                        </Badge>
+                        {/* Badge especial si está pendiente de acción */}
+                        {dispute.status === 'in_review' && dispute.resolutionPendingAt && (
+                          <Badge variant="destructive" className="bg-orange-100 text-orange-800 border-orange-200">
+                            {t('disputes.dispute.pendingCreatorAction') || 'Pending creator action'}
+                          </Badge>
                         )}
-                        {dispute.evidence.reasoning && (
-                          <div className="mt-2 text-sm">
-                            <span className="font-medium">{t("disputes.dispute.evidence.evidence")} </span>
-                            {dispute.evidence.reasoning}
-                          </div>
-                        )}
-                        {dispute.evidence.imageUrl && (
-                          <div className="mt-3">
-                            <p className="text-sm font-medium mb-2">{t("disputes.dispute.evidence.evidenceImage")}</p>
-                            <img
-                              src={dispute.evidence.imageUrl}
-                              alt="Evidence"
-                              className="max-w-full max-h-48 rounded-lg object-cover border"
-                            />
-                          </div>
-                        )}
-                      </div>
-                    )}
-
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-muted-foreground">
-                        <span>{t("disputes.dispute.createdBy")} {dispute.createdByTag || '@unknown'}</span>
-                        <span>{dispute.createdAt ? new Date(dispute.createdAt.toDate ? dispute.createdAt.toDate() : dispute.createdAt).toLocaleDateString() : t("disputes.dispute.unknownDate")}</span>
                       </div>
                       
-                      <div className="flex items-center gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleVote(dispute.id, 'up')}
-                          className="flex items-center gap-1"
-                        >
-                          <ThumbsUp className="h-3 w-3" />
-                          {dispute.votes?.upvotes || 0}
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleVote(dispute.id, 'down')}
-                          className="flex items-center gap-1"
-                        >
-                          <ThumbsDown className="h-3 w-3" />
-                          {dispute.votes?.downvotes || 0}
-                        </Button>
-                        
-                        {/* Admin Controls */}
-                        {isAdmin && (
-                          <div className="flex items-center gap-2 ml-4 border-l pl-4">
-                            <Settings className="h-4 w-4 text-muted-foreground" />
-                            <Select value={dispute.status || 'open'} onValueChange={(value) => handleStatusChange(dispute.id, value)}>
-                              <SelectTrigger className="w-32 h-8">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="open">Open</SelectItem>
-                                <SelectItem value="in_review">In Review</SelectItem>
-                                <SelectItem value="resolved">Resolved</SelectItem>
-                                <SelectItem value="rejected">Rejected</SelectItem>
-                              </SelectContent>
-                            </Select>
+                      <p className="text-sm text-muted-foreground mb-2">
+                        {t("disputes.dispute.product")} <span className="font-mono">{dispute.productSku || 'N/A'}</span> - {dispute.productName || t("disputes.dispute.unknownProduct")}
+                      </p>
+                      
+                      <p className="text-muted-foreground mb-4">{dispute.description || t("disputes.dispute.noDescription")}</p>
+                      
+                      {dispute.evidence && (
+                        (dispute.evidence.currentValue || dispute.evidence.proposedValue || dispute.evidence.reasoning || dispute.evidence.imageUrl) && (
+                          <div className="bg-muted/50 p-3 rounded-lg mb-4">
+                            {(dispute.disputeType === 'measurement' || dispute.disputeType === 'weight') && (
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                                {dispute.evidence.currentValue && (
+                                  <div>
+                                    <span className="font-medium">{t("disputes.dispute.evidence.current")} </span>
+                                    <span className="font-mono">{dispute.evidence.currentValue}</span>
+                                  </div>
+                                )}
+                                {dispute.evidence.proposedValue && (
+                                  <div>
+                                    <span className="font-medium">{t("disputes.dispute.evidence.proposed")} </span>
+                                    <span className="font-mono">{dispute.evidence.proposedValue}</span>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                            {dispute.evidence.reasoning && (
+                              <div className="mt-2 text-sm">
+                                <span className="font-medium">{t("disputes.dispute.evidence.evidence")} </span>
+                                {dispute.evidence.reasoning}
+                              </div>
+                            )}
+                            {dispute.evidence.imageUrl && (
+                              <div className="mt-3">
+                                <p className="text-sm font-medium mb-2">{t("disputes.dispute.evidence.evidenceImage")}</p>
+                                <img
+                                  src={dispute.evidence.imageUrl}
+                                  alt="Evidence"
+                                  className="max-w-full max-h-48 rounded-lg object-cover border"
+                                />
+                              </div>
+                            )}
                           </div>
-                        )}
+                        )
+                      )}
+
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-muted-foreground">
+                          <span>{t("disputes.dispute.createdBy")} {dispute.createdByTag || '@unknown'}</span>
+                          <span>{dispute.createdAt ? new Date(dispute.createdAt.toDate ? dispute.createdAt.toDate() : dispute.createdAt).toLocaleDateString() : t("disputes.dispute.unknownDate")}</span>
+                        </div>
+                        
+                        <div className="flex items-center gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleVote(dispute.id, 'up')}
+                            className="flex items-center gap-1"
+                          >
+                            <ThumbsUp className="h-3 w-3" />
+                            {dispute.votes?.upvotes || 0}
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleVote(dispute.id, 'down')}
+                            className="flex items-center gap-1"
+                          >
+                            <ThumbsDown className="h-3 w-3" />
+                            {dispute.votes?.downvotes || 0}
+                          </Button>
+                          {/* Botón para ver detalle */}
+                          <a href={`/disputes/${dispute.id}`}>
+                            <Button size="sm" className="ml-2">
+                              Ver detalle
+                            </Button>
+                          </a>
+                          {/* Admin Controls */}
+                          {isAdmin && (
+                            <div className="flex items-center gap-2 ml-4 border-l pl-4">
+                              <Settings className="h-4 w-4 text-muted-foreground" />
+                              <Select value={dispute.status || 'open'} onValueChange={(value) => handleStatusChange(dispute.id, value)}>
+                                <SelectTrigger className="w-32 h-8">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="open">Open</SelectItem>
+                                  <SelectItem value="in_review">In Review</SelectItem>
+                                  <SelectItem value="resolved">Resolved</SelectItem>
+                                  <SelectItem value="rejected">Rejected</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       )}
 
