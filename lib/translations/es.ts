@@ -561,7 +561,8 @@ export const es = {
           evidenceImage: "Imagen de Evidencia:",
         },
         createdBy: "Por",
-        unknownDate: "Fecha desconocida",
+        unknownDate: "Fecha desconocida",       
+        pendingCreatorAction: "Esperando la edición del creador",
       },
       modal: {
         createTitle: "Reportar un Problema de Datos",
