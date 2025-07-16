@@ -1,7 +1,7 @@
 // Application constants
 export const APP_CONSTANTS = {
   // Admin and contact information
-  ADMIN_EMAIL: "nachthelad.dev@gmail.com",
+  ADMIN_EMAIL: "nacho.vent@gmail.com",
   DEBUG_AUTHORIZED_EMAIL: "nacho.vent@gmail.com",
 
   // Application settings

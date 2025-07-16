@@ -187,7 +187,7 @@ export const es = {
       },
       disputeBadge: "En Disputa",
       disputeNotification: "Se abrió una disputa para tu producto \"{{productName}}\".",
-      pendingApproval: "Este producto está pendiente de aprobación y no es visible públicamente.",
+      resolutionPendingNotification: 'Una disputa para tu producto "{{productName}}" alcanzó los votos requeridos. Por favor edita tu producto antes de que expire el tiempo, o la comunidad podrá editarlo.',
     },
     blog: {
       admin: {
@@ -561,7 +561,10 @@ export const es = {
           evidenceImage: "Imagen de Evidencia:",
         },
         createdBy: "Por",
-        unknownDate: "Fecha desconocida",
+        unknownDate: "Fecha desconocida",       
+        pendingCreatorAction: "Esperando la edición del creador",
+        youCanEditProduct: "Puedes editar el producto",
+        editProduct: "Editar Producto",
       },
       modal: {
         createTitle: "Reportar un Problema de Datos",
@@ -741,4 +744,5 @@ export const es = {
         modalImageAlt: "Imagen grande"
       },
     },
+    pendingApproval: "Este producto está pendiente de aprobación y no es visible públicamente.",
   }as const;

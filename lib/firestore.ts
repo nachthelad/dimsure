@@ -687,6 +687,10 @@ export const createBrandIfNotExists = async (name: string): Promise<string> => {
   return nameNorm;
 };
 
+const enMsg = en.myContributions.resolutionPendingNotification || "A dispute for your product \"{{productName}}\" has reached the required votes. Please edit your product before the time expires, or the community will be able to edit it.";
+const esMsg = es.myContributions.resolutionPendingNotification || "Una disputa para tu producto \"{{productName}}\" alcanzó los votos requeridos. Por favor edita tu producto antes de que expire el tiempo, o la comunidad podrá editarlo.";
+
+
 // Simple translation function for common categories
 const getBasicTranslation = (englishName: string): string => {
   const translations: Record<string, string> = {
@@ -867,23 +871,19 @@ export const voteOnDispute = async (disputeId: string, userId: string, voteType:
   try {
     const disputeRef = doc(db, "disputes", disputeId)
     const disputeDoc = await getDoc(disputeRef)
-    
     if (!disputeDoc.exists()) {
       throw new Error("Dispute not found")
     }
-    
     const data = disputeDoc.data()
     const currentVotes = data.votes || { upvotes: 0, downvotes: 0, userVotes: {} }
     const userVotes = currentVotes.userVotes || {}
     const previousVote = userVotes[userId]
-    
     // Remove previous vote if exists
     if (previousVote === 'up') {
       currentVotes.upvotes = Math.max(0, currentVotes.upvotes - 1)
     } else if (previousVote === 'down') {
       currentVotes.downvotes = Math.max(0, currentVotes.downvotes - 1)
     }
-    
     // Add new vote if different from previous or no previous vote
     if (previousVote !== voteType) {
       if (voteType === 'up') {
@@ -896,13 +896,55 @@ export const voteOnDispute = async (disputeId: string, userId: string, voteType:
       // Remove vote if clicking same vote type
       delete userVotes[userId]
     }
-    
     currentVotes.userVotes = userVotes
-    
-    await updateDoc(disputeRef, {
-      votes: currentVotes
-    })
-    
+    // Calcular porcentaje y total de votos
+    const upvotes = currentVotes.upvotes
+    const downvotes = currentVotes.downvotes
+    const totalVotes = upvotes + downvotes
+    const positiveRatio = totalVotes > 0 ? upvotes / totalVotes : 0
+    let updateData: any = { votes: currentVotes }
+    // Si cumple el umbral y no hay resolutionPendingAt, marcar y notificar
+    if (
+      positiveRatio >= 0.7 &&
+      totalVotes >= 2 &&
+      !data.resolutionPendingAt
+    ) {
+      updateData.resolutionPendingAt = serverTimestamp();
+      updateData.status = 'in_review'; // Cambia automáticamente a in_review
+      // Notificar al creador del producto
+      if (data.productSku) {
+        try {
+          const productDoc = await getDoc(doc(db, "products", data.productSku))
+          if (productDoc.exists()) {
+            const productData = productDoc.data()
+            const creatorId = productData.createdBy
+            if (creatorId) {
+              await createNotificationForDispute({
+                userId: creatorId,
+                productId: data.productSku,
+                disputeId: disputeId,
+                message: {
+                  en: enMsg.replace("{{productName}}", productData.name || data.productSku),
+                  es: esMsg.replace("{{productName}}", productData.name || data.productSku),
+                },
+                status: 'Resolution Pending',
+              })
+            }
+          }
+        } catch (error) {
+          console.error("Error fetching product for dispute notification:", error)
+        }
+      }
+    }
+    // Si recibe mayoría de votos negativos, pasar a 'rejected'
+    if (
+      positiveRatio < 0.3 &&
+      totalVotes >= 2 &&
+      data.status !== 'rejected'
+    ) {
+      updateData.status = 'rejected';
+    }
+    await updateDoc(disputeRef, updateData)
   } catch (error) {
     console.error("Error voting on dispute:", error)
     throw error

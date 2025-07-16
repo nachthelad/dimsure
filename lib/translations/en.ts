@@ -186,6 +186,7 @@ export const en = {
       },
       disputeBadge: "In Dispute",
       disputeNotification: "A dispute has been opened for your product \"{{productName}}\".",
+      resolutionPendingNotification: 'A dispute for your product "{{productName}}" has reached the required votes. Please edit your product before the time expires, or the community will be able to edit it.',
     },
     blog: {
       admin: {
@@ -558,6 +559,9 @@ export const en = {
         },
         createdBy: "By",
         unknownDate: "Unknown date",
+        pendingCreatorAction: "Pending creator action",
+        youCanEditProduct: "You can edit the product",
+        editProduct: "Edit Product",
       },
       modal: {
         createTitle: "Report a Data Issue",
