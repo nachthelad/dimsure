@@ -687,6 +687,10 @@ export const createBrandIfNotExists = async (name: string): Promise<string> => {
   return nameNorm;
 };
 
+const enMsg = en.myContributions.resolutionPendingNotification || "A dispute for your product \"{{productName}}\" has reached the required votes. Please edit your product before the time expires, or the community will be able to edit it.";
+const esMsg = es.myContributions.resolutionPendingNotification || "Una disputa para tu producto \"{{productName}}\" alcanzó los votos requeridos. Por favor edita tu producto antes de que expire el tiempo, o la comunidad podrá editarlo.";
+
+
 // Simple translation function for common categories
 const getBasicTranslation = (englishName: string): string => {
   const translations: Record<string, string> = {
@@ -902,10 +906,11 @@ export const voteOnDispute = async (disputeId: string, userId: string, voteType:
     // Si cumple el umbral y no hay resolutionPendingAt, marcar y notificar
     if (
       positiveRatio >= 0.7 &&
-      totalVotes >= 5 &&
+      totalVotes >= 2 &&
       !data.resolutionPendingAt
     ) {
-      updateData.resolutionPendingAt = serverTimestamp()
+      updateData.resolutionPendingAt = serverTimestamp();
+      updateData.status = 'in_review'; // Cambia automáticamente a in_review
       // Notificar al creador del producto
       if (data.productSku) {
         try {
@@ -919,8 +924,8 @@ export const voteOnDispute = async (disputeId: string, userId: string, voteType:
                 productId: data.productSku,
                 disputeId: disputeId,
                 message: {
-                  en: en.myContributions.disputeNotification.replace("{{productName}}", productData.name || data.productSku),
-                  es: es.myContributions.disputeNotification.replace("{{productName}}", productData.name || data.productSku),
+                  en: enMsg.replace("{{productName}}", productData.name || data.productSku),
+                  es: esMsg.replace("{{productName}}", productData.name || data.productSku),
                 },
                 status: 'Resolution Pending',
               })
@@ -930,6 +935,14 @@ export const voteOnDispute = async (disputeId: string, userId: string, voteType:
           console.error("Error fetching product for dispute notification:", error)
         }
       }
+    }
+    // Si recibe mayoría de votos negativos, pasar a 'rejected'
+    if (
+      positiveRatio < 0.3 &&
+      totalVotes >= 2 &&
+      data.status !== 'rejected'
+    ) {
+      updateData.status = 'rejected';
     }
     await updateDoc(disputeRef, updateData)
   } catch (error) {

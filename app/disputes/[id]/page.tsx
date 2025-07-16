@@ -43,6 +43,7 @@ interface Dispute {
   }
   productImages?: string[] // Added for product images
   resolutionPendingAt?: any // Added for resolution pending status
+  provisionalEditor?: string // Added for provisional editor
 }
 
 export default function DisputeDetailPage() {
@@ -203,7 +204,21 @@ export default function DisputeDetailPage() {
                 {t('disputes.dispute.pendingCreatorAction') || 'Pending creator action'}
               </Badge>
             )}
+            {/* Badge y botón para el provisionalEditor */}
+            {dispute.status === 'in_review' && dispute.provisionalEditor === user?.uid && (
+              <Badge variant="default" className="bg-green-100 text-green-800 border-green-200">
+                {t('disputes.dispute.youCanEditProduct') || 'You can edit the product'}
+              </Badge>
+            )}
           </div>
+          {/* Botón para editar producto si es provisionalEditor */}
+          {dispute.status === 'in_review' && dispute.provisionalEditor === user?.uid && (
+            <div className="mt-4">
+              <Button onClick={() => router.push(`/edit-product/${dispute.productSku}`)}>
+                {t('disputes.dispute.editProduct') || 'Edit Product'}
+              </Button>
+            </div>
+          )}
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground mb-2">
