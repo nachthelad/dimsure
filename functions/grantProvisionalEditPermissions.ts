@@ -1,4 +1,4 @@
-import * as functions from "firebase-functions";
+import * as functions from "firebase-functions/v1";
 import * as admin from "firebase-admin";
 
 admin.initializeApp();
@@ -6,7 +6,7 @@ const db = admin.firestore();
 
 export const grantProvisionalEditPermissions = functions.pubsub
   .schedule("every 1 hours")
-  .onRun(async (context) => {
+  .onRun(async (_context: any) => {
     const now = admin.firestore.Timestamp.now();
     const disputesSnap = await db
       .collection("disputes")
@@ -22,7 +22,9 @@ export const grantProvisionalEditPermissions = functions.pubsub
       if (!pendingAt) continue;
 
       // 7 días en milisegundos
-      const sevenDaysMs = 7 * 24 * 60 * 60 * 1000;
+      // const sevenDaysMs = 7 * 24 * 60 * 60 * 1000;
+      // Para testing, usar 1 minuto (60 * 1000 ms)
+      const sevenDaysMs = 1 * 60 * 1000; // 1 minuto para pruebas
       const nowMs = now.toMillis();
       const pendingAtMs = pendingAt.toMillis ? pendingAt.toMillis() : new Date(pendingAt).getTime();
 
@@ -32,6 +34,7 @@ export const grantProvisionalEditPermissions = functions.pubsub
       const productSnap = await db.collection("products").doc(dispute.productSku).get();
       if (!productSnap.exists) continue;
       const product = productSnap.data();
+      if (!product) continue;
 
       // Si el producto fue modificado después de resolutionPendingAt, no dar permiso
       const lastModified = product.lastModified?.toMillis
@@ -60,4 +63,4 @@ export const grantProvisionalEditPermissions = functions.pubsub
       });
     }
     return null;
-  }); 
+  });
