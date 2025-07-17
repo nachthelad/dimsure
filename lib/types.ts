@@ -29,6 +29,8 @@ export interface Dispute {
   productImages?: string[];
   resolutionPendingAt?: any;
   provisionalEditor?: string;
+  productCreatedBy?: string;
+  productLastModified?: any;
 }
 
 export interface Product {

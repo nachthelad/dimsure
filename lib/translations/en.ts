@@ -687,6 +687,7 @@ export const en = {
       edit: "Edit",
       delete: "Delete",
       view: "View",
+      viewDetail: "View Detail",
       share: "Share",
       like: "Like",
       unlike: "Unlike",
@@ -700,6 +701,7 @@ export const en = {
       back: "Back",
       next: "Next",
       previous: "Previous",
+      backToList: "Back to list",
       comingSoon: "Coming Soon",
     },
     units: {
