@@ -55,23 +55,35 @@ export default function DisputeDetailPage() {
       setCanProvisionalEdit(false)
       return
     }
-    if (dispute.status !== "in_review") return setCanProvisionalEdit(false)
-    if (!dispute.resolutionPendingAt) return setCanProvisionalEdit(false)
-    if (dispute.provisionalEditor && dispute.provisionalEditor !== user.uid) return setCanProvisionalEdit(false)
-    if (dispute.createdBy !== user.uid) return setCanProvisionalEdit(false)
-    // Tiempo de gracia (1 minuto para pruebas, 7 días en prod)
-    const gracePeriodMs = 7 * 24 * 60 * 60 * 1000 // 7 días
-    const now = Date.now()
-    const pendingAtMs = dispute.resolutionPendingAt.toMillis
-      ? dispute.resolutionPendingAt.toMillis()
-      : new Date(dispute.resolutionPendingAt).getTime()
-    if (now - pendingAtMs < gracePeriodMs) return setCanProvisionalEdit(false)
-    // El producto no debe haber sido editado después de la disputa
-    const lastModifiedMs = product.lastModified?.toMillis
-      ? product.lastModified.toMillis()
-      : new Date(product.lastModified).getTime()
-    if (lastModifiedMs > pendingAtMs) return setCanProvisionalEdit(false)
-    setCanProvisionalEdit(true)
+    if (dispute.status === "in_review" && dispute.resolutionPendingAt) {
+      const pendingAtMs = dispute.resolutionPendingAt.toMillis
+        ? dispute.resolutionPendingAt.toMillis()
+        : new Date(dispute.resolutionPendingAt).getTime()
+      const lastModifiedMs = product.lastModified?.toMillis
+        ? product.lastModified.toMillis()
+        : new Date(product.lastModified).getTime()
+      const now = Date.now()
+      const gracePeriodMs = 7 * 24 * 60 * 60 * 1000 // 7 días
+      // Si el producto fue editado después de la disputa, nadie puede editar
+      if (lastModifiedMs > pendingAtMs) {
+        setCanProvisionalEdit(false)
+        return
+      }
+      // Durante los primeros 7 días, solo el creador del producto puede editar
+      if (now - pendingAtMs < gracePeriodMs) {
+        if (product.createdBy === user.uid) {
+          setCanProvisionalEdit(true)
+          return
+        }
+      } else {
+        // Pasados los 7 días, solo el creador de la disputa puede editar
+        if (dispute.createdBy === user.uid) {
+          setCanProvisionalEdit(true)
+          return
+        }
+      }
+    }
+    setCanProvisionalEdit(false)
   }, [dispute, product, user])
 
   const loadDispute = async () => {
@@ -226,20 +238,18 @@ export default function DisputeDetailPage() {
     return null // O notFound()
   }
 
-  // Identificador legible tipo #001
   const readableId = disputeIndex !== null ? `#${(disputeIndex + 1).toString().padStart(3, '0')}` : ''
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-2xl">
+    <div className="container mx-auto px-4 py-8 max-w-3xl">
       <Button variant="outline" className="mb-6" onClick={() => router.push('/disputes')}>
-        ← Volver a la lista
+        ← {t("common.backToList")}
       </Button>
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl font-bold">
             {readableId} {dispute.title || t("disputes.dispute.untitled")}
           </CardTitle>
-          {/* Badges debajo del título */}
           <div className="flex flex-wrap gap-2 mt-2">
             <Badge className={getStatusColor(dispute.status)}>
               {getStatusIcon(dispute.status)}
@@ -248,13 +258,11 @@ export default function DisputeDetailPage() {
             <Badge variant="outline" className={getDisputeTypeColor(dispute.disputeType)}>
               {dispute.disputeType || 'Other'}
             </Badge>
-            {/* Mostrar badge especial si está pendiente de acción */}
             {dispute.status === 'in_review' && dispute.resolutionPendingAt && (
               <Badge variant="destructive" className="bg-orange-100 text-orange-800 border-orange-200">
                 {t('disputes.dispute.pendingCreatorAction') || 'Pending creator action'}
               </Badge>
             )}
-            {/* Badge y botón para el provisionalEditor */}
             {canProvisionalEdit && (
               <Badge variant="default" className="bg-green-100 text-green-800 border-green-200">
                 {t('disputes.dispute.youCanEditProduct') || 'You can edit the product'}
@@ -266,16 +274,7 @@ export default function DisputeDetailPage() {
           <p className="text-sm text-muted-foreground mb-2">
             {t("disputes.dispute.product")} <span className="font-mono">{dispute.productSku || 'N/A'}</span> - {dispute.productName || t("disputes.dispute.unknownProduct")}
           </p>
-          {/* Mostrar imágenes del producto si existen */}
-          {dispute.productImages && Array.isArray(dispute.productImages) && dispute.productImages.length > 0 && (
-            <div className="flex gap-2 mb-4">
-              {dispute.productImages.map((img: string, i: number) => (
-                <img key={i} src={img} alt="Product" className="w-16 h-16 object-cover rounded border" />
-              ))}
-            </div>
-          )}
           <p className="text-muted-foreground mb-4">{dispute.description || t("disputes.dispute.noDescription")}</p>
-          {/* Solo mostrar evidencia si hay datos relevantes */}
           {dispute.evidence && (
             (dispute.evidence.currentValue || dispute.evidence.proposedValue || dispute.evidence.reasoning || dispute.evidence.imageUrl) && (
               <div className="bg-muted/50 p-3 rounded-lg mb-4">
@@ -320,7 +319,6 @@ export default function DisputeDetailPage() {
               <span>{dispute.createdAt ? new Date(dispute.createdAt.toDate ? dispute.createdAt.toDate() : dispute.createdAt).toLocaleDateString() : t("disputes.dispute.unknownDate")}</span>
             </div>
             <div className="flex items-center gap-2">
-              {/* Botón de editar producto a la izquierda de los likes */}
               {canProvisionalEdit && (
                 <Button
                   variant="default"

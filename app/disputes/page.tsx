@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useAuth } from "@/hooks/useAuth"
 import { useLanguage } from "@/components/layout/language-provider"
-import { getDisputes, voteOnDispute, updateDisputeStatus } from "@/lib/firestore"
+import { getDisputes, voteOnDispute, updateDisputeStatus, getProduct } from "@/lib/firestore"
 import { DisputeModal } from "@/components/features/dispute-modal"
 import { APP_CONSTANTS } from "@/lib/constants"
 import { toast } from "@/hooks/use-toast"
@@ -81,8 +81,24 @@ export default function DisputesPage() {
   const loadDisputes = async () => {
     try {
       setDisputesLoading(true)
-      const disputesData = await getDisputes()
-      setDisputes(disputesData)
+      const disputesData = await getDisputes() as Dispute[];
+      // Enriquecer con datos del producto
+      const enrichedDisputes = await Promise.all(disputesData.map(async (dispute) => {
+        if (dispute.productSku) {
+          try {
+            const product = await getProduct(dispute.productSku)
+            return {
+              ...dispute,
+              productCreatedBy: product?.createdBy,
+              productLastModified: product?.lastModified,
+            }
+          } catch {
+            return dispute
+          }
+        }
+        return dispute
+      }))
+      setDisputes(enrichedDisputes)
     } catch (error) {
       console.error("Error loading disputes:", error)
     } finally {
@@ -457,16 +473,29 @@ export default function DisputesPage() {
       ) : (
         <div className="space-y-4">
           {filteredDisputes.map((dispute) => {
-            // Identificador legible tipo #001 (más vieja primero)
             const idx = disputesByOldest.findIndex(d => d.id === dispute.id)
             const readableId = `#${(idx + 1).toString().padStart(3, '0')} -`;
+            // Lógica para mostrar el badge de edición
+            let canEdit = false;
+            if (user && dispute.status === 'in_review' && dispute.resolutionPendingAt && dispute.productCreatedBy && dispute.productLastModified) {
+              const pendingAtMs = dispute.resolutionPendingAt.toDate ? dispute.resolutionPendingAt.toDate().getTime() : new Date(dispute.resolutionPendingAt).getTime();
+              const lastModifiedMs = dispute.productLastModified.toDate ? dispute.productLastModified.toDate().getTime() : (dispute.productLastModified ? new Date(dispute.productLastModified).getTime() : 0);
+              const now = Date.now();
+              const gracePeriodMs = 7 * 24 * 60 * 60 * 1000;
+              if (!lastModifiedMs || lastModifiedMs <= pendingAtMs) {
+                if (now - pendingAtMs < gracePeriodMs) {
+                  if (dispute.productCreatedBy === user.uid) canEdit = true;
+                } else {
+                  if (dispute.createdBy === user.uid) canEdit = true;
+                }
+              }
+            }
             return (
               <Card key={dispute.id} className="hover:shadow-md transition-shadow">
                 <CardContent className="p-6">
                   <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
                     <div className="flex-1 min-w-0">
                       <div className="flex flex-wrap items-center gap-2 mb-2">
-                        {/* Título como link a la página individual */}
                         <a href={`/disputes/${dispute.id}`} className="text-lg font-semibold hover:underline focus:underline">
                           {readableId} {dispute.title || t("disputes.dispute.untitled")}
                         </a>
@@ -477,10 +506,14 @@ export default function DisputesPage() {
                         <Badge variant="outline" className={getDisputeTypeColor(dispute.disputeType)}>
                           {dispute.disputeType || 'Other'}
                         </Badge>
-                        {/* Badge especial si está pendiente de acción */}
                         {dispute.status === 'in_review' && dispute.resolutionPendingAt && (
                           <Badge variant="destructive" className="bg-orange-100 text-orange-800 border-orange-200">
                             {t('disputes.dispute.pendingCreatorAction') || 'Pending creator action'}
+                          </Badge>
+                        )}
+                        {canEdit && (
+                          <Badge variant="default" className="bg-green-100 text-green-800 border-green-200">
+                            {t('disputes.dispute.youCanEditProduct') || 'You can edit the product'}
                           </Badge>
                         )}
                       </div>
@@ -557,10 +590,9 @@ export default function DisputesPage() {
                             {voteLoading[dispute.id] === "down" ? <Loader2 className="h-3 w-3 animate-spin" /> : <ThumbsDown className="h-3 w-3" />}
                             {dispute.votes?.downvotes || 0}
                           </Button>
-                          {/* Botón para ver detalle */}
                           <a href={`/disputes/${dispute.id}`}>
                             <Button size="sm" className="ml-2">
-                              Ver detalle
+                              {t("common.viewDetail")}
                             </Button>
                           </a>
                           {/* Admin Controls */}
