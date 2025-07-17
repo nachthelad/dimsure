@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useRouter, notFound, useParams } from "next/navigation"
-import { MessageSquare, Scale, Users, Plus, Clock, ThumbsUp, ThumbsDown, AlertTriangle, CheckCircle, XCircle, Settings } from "lucide-react"
+import { Clock, ThumbsUp, ThumbsDown, AlertTriangle, CheckCircle, XCircle, Settings, Loader2 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -10,40 +10,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Skeleton } from "@/components/ui/skeleton"
 import { useAuth } from "@/hooks/useAuth"
 import { useLanguage } from "@/components/layout/language-provider"
-import { getDisputes, voteOnDispute, updateDisputeStatus } from "@/lib/firestore"
+import { getDisputes, voteOnDispute, updateDisputeStatus, getProduct } from "@/lib/firestore"
 import { APP_CONSTANTS } from "@/lib/constants"
+import { toast } from "@/hooks/use-toast"
+import type { Dispute } from "@/lib/types"
 
-interface Dispute {
-  id: string
-  title?: string
-  description?: string
-  productSku?: string
-  productName?: string
-  disputeType?: 'measurement' | 'description' | 'category' | 'image' | 'weight' | 'other'
-  status?: 'open' | 'in_review' | 'resolved' | 'rejected'
-  createdBy?: string
-  createdByTag?: string
-  createdAt?: any
-  votes?: {
-    upvotes: number
-    downvotes: number
-    userVotes: { [userId: string]: 'up' | 'down' }
-  }
-  evidence?: {
-    currentValue?: string
-    proposedValue?: string
-    reasoning?: string
-    imageUrl?: string
-  }
-  resolution?: {
-    action: string
-    reason: string
-    resolvedBy: string
-    resolvedAt: any
-  }
-  productImages?: string[] // Added for product images
-  resolutionPendingAt?: any // Added for resolution pending status
-}
 
 export default function DisputeDetailPage() {
   const { isLoggedIn, loading, user, userData } = useAuth()
@@ -53,6 +24,9 @@ export default function DisputeDetailPage() {
   const [dispute, setDispute] = useState<Dispute | null>(null)
   const [disputeIndex, setDisputeIndex] = useState<number | null>(null)
   const [disputesLoading, setDisputesLoading] = useState(true)
+  const [product, setProduct] = useState<any>(null)
+  const [canProvisionalEdit, setCanProvisionalEdit] = useState(false)
+  const [voteLoading, setVoteLoading] = useState<"up" | "down" | null>(null)
 
   // Check if current user is admin
   const isAdmin = userData?.email === APP_CONSTANTS.ADMIN_EMAIL || userData?.email === APP_CONSTANTS.DEBUG_AUTHORIZED_EMAIL
@@ -70,17 +44,57 @@ export default function DisputeDetailPage() {
     // eslint-disable-next-line
   }, [isLoggedIn, params?.id])
 
+  useEffect(() => {
+    if (dispute?.productSku) {
+      getProduct(dispute.productSku).then(setProduct)
+    }
+  }, [dispute])
+
+  useEffect(() => {
+    if (!dispute || !product || !user) {
+      setCanProvisionalEdit(false)
+      return
+    }
+    if (dispute.status !== "in_review") return setCanProvisionalEdit(false)
+    if (!dispute.resolutionPendingAt) return setCanProvisionalEdit(false)
+    if (dispute.provisionalEditor && dispute.provisionalEditor !== user.uid) return setCanProvisionalEdit(false)
+    if (dispute.createdBy !== user.uid) return setCanProvisionalEdit(false)
+    // Tiempo de gracia (1 minuto para pruebas, 7 días en prod)
+    const gracePeriodMs = 7 * 24 * 60 * 60 * 1000 // 7 días
+    const now = Date.now()
+    const pendingAtMs = dispute.resolutionPendingAt.toMillis
+      ? dispute.resolutionPendingAt.toMillis()
+      : new Date(dispute.resolutionPendingAt).getTime()
+    if (now - pendingAtMs < gracePeriodMs) return setCanProvisionalEdit(false)
+    // El producto no debe haber sido editado después de la disputa
+    const lastModifiedMs = product.lastModified?.toMillis
+      ? product.lastModified.toMillis()
+      : new Date(product.lastModified).getTime()
+    if (lastModifiedMs > pendingAtMs) return setCanProvisionalEdit(false)
+    setCanProvisionalEdit(true)
+  }, [dispute, product, user])
+
   const loadDispute = async () => {
     try {
       setDisputesLoading(true)
       // getDisputes trae todas, buscamos la que corresponde
       const disputesData = await getDisputes()
-      const idx = disputesData.findIndex(d => d.id === params.id)
+      // Ordenar por fecha ascendente (más vieja primero)
+      const disputesByOldest = [...disputesData as Dispute[]].sort((a, b) => {
+        // Si falta createdAt, lo mandamos al final
+        if (!a.createdAt && !b.createdAt) return 0;
+        if (!a.createdAt) return 1;
+        if (!b.createdAt) return -1;
+        const aTime = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt)
+        const bTime = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt)
+        return aTime.getTime() - bTime.getTime()
+      })
+      const idx = disputesByOldest.findIndex(d => d.id === params.id)
       if (idx === -1) {
         notFound()
         return
       }
-      setDispute(disputesData[idx])
+      setDispute(disputesByOldest[idx])
       setDisputeIndex(idx)
     } catch (error) {
       notFound()
@@ -91,11 +105,48 @@ export default function DisputeDetailPage() {
 
   const handleVote = async (disputeId: string, voteType: 'up' | 'down') => {
     if (!user) return
+    setVoteLoading(voteType)
+    // Actualización optimista de votos
+    setDispute(prev => {
+      if (!prev) return prev
+      const prevVotes = prev.votes || { upvotes: 0, downvotes: 0, userVotes: {} }
+      const userVotes = { ...prevVotes.userVotes }
+      const previousVote = userVotes[user.uid]
+      let upvotes = prevVotes.upvotes
+      let downvotes = prevVotes.downvotes
+      // Quitar voto anterior
+      if (previousVote === 'up') upvotes = Math.max(0, upvotes - 1)
+      if (previousVote === 'down') downvotes = Math.max(0, downvotes - 1)
+      // Agregar nuevo voto
+      if (previousVote !== voteType) {
+        if (voteType === 'up') upvotes += 1
+        else downvotes += 1
+        userVotes[user.uid] = voteType
+      } else {
+        // Si hace click en el mismo, lo quita
+        delete userVotes[user.uid]
+      }
+      return {
+        ...prev,
+        votes: {
+          ...prevVotes,
+          upvotes,
+          downvotes,
+          userVotes
+        }
+      }
+    })
     try {
       await voteOnDispute(disputeId, user.uid, voteType)
-      loadDispute()
+      // No recargues toda la disputa
     } catch (error) {
-      console.error("Error voting on dispute:", error)
+      toast({
+       title: "Error",
+        description: "No se pudo registrar tu voto. Por favor, intenta de nuevo.",
+      variant: "destructive",
+         })
+    } finally {
+      setVoteLoading(null)
     }
   }
 
@@ -203,6 +254,12 @@ export default function DisputeDetailPage() {
                 {t('disputes.dispute.pendingCreatorAction') || 'Pending creator action'}
               </Badge>
             )}
+            {/* Badge y botón para el provisionalEditor */}
+            {canProvisionalEdit && (
+              <Badge variant="default" className="bg-green-100 text-green-800 border-green-200">
+                {t('disputes.dispute.youCanEditProduct') || 'You can edit the product'}
+              </Badge>
+            )}
           </div>
         </CardHeader>
         <CardContent>
@@ -263,13 +320,25 @@ export default function DisputeDetailPage() {
               <span>{dispute.createdAt ? new Date(dispute.createdAt.toDate ? dispute.createdAt.toDate() : dispute.createdAt).toLocaleDateString() : t("disputes.dispute.unknownDate")}</span>
             </div>
             <div className="flex items-center gap-2">
+              {/* Botón de editar producto a la izquierda de los likes */}
+              {canProvisionalEdit && (
+                <Button
+                  variant="default"
+                  size="sm"
+                  className="mr-2"
+                  onClick={() => router.push(`/edit-product/${dispute.productSku}`)}
+                >
+                  {t('disputes.dispute.editProduct') || 'Edit Product'}
+                </Button>
+              )}
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => handleVote(dispute.id, 'up')}
                 className="flex items-center gap-1"
+                disabled={voteLoading === "up"}
               >
-                <ThumbsUp className="h-3 w-3" />
+                {voteLoading === "up" ? <Loader2 className="h-3 w-3 animate-spin" /> : <ThumbsUp className="h-3 w-3" />}
                 {dispute.votes?.upvotes || 0}
               </Button>
               <Button
@@ -277,8 +346,9 @@ export default function DisputeDetailPage() {
                 size="sm"
                 onClick={() => handleVote(dispute.id, 'down')}
                 className="flex items-center gap-1"
+                disabled={voteLoading === "down"}
               >
-                <ThumbsDown className="h-3 w-3" />
+                {voteLoading === "down" ? <Loader2 className="h-3 w-3 animate-spin" /> : <ThumbsDown className="h-3 w-3" />}
                 {dispute.votes?.downvotes || 0}
               </Button>
               {/* Admin Controls */}

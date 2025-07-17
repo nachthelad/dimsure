@@ -1,7 +1,7 @@
 // Application constants
 export const APP_CONSTANTS = {
   // Admin and contact information
-  ADMIN_EMAIL: "nachthelad.dev@gmail.com",
+  ADMIN_EMAIL: "nacho.vent@gmail.com",
   DEBUG_AUTHORIZED_EMAIL: "nacho.vent@gmail.com",
 
   // Application settings
@@ -15,6 +15,7 @@ export const APP_CONSTANTS = {
   },
 
   // UI constants
-  ITEMS_PER_PAGE: 20,
-  MAX_SEARCH_RESULTS: 100,
+  MAX_SEARCH_RESULTS: 10,
+  // Dispute system
+  MIN_DISPUTE_VOTES: 5,
 } as const

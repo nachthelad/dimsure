@@ -14,37 +14,8 @@ import { useLanguage } from "@/components/layout/language-provider"
 import { getDisputes, voteOnDispute, updateDisputeStatus } from "@/lib/firestore"
 import { DisputeModal } from "@/components/features/dispute-modal"
 import { APP_CONSTANTS } from "@/lib/constants"
-
-interface Dispute {
-  id: string
-  title?: string
-  description?: string
-  productSku?: string
-  productName?: string
-  disputeType?: 'measurement' | 'description' | 'category' | 'image' | 'weight' | 'other'
-  status?: 'open' | 'in_review' | 'resolved' | 'rejected'
-  createdBy?: string
-  createdByTag?: string
-  createdAt?: any
-  votes?: {
-    upvotes: number
-    downvotes: number
-    userVotes: { [userId: string]: 'up' | 'down' }
-  }
-  evidence?: {
-    currentValue?: string
-    proposedValue?: string
-    reasoning?: string
-    imageUrl?: string
-  }
-  resolution?: {
-    action: string
-    reason: string
-    resolvedBy: string
-    resolvedAt: any
-  }
-  resolutionPendingAt?: any
-}
+import { toast } from "@/hooks/use-toast"
+import type { Dispute } from "@/lib/types"
 
 export default function DisputesPage() {
   const { isLoggedIn, loading, user, userData } = useAuth()
@@ -58,6 +29,7 @@ export default function DisputesPage() {
   const [showMyReports, setShowMyReports] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
+  const [voteLoading, setVoteLoading] = useState<{ [disputeId: string]: "up" | "down" | null }>({})
 
   // Check if current user is admin
   const isAdmin = userData?.email === APP_CONSTANTS.ADMIN_EMAIL || userData?.email === APP_CONSTANTS.DEBUG_AUTHORIZED_EMAIL
@@ -120,12 +92,48 @@ export default function DisputesPage() {
 
   const handleVote = async (disputeId: string, voteType: 'up' | 'down') => {
     if (!user) return
-    
+    setVoteLoading(prev => ({ ...prev, [disputeId]: voteType }))
+    // Actualización optimista de votos
+    setFilteredDisputes(prev => prev.map(d => {
+      if (d.id !== disputeId) return d
+      const prevVotes = d.votes || { upvotes: 0, downvotes: 0, userVotes: {} }
+      const userVotes = { ...prevVotes.userVotes }
+      const previousVote = userVotes[user.uid]
+      let upvotes = prevVotes.upvotes
+      let downvotes = prevVotes.downvotes
+      // Quitar voto anterior
+      if (previousVote === 'up') upvotes = Math.max(0, upvotes - 1)
+      if (previousVote === 'down') downvotes = Math.max(0, downvotes - 1)
+      // Agregar nuevo voto
+      if (previousVote !== voteType) {
+        if (voteType === 'up') upvotes += 1
+        else downvotes += 1
+        userVotes[user.uid] = voteType
+      } else {
+        // Si hace click en el mismo, lo quita
+        delete userVotes[user.uid]
+      }
+      return {
+        ...d,
+        votes: {
+          ...prevVotes,
+          upvotes,
+          downvotes,
+          userVotes
+        }
+      }
+    }))
     try {
       await voteOnDispute(disputeId, user.uid, voteType)
-      loadDisputes()
+      // Opcional: podrías recargar solo la disputa si quieres máxima precisión
     } catch (error) {
-      console.error("Error voting on dispute:", error)
+      toast({
+        title: "Error",
+        description: "No se pudo registrar tu voto. Por favor, intenta de nuevo.",
+        variant: "destructive",
+      })
+    } finally {
+      setVoteLoading(prev => ({ ...prev, [disputeId]: null }))
     }
   }
 
@@ -266,6 +274,13 @@ export default function DisputesPage() {
   if (!isLoggedIn) {
     return null // Will redirect
   }
+
+  // Ordena todas las disputas por fecha ascendente (más vieja primero)
+  const disputesByOldest = [...disputes].sort((a, b) => {
+    const aTime = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt)
+    const bTime = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt)
+    return aTime.getTime() - bTime.getTime()
+  })
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
@@ -441,9 +456,10 @@ export default function DisputesPage() {
         </Card>
       ) : (
         <div className="space-y-4">
-          {filteredDisputes.map((dispute, idx) => {
-            // Identificador legible tipo #001
-            const readableId = `#${(idx + 1).toString().padStart(3, '0')}`;
+          {filteredDisputes.map((dispute) => {
+            // Identificador legible tipo #001 (más vieja primero)
+            const idx = disputesByOldest.findIndex(d => d.id === dispute.id)
+            const readableId = `#${(idx + 1).toString().padStart(3, '0')} -`;
             return (
               <Card key={dispute.id} className="hover:shadow-md transition-shadow">
                 <CardContent className="p-6">
@@ -526,8 +542,9 @@ export default function DisputesPage() {
                             size="sm"
                             onClick={() => handleVote(dispute.id, 'up')}
                             className="flex items-center gap-1"
+                            disabled={voteLoading[dispute.id] === "up"}
                           >
-                            <ThumbsUp className="h-3 w-3" />
+                            {voteLoading[dispute.id] === "up" ? <Loader2 className="h-3 w-3 animate-spin" /> : <ThumbsUp className="h-3 w-3" />}
                             {dispute.votes?.upvotes || 0}
                           </Button>
                           <Button
@@ -535,8 +552,9 @@ export default function DisputesPage() {
                             size="sm"
                             onClick={() => handleVote(dispute.id, 'down')}
                             className="flex items-center gap-1"
+                            disabled={voteLoading[dispute.id] === "down"}
                           >
-                            <ThumbsDown className="h-3 w-3" />
+                            {voteLoading[dispute.id] === "down" ? <Loader2 className="h-3 w-3 animate-spin" /> : <ThumbsDown className="h-3 w-3" />}
                             {dispute.votes?.downvotes || 0}
                           </Button>
                           {/* Botón para ver detalle */}

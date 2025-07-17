@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation"
 import { Package } from "lucide-react"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
 import { searchProducts } from "@/lib/firestore"
+import { APP_CONSTANTS } from "@/lib/constants"
 import { useUnit } from "@/components/layout/unit-provider"
 import { useLanguage } from "@/components/layout/language-provider"
 import type { Product } from "@/lib/types"
@@ -26,7 +27,7 @@ export function ProductSearch() {
       if (searchTerm.trim().length >= 2) {
         setLoading(true)
         try {
-          const results = await searchProducts(searchTerm, 8)
+          const results = await searchProducts(searchTerm, APP_CONSTANTS.MAX_SEARCH_RESULTS)
           setProducts(results)
         } catch (error) {
           console.error("Search error:", error)

@@ -15,9 +15,10 @@ import Link from "next/link"
 import Image from "next/image"
 import { useAuth } from "@/hooks/useAuth"
 import { useLanguage } from "@/components/layout/language-provider"
-import { getProduct, updateProductField, getAllBrands, getAllCategories, uploadProductImage, updateProductImages } from "@/lib/firestore"
+import { getProduct, updateProductField, getAllBrands, getAllCategories, uploadProductImage, updateProductImages, getProductDisputes, updateDisputeStatus } from "@/lib/firestore"
 import { APP_CONSTANTS } from "@/lib/constants"
-import type { Product } from "@/lib/types"
+import type { Product, Dispute } from "@/lib/types"
+
 
 export default function EditProductPage({
   params,
@@ -34,6 +35,7 @@ export default function EditProductPage({
   const [brands, setBrands] = useState<string[]>([])
   const [categories, setCategories] = useState<string[]>([])
   const [canEdit, setCanEdit] = useState(false)
+  const [provisionalDisputeId, setProvisionalDisputeId] = useState<string | null>(null)
   
   // Individual field states
   const [name, setName] = useState("")
@@ -75,7 +77,37 @@ export default function EditProductPage({
         setProduct(productData)
         
         // Check permissions
-        const userCanEdit = isAdmin || (user && productData.createdBy === user.uid)
+        let userCanEdit = isAdmin || (user && productData.createdBy === user.uid)
+        let foundProvisional = false
+        if (!userCanEdit && user) {
+          // Buscar disputas in_review para este producto creadas por el usuario
+          const disputes: Dispute[] = await getProductDisputes(productData.sku)
+          const now = Date.now()
+          for (const d of disputes) {
+            if (
+              d.status === 'in_review' &&
+              d.createdBy === user.uid &&
+              d.resolutionPendingAt &&
+              (!d.provisionalEditor || d.provisionalEditor === user.uid)
+            ) {
+              // Tiempo de gracia (1 minuto para pruebas)
+              const gracePeriodMs = 7 * 24 * 60 * 60 * 1000 // 7 días
+              const pendingAtMs = d.resolutionPendingAt.toMillis
+                ? d.resolutionPendingAt.toMillis()
+                : new Date(d.resolutionPendingAt).getTime()
+              if (now - pendingAtMs < gracePeriodMs) continue
+              // El producto no debe haber sido editado después de la disputa
+              const lastModifiedMs = productData.lastModified?.toMillis
+                ? productData.lastModified.toMillis()
+                : new Date(productData.lastModified).getTime()
+              if (lastModifiedMs > pendingAtMs) continue
+              userCanEdit = true
+              foundProvisional = true
+              setProvisionalDisputeId(d.id)
+              break
+            }
+          }
+        }
         setCanEdit(!!userCanEdit)
         
         if (!userCanEdit) {
@@ -173,6 +205,16 @@ export default function EditProductPage({
       setTimeout(() => {
         setSuccessStates(prev => ({ ...prev, [originalField]: false }))
       }, 2000)
+      
+      // Si el usuario es provisionalEditor, quitar el permiso de la disputa
+      if (provisionalDisputeId) {
+        await updateDisputeStatus(provisionalDisputeId, 'resolved', {
+          action: 'Product edited by provisional editor',
+          reason: 'Dispute resolved by community',
+          resolvedBy: user.uid
+        })
+        setProvisionalDisputeId(null)
+      }
       
     } catch (error) {
       console.error(`Error saving ${originalField}:`, error)
