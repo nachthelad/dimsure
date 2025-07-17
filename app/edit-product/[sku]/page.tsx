@@ -17,7 +17,8 @@ import { useAuth } from "@/hooks/useAuth"
 import { useLanguage } from "@/components/layout/language-provider"
 import { getProduct, updateProductField, getAllBrands, getAllCategories, uploadProductImage, updateProductImages, getProductDisputes, updateDisputeStatus } from "@/lib/firestore"
 import { APP_CONSTANTS } from "@/lib/constants"
-import type { Product } from "@/lib/types"
+import type { Product, Dispute } from "@/lib/types"
+
 
 export default function EditProductPage({
   params,
@@ -79,15 +80,32 @@ export default function EditProductPage({
         let userCanEdit = isAdmin || (user && productData.createdBy === user.uid)
         let foundProvisional = false
         if (!userCanEdit && user) {
-          // Buscar disputas in_review con provisionalEditor para este producto
-          const disputes = await getProductDisputes(productData.sku)
-          const matching = disputes.find(
-            (d: any) => d.status === 'in_review' && d.provisionalEditor === user.uid
-          )
-          if (matching) {
-            userCanEdit = true
-            foundProvisional = true
-            setProvisionalDisputeId(matching.id)
+          // Buscar disputas in_review para este producto creadas por el usuario
+          const disputes: Dispute[] = await getProductDisputes(productData.sku)
+          const now = Date.now()
+          for (const d of disputes) {
+            if (
+              d.status === 'in_review' &&
+              d.createdBy === user.uid &&
+              d.resolutionPendingAt &&
+              (!d.provisionalEditor || d.provisionalEditor === user.uid)
+            ) {
+              // Tiempo de gracia (1 minuto para pruebas)
+              const gracePeriodMs = 7 * 24 * 60 * 60 * 1000 // 7 días
+              const pendingAtMs = d.resolutionPendingAt.toMillis
+                ? d.resolutionPendingAt.toMillis()
+                : new Date(d.resolutionPendingAt).getTime()
+              if (now - pendingAtMs < gracePeriodMs) continue
+              // El producto no debe haber sido editado después de la disputa
+              const lastModifiedMs = productData.lastModified?.toMillis
+                ? productData.lastModified.toMillis()
+                : new Date(productData.lastModified).getTime()
+              if (lastModifiedMs > pendingAtMs) continue
+              userCanEdit = true
+              foundProvisional = true
+              setProvisionalDisputeId(d.id)
+              break
+            }
           }
         }
         setCanEdit(!!userCanEdit)

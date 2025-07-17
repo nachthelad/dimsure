@@ -22,6 +22,7 @@ import { normalizeProduct } from "./product-normalizer"
 import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage"
 import { en } from "@/lib/translations/en"
 import { es } from "@/lib/translations/es"
+import { APP_CONSTANTS } from "./constants"
 
 // Product operations
 export const createProduct = async (productData: any, userId: string) => {
@@ -906,7 +907,7 @@ export const voteOnDispute = async (disputeId: string, userId: string, voteType:
     // Si cumple el umbral y no hay resolutionPendingAt, marcar y notificar
     if (
       positiveRatio >= 0.7 &&
-      totalVotes >= 2 &&
+      totalVotes >= APP_CONSTANTS.MIN_DISPUTE_VOTES &&
       !data.resolutionPendingAt
     ) {
       updateData.resolutionPendingAt = serverTimestamp();
@@ -939,7 +940,7 @@ export const voteOnDispute = async (disputeId: string, userId: string, voteType:
     // Si recibe mayoría de votos negativos, pasar a 'rejected'
     if (
       positiveRatio < 0.3 &&
-      totalVotes >= 2 &&
+      totalVotes >= APP_CONSTANTS.MIN_DISPUTE_VOTES &&
       data.status !== 'rejected'
     ) {
       updateData.status = 'rejected';
