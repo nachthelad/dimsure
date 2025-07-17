@@ -1,0 +1,72 @@
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+
+interface CategoryFieldProps {
+  value: string
+  selectedCategory: any | null
+  onChange: (value: string) => void
+  onInput: (value: string) => void
+  onSelect: (cat: any) => void
+  options: any[]
+  inputRef: React.RefObject<HTMLInputElement>
+  locale: string
+  error?: string
+  t: (key: string) => string
+}
+
+export function CategoryField({ 
+  value, 
+  selectedCategory, 
+  onChange, 
+  onInput, 
+  onSelect, 
+  options, 
+  inputRef, 
+  locale, 
+  error, 
+  t 
+}: CategoryFieldProps) {
+  return (
+    <div className="space-y-2">
+      <Label htmlFor="category">{t("addProduct.form.category")} *</Label>
+      <div className="relative">
+        <Input
+          id="category"
+          type="text"
+          placeholder={t("addProduct.form.categoryPlaceholder")}
+          value={selectedCategory ? (selectedCategory.translations?.[locale] || selectedCategory.name) : value}
+          onChange={(e) => {
+            onChange(e.target.value)
+            onInput(e.target.value)
+          }}
+          onBlur={(e) => {
+            const error = e.target.value.trim() === "" ? t("addProduct.validation.categoryRequired") : undefined
+            if (error) {
+              // This would need to be handled by the parent component
+            }
+          }}
+          ref={inputRef}
+          autoComplete="off"
+          className={error ? "border-red-500 focus:border-red-500" : ""}
+          required
+        />
+        {options.length > 0 && (
+          <ul className="absolute z-10 bg-background border border-border rounded w-full mt-1 max-h-40 overflow-auto shadow">
+            {options.map((option) => (
+              <li
+                key={option.name}
+                className="px-3 py-2 cursor-pointer hover:bg-primary/10"
+                onClick={() => onSelect(option)}
+              >
+                {option.translations?.[locale] || option.name}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+      {error && (
+        <p className="text-sm text-red-500">{error}</p>
+      )}
+    </div>
+  )
+} 

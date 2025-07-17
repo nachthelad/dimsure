@@ -10,6 +10,7 @@ import { AccountReactivation } from "@/components/features/account-reactivation"
 import { ThemeProvider } from "@/components/layout/theme-provider"
 import { LanguageProvider } from "@/components/layout/language-provider"
 import { UnitProvider } from "@/components/layout/unit-provider"
+import { TooltipProvider } from "@/components/ui/tooltip"
 import { siteConfig } from "@/lib/site-config"
 import { Analytics } from "@vercel/analytics/next"
 
@@ -130,15 +131,17 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
           <LanguageProvider>
             <UnitProvider>
-              <div className="min-h-screen bg-background xl:flex">
-                <Navbar />
-                <div className="flex-1 flex flex-col min-h-screen xl:ml-20">
-                  <main className="flex-1">{children}</main>
-                  <Footer />
+              <TooltipProvider>
+                <div className="min-h-screen bg-background xl:flex">
+                  <Navbar />
+                  <div className="flex-1 flex flex-col min-h-screen xl:ml-20">
+                    <main className="flex-1">{children}</main>
+                    <Footer />
+                  </div>
+                  <CookieConsent />
+                  <AccountReactivation />
                 </div>
-                <CookieConsent />
-                <AccountReactivation />
-              </div>
+              </TooltipProvider>
             </UnitProvider>
           </LanguageProvider>
         </ThemeProvider>
