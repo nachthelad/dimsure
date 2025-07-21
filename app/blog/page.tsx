@@ -1,33 +1,33 @@
 "use client"
-import { useEffect, useState } from "react"
+
 import Link from "next/link"
+import { useEffect, useState } from "react"
 import { db } from "@/lib/firebase"
 import { collection, getDocs, query, orderBy } from "firebase/firestore"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
-
-interface Post {
-  id: string
-  title?: string
-  slug?: string
-  content?: string
-  coverImage?: string
-  createdAt?: any
-}
+import { useLanguage } from "@/components/layout/language-provider"
+import type { BlogPost } from "@/lib/types"
 
 export default function BlogPage() {
+  const { t } = useLanguage()
   const [loading, setLoading] = useState(true)
-  const [posts, setPosts] = useState<Post[]>([])
+  const [posts, setPosts] = useState<BlogPost[]>([])
 
   useEffect(() => {
     async function fetchPosts() {
-      const q = query(collection(db, "blogPosts"), orderBy("createdAt", "desc"))
-      const snapshot = await getDocs(q)
-      const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Post[]
-      setPosts(data)
-      setLoading(false)
+      try {
+        const q = query(collection(db, "blogPosts"), orderBy("createdAt", "desc"))
+        const snapshot = await getDocs(q)
+        const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as BlogPost[]
+        setPosts(data)
+      } catch (error) {
+        console.error("Error fetching posts:", error)
+      } finally {
+        setLoading(false)
+      }
     }
     fetchPosts()
   }, [])
@@ -75,9 +75,9 @@ export default function BlogPage() {
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
       <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold text-foreground mb-4">Dimsure Blog</h1>
+        <h1 className="text-4xl font-bold text-foreground mb-4">{t("blog.title")}</h1>
         <p className="text-xl text-muted-foreground">
-          Articles and tips about packaging, logistics and Dimsure updates.
+          {t("blog.subtitle")}
         </p>
       </div>
 
@@ -85,10 +85,10 @@ export default function BlogPage() {
         {posts.length === 0 && (
           <Card className="max-w-2xl mx-auto">
             <CardHeader className="text-center">
-              <CardTitle className="text-2xl">No articles yet</CardTitle>
+              <CardTitle className="text-2xl">{t("blog.noArticles")}</CardTitle>
             </CardHeader>
             <CardContent className="text-center">
-              <p className="text-muted-foreground">There are no blog articles published yet.</p>
+              <p className="text-muted-foreground">{t("blog.noArticlesMessage")}</p>
             </CardContent>
           </Card>
         )}
@@ -107,7 +107,7 @@ export default function BlogPage() {
                   {post.title}
                 </CardTitle>
                 <div className="text-xs text-muted-foreground mt-1">
-                  {post.createdAt?.toDate ? post.createdAt.toDate().toLocaleDateString() : ""}
+                  {post.createdAt?.toDate ? post.createdAt.toDate().toLocaleDateString() : t("blog.unknownDate")}
                 </div>
               </CardHeader>
               <CardContent className="flex-1">

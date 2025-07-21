@@ -213,6 +213,14 @@ export const es = {
       resolutionPendingNotification: 'Una disputa para tu producto "{{productName}}" alcanzó los votos requeridos. Por favor edita tu producto antes de que expire el tiempo, o la comunidad podrá editarlo.',
     },
     blog: {
+      title: "Blog de Dimsure",
+      subtitle: "Artículos y consejos sobre embalaje, logística y actualizaciones de Dimsure.",
+      noArticles: "Aún no hay artículos",
+      noArticlesMessage: "Aún no se han publicado artículos en el blog.",
+      backToBlog: "Volver al blog",
+      by: "Por",
+      on: "el",
+      unknownDate: "Fecha desconocida",
       admin: {
         notAuthorized: "No autorizado",
         loading: "Cargando...",

@@ -55,3 +55,16 @@ export interface Product {
   status?: 'approved' | 'pending' | 'rejected';
   moderationResults?: any[];
 }
+
+export interface BlogPost {
+  id: string;
+  title?: string;
+  slug?: string;
+  content?: string;
+  coverImage?: string;
+  createdAt?: any;
+  author?: string;
+  excerpt?: string;
+  tags?: string[];
+  status?: 'draft' | 'published' | 'archived';
+}
