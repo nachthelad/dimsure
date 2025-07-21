@@ -9,11 +9,14 @@ import { Button } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
+import { useLanguage } from "@/components/layout/language-provider"
+import type { BlogPost } from "@/lib/types"
 
 export default function BlogPostPage() {
   const { slug } = useParams<{ slug: string }>()
+  const { t } = useLanguage()
   const [loading, setLoading] = useState(true)
-  const [post, setPost] = useState<any>(null)
+  const [post, setPost] = useState<BlogPost | null>(null)
 
   useEffect(() => {
     async function fetchPost() {
@@ -46,7 +49,7 @@ export default function BlogPostPage() {
       <div className="mb-6">
         <Button asChild variant="outline">
           <Link href="/blog">
-            <ArrowLeft className="mr-2 h-4 w-4" /> Volver al blog
+            <ArrowLeft className="mr-2 h-4 w-4" /> {t("blog.backToBlog")}
           </Link>
         </Button>
       </div>
@@ -61,7 +64,7 @@ export default function BlogPostPage() {
         <CardHeader>
           <CardTitle>{post.title}</CardTitle>
           <div className="text-xs text-muted-foreground mt-1">
-            {post.createdAt?.toDate ? post.createdAt.toDate().toLocaleDateString() : ""}
+            {post.createdAt?.toDate ? post.createdAt.toDate().toLocaleDateString() : t("blog.unknownDate")}
             <span> &middot; Dimsure</span>
           </div>
         </CardHeader>

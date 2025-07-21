@@ -12,6 +12,28 @@ const nextConfig = {
     domains: ['placeholder.svg'],
     unoptimized: true,
   },
+  async redirects() {
+    return [
+      {
+        source: '/blog/',
+        destination: '/blog',
+        permanent: true,
+      },
+    ]
+  },
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'X-Robots-Tag',
+            value: 'index, follow',
+          },
+        ],
+      },
+    ]
+  },
 }
 
 export default nextConfig

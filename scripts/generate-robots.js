@@ -13,6 +13,11 @@ Allow: /
 Disallow: /my-contributions
 Disallow: /disputes
 Disallow: /add-product
+Disallow: /admin/
+
+# Allow blog explicitly
+Allow: /blog
+Allow: /blog/
 
 # Sitemap location
 Sitemap: ${siteConfig.url}/sitemap.xml
