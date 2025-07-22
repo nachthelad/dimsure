@@ -1,27 +1,29 @@
-"use client"
+"use client";
 
-import { Switch } from "@/components/ui/switch"
-import { Label } from "@/components/ui/label"
-import { useUnit } from "@/components/layout/unit-provider"
-import { useLanguage } from "@/components/layout/language-provider"
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { useUnit } from "@/components/layout/unit-provider";
+import { useLanguage } from "@/components/layout/language-provider";
 
 export function UnitToggle() {
-  const { unit, setUnit } = useUnit()
-  const { t } = useLanguage()
+  const { unitSystem, setUnitSystem } = useUnit();
+  const { t } = useLanguage();
 
   return (
     <div className="flex items-center space-x-2">
       <Label htmlFor="unit-toggle" className="text-sm font-medium">
-        {t("units.mm")}
+        {t("units.metric")}
       </Label>
       <Switch
         id="unit-toggle"
-        checked={unit === "inches"}
-        onCheckedChange={(checked) => setUnit(checked ? "inches" : "mm")}
+        checked={unitSystem === "imperial"}
+        onCheckedChange={(checked) =>
+          setUnitSystem(checked ? "imperial" : "metric")
+        }
       />
       <Label htmlFor="unit-toggle" className="text-sm font-medium">
-        {t("units.inches")}
+        {t("units.imperial")}
       </Label>
     </div>
-  )
+  );
 }
