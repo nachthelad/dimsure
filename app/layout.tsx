@@ -1,21 +1,23 @@
-import type React from "react"
-import type { Metadata } from "next"
-import { Inter } from "next/font/google"
-import Script from "next/script"
-import "./globals.css"
-import { Navbar } from "@/components/layout/navbar"
-import { Footer } from "@/components/layout/footer"
-import { CookieConsent } from "@/components/layout/cookie-consent"
-import { AccountReactivation } from "@/components/features/account-reactivation"
-import { ThemeProvider } from "@/components/layout/theme-provider"
-import { LanguageProvider } from "@/components/layout/language-provider"
-import { UnitProvider } from "@/components/layout/unit-provider"
-import { TooltipProvider } from "@/components/ui/tooltip"
-import { siteConfig } from "@/lib/site-config"
-import { Analytics } from "@vercel/analytics/next"
+import type React from "react";
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import Script from "next/script";
+import "./globals.css";
+import { Navbar } from "@/components/layout/navbar";
+import { Footer } from "@/components/layout/footer";
+import { CookieConsent } from "@/components/layout/cookie-consent";
+import { AccountReactivation } from "@/components/features/account-reactivation";
+import { ThemeProvider } from "@/components/layout/theme-provider";
+import { LanguageProvider } from "@/components/layout/language-provider";
+import { UnitProvider } from "@/components/layout/unit-provider";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { siteConfig } from "@/lib/site-config";
+import { Analytics } from "@vercel/analytics/next";
+import { headers } from "next/headers";
+import { getServerLocale } from "@/lib/translations";
+import { parseCookies, COOKIE_NAMES } from "@/lib/cookies";
 
-
-const inter = Inter({ subsets: ["latin"] })
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: `${siteConfig.name} — Measure it once. Trust it forever.`,
@@ -62,18 +64,34 @@ export const metadata: Metadata = {
     canonical: siteConfig.url,
   },
   generator: "v0.dev",
-}
+};
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
+  const headersList = await headers();
+  const cookieHeader = headersList.get("cookie") || "";
+  const acceptLanguage = headersList.get("accept-language") || "";
+  const locale = getServerLocale(cookieHeader, acceptLanguage) as "en" | "es";
+
+  // Detect unit system from cookies
+  const cookies = parseCookies(cookieHeader);
+  const unitSystem =
+    (cookies[COOKIE_NAMES.UNITS] as "metric" | "imperial") || "metric";
+
+  // Detect theme from cookies (next-themes uses 'theme' cookie)
+  const theme = (cookies["theme"] as "light" | "dark" | "system") || "dark";
+
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning>
       <head>
         {/* Google Analytics with Consent Mode */}
-        <Script src="https://www.googletagmanager.com/gtag/js?id=G-KY8VFRM514" strategy="afterInteractive" />
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-KY8VFRM514"
+          strategy="afterInteractive"
+        />
         <Script id="google-analytics" strategy="afterInteractive">
           {`
             window.dataLayer = window.dataLayer || [];
@@ -105,16 +123,43 @@ export default function RootLayout({
             });
           `}
         </Script>
-        <meta name="google-site-verification" content="c1efNuZhhG-SikmDFge_tg2KrONNix0vCkpjSnhCj_o" />
+        <meta
+          name="google-site-verification"
+          content="c1efNuZhhG-SikmDFge_tg2KrONNix0vCkpjSnhCj_o"
+        />
         <link rel="canonical" href={siteConfig.url} />
 
         {/* Favicon and app icons */}
         <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-        <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png" />
-        <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png" />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="16x16"
+          href="/favicon-16x16.png"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="32x32"
+          href="/favicon-32x32.png"
+        />
+        <link
+          rel="apple-touch-icon"
+          sizes="180x180"
+          href="/apple-touch-icon.png"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="192x192"
+          href="/android-chrome-192x192.png"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="512x512"
+          href="/android-chrome-512x512.png"
+        />
 
         {/* Theme color */}
         <meta name="theme-color" content="#10b981" />
@@ -125,12 +170,16 @@ export default function RootLayout({
         <Script id="google-ads-conversion" strategy="afterInteractive">
           {`gtag('event', 'conversion', {'send_to': 'AW-980303157/Me53CNDr45cZELX6uNMD'});`}
         </Script>
-
       </head>
       <body className={inter.className}>
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
-          <LanguageProvider>
-            <UnitProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme={theme}
+          enableSystem
+          disableTransitionOnChange
+        >
+          <LanguageProvider defaultLocale={locale}>
+            <UnitProvider defaultUnitSystem={unitSystem}>
               <TooltipProvider>
                 <div className="min-h-screen bg-background xl:flex">
                   <Navbar />
@@ -148,5 +197,5 @@ export default function RootLayout({
         <Analytics />
       </body>
     </html>
-  )
+  );
 }

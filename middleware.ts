@@ -1,25 +1,28 @@
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
-  const { pathname, host } = request.nextUrl
-  
+  const { pathname, host } = request.nextUrl;
+
   // Redirect www to non-www
-  if (host.startsWith('www.')) {
-    const newHost = host.replace('www.', '')
-    const newUrl = new URL(request.url)
-    newUrl.host = newHost
-    return NextResponse.redirect(newUrl, 301)
+  if (host.startsWith("www.")) {
+    const newHost = host.replace("www.", "");
+    const newUrl = new URL(request.url);
+    newUrl.host = newHost;
+    return NextResponse.redirect(newUrl, 301);
   }
 
   // Ensure HTTPS
-  if (process.env.NODE_ENV === 'production' && !request.headers.get('x-forwarded-proto')?.includes('https')) {
-    const newUrl = new URL(request.url)
-    newUrl.protocol = 'https:'
-    return NextResponse.redirect(newUrl, 301)
+  if (
+    process.env.NODE_ENV === "production" &&
+    !request.headers.get("x-forwarded-proto")?.includes("https")
+  ) {
+    const newUrl = new URL(request.url);
+    newUrl.protocol = "https:";
+    return NextResponse.redirect(newUrl, 301);
   }
 
-  return NextResponse.next()
+  return NextResponse.next();
 }
 
 export const config = {
@@ -31,6 +34,6 @@ export const config = {
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      */
-    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+    "/((?!api|_next/static|_next/image|favicon.ico).*)",
   ],
-} 
+};
