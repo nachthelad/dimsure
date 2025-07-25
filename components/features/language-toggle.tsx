@@ -1,49 +1,25 @@
-"use client"
+"use client";
 
-import { Globe } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { useLanguage } from "@/components/layout/language-provider"
-import { locales, localeNames, localeFlags } from "@/lib/i18n"
-import React from "react"
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { useLanguage } from "@/components/layout/language-provider";
 
-export function LanguageToggle({ setSidebarForceOpen }: { setSidebarForceOpen?: (open: boolean) => void }) {
-  const { locale, setLocale } = useLanguage()
-  const [open, setOpen] = React.useState(false)
-
-  const currentLanguage = {
-    name: localeNames[locale],
-    flag: localeFlags[locale],
-  }
-
-  const handleOpenChange = (isOpen: boolean) => {
-    setOpen(isOpen)
-    if (setSidebarForceOpen) setSidebarForceOpen(isOpen)
-  }
+export function LanguageToggle() {
+  const { locale, setLocale } = useLanguage();
 
   return (
-    <DropdownMenu open={open} onOpenChange={handleOpenChange}>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="sm" className="flex items-center gap-2">
-          <Globe className="h-4 w-4" />
-          <span className="hidden sm:inline">
-            {currentLanguage.flag} {currentLanguage.name}
-          </span>
-          <span className="sm:hidden">{currentLanguage.flag}</span>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        {locales.map((localeCode) => (
-          <DropdownMenuItem
-            key={localeCode}
-            onClick={() => setLocale(localeCode)}
-            className={locale === localeCode ? "bg-accent" : ""}
-          >
-            <span className="mr-2">{localeFlags[localeCode]}</span>
-            {localeNames[localeCode]}
-          </DropdownMenuItem>
-        ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
-  )
+    <div className="flex items-center space-x-2">
+      <Label htmlFor="language-toggle" className="text-sm font-medium">
+        EN
+      </Label>
+      <Switch
+        id="language-toggle"
+        checked={locale === "es"}
+        onCheckedChange={(checked) => setLocale(checked ? "es" : "en")}
+      />
+      <Label htmlFor="language-toggle" className="text-sm font-medium">
+        ES
+      </Label>
+    </div>
+  );
 }
