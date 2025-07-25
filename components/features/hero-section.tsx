@@ -1,9 +1,9 @@
-import { getTranslation } from "@/lib/translations";
-import { defaultLocale } from "@/lib/i18n";
+"use client";
 
-export default function HeroSection({ lang }: { lang?: string }) {
-  const locale = lang || defaultLocale;
-  const t = (key: string) => getTranslation(locale, key);
+import { useLanguage } from "@/components/layout/language-provider";
+
+export default function HeroSection() {
+  const { t } = useLanguage();
   return (
     <div className="text-center mb-8">
       <h1 className="text-3xl md:text-5xl font-bold text-foreground mb-3">
@@ -16,4 +16,4 @@ export default function HeroSection({ lang }: { lang?: string }) {
       </p>
     </div>
   );
-} 
+}
