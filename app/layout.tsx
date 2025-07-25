@@ -7,6 +7,7 @@ import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { CookieConsent } from "@/components/layout/cookie-consent";
 import { AccountReactivation } from "@/components/features/account-reactivation";
+import { UsernameRequirement } from "@/components/features/username-requirement";
 import { ThemeProvider } from "@/components/layout/theme-provider";
 import { LanguageProvider } from "@/components/layout/language-provider";
 import { UnitProvider } from "@/components/layout/unit-provider";
@@ -63,7 +64,7 @@ export const metadata: Metadata = {
   alternates: {
     canonical: siteConfig.url,
   },
-  generator: "v0.dev",
+  generator: "Dimsure",
 };
 
 export default async function RootLayout({
@@ -189,6 +190,7 @@ export default async function RootLayout({
                   </div>
                   <CookieConsent />
                   <AccountReactivation />
+                  <UsernameRequirement />
                 </div>
               </TooltipProvider>
             </UnitProvider>

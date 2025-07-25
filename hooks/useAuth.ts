@@ -1,81 +1,71 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { type User, onAuthStateChanged } from "firebase/auth"
-import { auth } from "@/lib/firebase"
-import { getUserById, checkAccountStatus, reactivateAccount } from "@/lib/firestore"
-
-export interface UserData {
-  publicTag?: string
-  email?: string
-  displayName?: string
-  createdAt?: any
-  lastLoginAt?: any
-  isActive?: boolean
-  tagLastChanged?: any 
-  role?: string;
-}
+import { useEffect, useState } from "react";
+import { type User, onAuthStateChanged } from "firebase/auth";
+import { auth } from "@/lib/firebase";
+import { UserService } from "@/lib/services/user-service";
+import { UserData } from "@/lib/types/user";
 
 export function useAuth() {
-  const [user, setUser] = useState<User | null>(null)
-  const [userData, setUserData] = useState<UserData | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [user, setUser] = useState<User | null>(null);
+  const [userData, setUserData] = useState<UserData | null>(null);
+  const [loading, setLoading] = useState(true);
   const [accountStatus, setAccountStatus] = useState({
     isActive: true,
     needsReactivation: false,
-  })
+  });
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      setUser(firebaseUser)
+      setUser(firebaseUser);
 
       if (firebaseUser) {
         try {
           // Get user data from Firestore
-          const data = await getUserById(firebaseUser.uid)
-          setUserData(data)
+          const data = await UserService.getUserById(firebaseUser.uid);
+          setUserData(data);
 
           // Check account status
-          const status = await checkAccountStatus(firebaseUser.uid)
+          const status = await UserService.checkAccountStatus(firebaseUser.uid);
 
           if (status.exists && !status.isActive) {
             // Account exists but is deactivated
-            setAccountStatus({ isActive: false, needsReactivation: true })
+            setAccountStatus({ isActive: false, needsReactivation: true });
           } else {
             // Account is active or doesn't exist yet
-            setAccountStatus({ isActive: true, needsReactivation: false })
+            setAccountStatus({ isActive: true, needsReactivation: false });
           }
         } catch (error) {
-          console.error("Error fetching user data:", error)
-          setUserData(null)
-          setAccountStatus({ isActive: true, needsReactivation: false })
+          console.error("Error fetching user data:", error);
+          setUserData(null);
+          setAccountStatus({ isActive: true, needsReactivation: false });
         }
       } else {
-        setUserData(null)
-        setAccountStatus({ isActive: true, needsReactivation: false })
+        setUserData(null);
+        setAccountStatus({ isActive: true, needsReactivation: false });
       }
 
-      setLoading(false)
-    })
+      setLoading(false);
+    });
 
-    return () => unsubscribe()
-  }, [])
+    return () => unsubscribe();
+  }, []);
 
   const handleReactivateAccount = async () => {
     if (user) {
       try {
-        await reactivateAccount(user.uid)
-        setAccountStatus({ isActive: true, needsReactivation: false })
-        return true
+        await UserService.reactivateAccount(user.uid);
+        setAccountStatus({ isActive: true, needsReactivation: false });
+        return true;
       } catch (error) {
-        console.error("Failed to reactivate account:", error)
-        return false
+        console.error("Failed to reactivate account:", error);
+        return false;
       }
     }
-    return false
-  }
+    return false;
+  };
 
-  const isLoggedIn = !!user && accountStatus.isActive
+  const isLoggedIn = !!user && accountStatus.isActive;
 
   return {
     user,
@@ -84,5 +74,5 @@ export function useAuth() {
     accountStatus,
     handleReactivateAccount,
     isLoggedIn,
-  }
+  };
 }

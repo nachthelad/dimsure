@@ -4,10 +4,17 @@ import { useLanguage } from "@/components/layout/language-provider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-import { Heart, ThumbsDown, Loader2, User, ThumbsUp, Trash2 } from "lucide-react";
+import { ThumbsDown, Loader2, User, ThumbsUp, Trash2 } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { toast } from "@/hooks/use-toast";
-import { getProductComments, addProductComment, likeProductComment, dislikeProductComment, getUserById, deleteProductComment } from "@/lib/firestore";
+import {
+  getProductComments,
+  addProductComment,
+  likeProductComment,
+  dislikeProductComment,
+  getUserById,
+  deleteProductComment,
+} from "@/lib/firestore";
 import { APP_CONSTANTS } from "@/lib/constants";
 
 interface ProductCommentsProps {
@@ -50,7 +57,11 @@ export function ProductComments({ productSku }: ProductCommentsProps) {
               const userData = await getUserById(comment.userId);
               return {
                 ...comment,
-                userName: userData?.publicTag || comment.userName || userData?.displayName || "@user",
+                userName:
+                  userData?.publicTag ||
+                  comment.userName ||
+                  userData?.displayName ||
+                  "@user",
               };
             }
             return comment;
@@ -67,7 +78,8 @@ export function ProductComments({ productSku }: ProductCommentsProps) {
     try {
       await addProductComment(productSku, {
         userId: user.uid,
-        userName: userData?.publicTag || user.displayName || user.email || "@user",
+        userName:
+          userData?.publicTag || user.displayName || user.email || "@user",
         userPhotoURL: user.photoURL,
         text: newComment.trim(),
         createdAt: new Date(),
@@ -77,7 +89,11 @@ export function ProductComments({ productSku }: ProductCommentsProps) {
       const updated = await getProductComments(productSku);
       setComments(updated as Comment[]);
     } catch (e: any) {
-      toast({ title: t("product.comments.errorAdd"), description: e?.message, variant: "destructive" });
+      toast({
+        title: t("product.comments.errorAdd"),
+        description: e?.message,
+        variant: "destructive",
+      });
     } finally {
       setSubmitting(false);
     }
@@ -99,7 +115,12 @@ export function ProductComments({ productSku }: ProductCommentsProps) {
     if (!user) return;
     setLikeLoading(commentId);
     try {
-      await dislikeProductComment(productSku, commentId, user.uid, alreadyDisliked);
+      await dislikeProductComment(
+        productSku,
+        commentId,
+        user.uid,
+        alreadyDisliked
+      );
       const updated = await getProductComments(productSku);
       setComments(updated as Comment[]);
     } finally {
@@ -120,7 +141,11 @@ export function ProductComments({ productSku }: ProductCommentsProps) {
             const userData = await getUserById(comment.userId);
             return {
               ...comment,
-              userName: userData?.publicTag || comment.userName || userData?.displayName || "@user",
+              userName:
+                userData?.publicTag ||
+                comment.userName ||
+                userData?.displayName ||
+                "@user",
             };
           }
           return comment;
@@ -140,7 +165,9 @@ export function ProductComments({ productSku }: ProductCommentsProps) {
         </CardHeader>
         <CardContent>
           <p className="mb-4">{t("product.comments.loginToComment")}</p>
-          <Button onClick={() => window.location.href = "/login"}>{t("navigation.signIn")}</Button>
+          <Button onClick={() => (window.location.href = "/login")}>
+            {t("navigation.signIn")}
+          </Button>
         </CardContent>
       </Card>
     );
@@ -159,57 +186,109 @@ export function ProductComments({ productSku }: ProductCommentsProps) {
         ) : (
           <>
             {comments.length === 0 ? (
-              <div className="text-center text-muted-foreground py-8">{t("product.comments.noComments")}</div>
+              <div className="text-center text-muted-foreground py-8">
+                {t("product.comments.noComments")}
+              </div>
             ) : (
               <div className="space-y-6 mb-6">
                 {comments.map((comment) => (
-                  <div key={comment.id} className="flex items-start gap-3 border-b border-border pb-4 last:border-0 last:pb-0">
+                  <div
+                    key={comment.id}
+                    className="flex items-start gap-3 border-b border-border pb-4 last:border-0 last:pb-0"
+                  >
                     <Avatar>
                       {comment.userPhotoURL ? (
-                        <AvatarImage src={comment.userPhotoURL} alt={comment.userName} />
+                        <AvatarImage
+                          src={comment.userPhotoURL}
+                          alt={comment.userName}
+                        />
                       ) : (
-                        <AvatarFallback><User className="h-4 w-4" /></AvatarFallback>
+                        <AvatarFallback>
+                          <User className="h-4 w-4" />
+                        </AvatarFallback>
                       )}
                     </Avatar>
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="font-semibold text-primary">{comment.userName}</span>
-                        <span className="text-xs text-muted-foreground">{comment.createdAt?.toDate ? comment.createdAt.toDate().toLocaleString() : ""}</span>
+                        <span className="font-semibold text-primary">
+                          {comment.userName}
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          {comment.createdAt?.toDate
+                            ? comment.createdAt.toDate().toLocaleString()
+                            : ""}
+                        </span>
                       </div>
                       <div className="text-foreground mb-2">{comment.text}</div>
                       <div className="flex items-center gap-2">
                         <Button
                           size="sm"
                           variant="ghost"
-                          className={user && comment.likes.includes(user.uid) ? "text-green-600" : "text-muted-foreground"}
-                          onClick={() => user && handleLike(comment.id, comment.likes.includes(user.uid))}
+                          className={
+                            user && comment.likes.includes(user.uid)
+                              ? "text-green-600"
+                              : "text-muted-foreground"
+                          }
+                          onClick={() =>
+                            user &&
+                            handleLike(
+                              comment.id,
+                              comment.likes.includes(user.uid)
+                            )
+                          }
                           disabled={likeLoading === comment.id}
                         >
-                          <ThumbsUp className={user && comment.likes.includes(user.uid) ? "fill-current" : ""} />
+                          <ThumbsUp
+                            className={
+                              user && comment.likes.includes(user.uid)
+                                ? "fill-current"
+                                : ""
+                            }
+                          />
                           <span className="ml-1">{comment.likes.length}</span>
                         </Button>
                         <Button
                           size="sm"
                           variant="ghost"
-                          className={user && comment.dislikes.includes(user.uid) ? "text-blue-500" : "text-muted-foreground"}
-                          onClick={() => user && handleDislike(comment.id, comment.dislikes.includes(user.uid))}
+                          className={
+                            user && comment.dislikes.includes(user.uid)
+                              ? "text-blue-500"
+                              : "text-muted-foreground"
+                          }
+                          onClick={() =>
+                            user &&
+                            handleDislike(
+                              comment.id,
+                              comment.dislikes.includes(user.uid)
+                            )
+                          }
                           disabled={likeLoading === comment.id}
                         >
-                          <ThumbsDown className={user && comment.dislikes.includes(user.uid) ? "fill-current" : ""} />
-                          <span className="ml-1">{comment.dislikes.length}</span>
+                          <ThumbsDown
+                            className={
+                              user && comment.dislikes.includes(user.uid)
+                                ? "fill-current"
+                                : ""
+                            }
+                          />
+                          <span className="ml-1">
+                            {comment.dislikes.length}
+                          </span>
                         </Button>
-                        {(user && (user.uid === comment.userId || user.email === APP_CONSTANTS.ADMIN_EMAIL)) && (
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            className="text-destructive"
-                            onClick={() => handleDelete(comment.id)}
-                            disabled={likeLoading === comment.id}
-                            title={t("product.comments.delete")}
-                          >
-                            <Trash2 />
-                          </Button>
-                        )}
+                        {user &&
+                          (user.uid === comment.userId ||
+                            user.email === APP_CONSTANTS.ADMIN_EMAIL) && (
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="text-destructive"
+                              onClick={() => handleDelete(comment.id)}
+                              disabled={likeLoading === comment.id}
+                              title={t("product.comments.delete")}
+                            >
+                              <Trash2 />
+                            </Button>
+                          )}
                       </div>
                     </div>
                   </div>
@@ -219,14 +298,21 @@ export function ProductComments({ productSku }: ProductCommentsProps) {
             <div className="mt-4">
               <Textarea
                 value={newComment}
-                onChange={e => setNewComment(e.target.value)}
+                onChange={(e) => setNewComment(e.target.value)}
                 placeholder={t("product.comments.addPlaceholder")}
                 rows={3}
                 className="mb-2"
                 maxLength={500}
               />
-              <Button onClick={handleAddComment} disabled={submitting || !newComment.trim()}>
-                {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : t("product.comments.add")}
+              <Button
+                onClick={handleAddComment}
+                disabled={submitting || !newComment.trim()}
+              >
+                {submitting ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  t("product.comments.add")
+                )}
               </Button>
             </div>
           </>
@@ -234,4 +320,4 @@ export function ProductComments({ productSku }: ProductCommentsProps) {
       </CardContent>
     </Card>
   );
-} 
+}
