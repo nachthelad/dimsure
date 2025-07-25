@@ -216,46 +216,49 @@ export default function SearchPage() {
           placeholder={t("search.placeholder")}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="pl-10 h-12 text-lg"
+          className="pl-10 h-12 text-base"
         />
       </div>
 
       {/* Controls */}
-      <div className="flex flex-col sm:flex-row gap-4 mb-6">
-        {/* View Mode Toggle */}
-        <div className="flex items-center gap-2">
-          <Button
-            variant={viewMode === "grid" ? "default" : "outline"}
-            size="sm"
-            onClick={() => setViewMode("grid")}
+      <div className="flex flex-col gap-4 mb-6">
+        {/* First row: Sort and View Mode */}
+        <div className="flex flex-col sm:flex-row gap-4">
+          {/* Sort */}
+          <Select
+            value={sortBy}
+            onValueChange={(value: SortOption) => setSortBy(value)}
           >
-            <Grid3X3 className="h-4 w-4" />
-          </Button>
-          <Button
-            variant={viewMode === "list" ? "default" : "outline"}
-            size="sm"
-            onClick={() => setViewMode("list")}
-          >
-            <List className="h-4 w-4" />
-          </Button>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder={t("search.sortBy")} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="name">{t("search.sort.name")}</SelectItem>
+              <SelectItem value="brand">{t("search.sort.brand")}</SelectItem>
+              <SelectItem value="date">{t("search.sort.date")}</SelectItem>
+            </SelectContent>
+          </Select>
+
+          {/* View Mode Toggle - Hidden on mobile */}
+          <div className="hidden md:flex items-center gap-2">
+            <Button
+              variant={viewMode === "grid" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setViewMode("grid")}
+            >
+              <Grid3X3 className="h-4 w-4" />
+            </Button>
+            <Button
+              variant={viewMode === "list" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setViewMode("list")}
+            >
+              <List className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
 
-        {/* Sort */}
-        <Select
-          value={sortBy}
-          onValueChange={(value: SortOption) => setSortBy(value)}
-        >
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder={t("search.sortBy")} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="name">{t("search.sort.name")}</SelectItem>
-            <SelectItem value="brand">{t("search.sort.brand")}</SelectItem>
-            <SelectItem value="date">{t("search.sort.date")}</SelectItem>
-          </SelectContent>
-        </Select>
-
-        {/* Filters Toggle */}
+        {/* Second row: Filters Toggle */}
         <Button
           variant="outline"
           size="sm"
@@ -263,7 +266,7 @@ export default function SearchPage() {
             console.log("Filter button clicked, current state:", showFilters);
             setShowFilters(!showFilters);
           }}
-          className="ml-auto"
+          className="self-start"
         >
           <Filter className="h-4 w-4 mr-2" />
           {t("search.filters")}
@@ -469,29 +472,55 @@ export default function SearchPage() {
 
       {/* Products Grid/List */}
       {loading || initialLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <Card key={i} className="animate-pulse">
-              <CardContent className="p-6">
-                <div className="h-32 bg-muted rounded-lg mb-4"></div>
-                <div className="h-4 bg-muted rounded mb-2"></div>
-                <div className="h-3 bg-muted rounded w-2/3"></div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        <>
+          {/* Mobile Skeleton */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:hidden">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <Card key={i} className="animate-pulse">
+                <CardContent className="p-4">
+                  <div className="h-24 bg-muted rounded-lg mb-3"></div>
+                  <div className="h-3 bg-muted rounded mb-2"></div>
+                  <div className="h-2 bg-muted rounded w-2/3"></div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {/* Desktop Skeleton */}
+          <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <Card key={i} className="animate-pulse">
+                <CardContent className="p-6">
+                  <div className="h-32 bg-muted rounded-lg mb-4"></div>
+                  <div className="h-4 bg-muted rounded mb-2"></div>
+                  <div className="h-3 bg-muted rounded w-2/3"></div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </>
       ) : !initialLoading && filteredProducts.length > 0 ? (
-        <div
-          className={
-            viewMode === "grid"
-              ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-              : "space-y-4"
-          }
-        >
-          {filteredProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
+        <>
+          {/* Mobile Grid - Always grid layout */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:hidden">
+            {filteredProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+
+          {/* Desktop Grid/List - Respects view mode */}
+          <div
+            className={
+              viewMode === "grid"
+                ? "hidden md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+                : "hidden md:block space-y-4"
+            }
+          >
+            {filteredProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        </>
       ) : !initialLoading ? (
         <Card className="p-12 text-center">
           <CardContent>
