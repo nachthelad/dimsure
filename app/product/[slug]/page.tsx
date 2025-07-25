@@ -10,6 +10,11 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { DimensionCard } from "@/components/features/dimension-card";
 import { DisputeModal } from "@/components/features/dispute-modal";
+
+import {
+  getConfidenceBadgeVariant,
+  getConfidenceDescription,
+} from "@/lib/utils/confidence-calculator";
 import {
   getProduct,
   incrementProductViews,
@@ -305,12 +310,9 @@ export default function ProductDetailPage({
                 </span>
               </Button>
               <Badge
-                variant={
-                  product.confidence && product.confidence >= 90
-                    ? "default"
-                    : "secondary"
-                }
-                className="bg-primary/10 text-primary border-primary/20"
+                variant={getConfidenceBadgeVariant(product.confidence || 0)}
+                className="cursor-help"
+                title={getConfidenceDescription(product.confidence || 0)}
               >
                 {product.confidence !== undefined
                   ? `${product.confidence}%`

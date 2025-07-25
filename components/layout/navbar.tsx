@@ -11,6 +11,7 @@ import {
   MessageSquare,
   BookOpen,
   Menu,
+  Settings,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,12 +28,19 @@ import { ThemeToggle } from "@/components/features/theme-toggle";
 import { LanguageToggle } from "@/components/features/language-toggle";
 import { useLanguage } from "@/components/layout/language-provider";
 import { NotificationBell } from "@/components/features/notification-bell";
+import { useAuth } from "@/hooks/useAuth";
+import { APP_CONSTANTS } from "@/lib/constants";
 
 export function Navbar() {
   const pathname = usePathname();
   const { t, locale } = useLanguage();
+  const { user } = useAuth();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [sidebarForceOpen, setSidebarForceOpen] = useState(false);
+
+  const isAdmin =
+    user?.email === APP_CONSTANTS.ADMIN_EMAIL ||
+    user?.email === APP_CONSTANTS.DEBUG_AUTHORIZED_EMAIL;
 
   // Close sheet when pathname changes
   useEffect(() => {
@@ -142,6 +150,44 @@ export function Navbar() {
             <div className="flex justify-center w-full px-2">
               <AuthButton />
             </div>
+            {/* Admin Link */}
+            {isAdmin && (
+              <>
+                <Separator className="my-3 w-full" />
+                <Link href="/admin" className="w-full">
+                  <Button
+                    variant="ghost"
+                    className={cn(
+                      "w-full h-12 flex items-center py-3 text-lg bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent transition-all duration-200",
+                      pathname.startsWith("/admin")
+                        ? "font-bold"
+                        : "font-normal",
+                      "px-4 justify-center",
+                      "xl:group-hover:justify-start xl:group-hover:px-4 xl:sidebar-force-open:justify-start xl:sidebar-force-open:px-4"
+                    )}
+                  >
+                    <Settings
+                      className={cn(
+                        "h-5 w-5 flex-shrink-0 transition-all duration-200",
+                        pathname.startsWith("/admin")
+                          ? "text-foreground"
+                          : "text-muted-foreground"
+                      )}
+                      strokeWidth={pathname.startsWith("/admin") ? 3 : 2}
+                    />
+                    <span
+                      className={cn(
+                        "transition-all duration-200 whitespace-nowrap overflow-hidden",
+                        "opacity-0 absolute ml-0",
+                        "xl:group-hover:static xl:group-hover:opacity-100 xl:group-hover:ml-3 xl:sidebar-force-open:static xl:sidebar-force-open:opacity-100 xl:sidebar-force-open:ml-3"
+                      )}
+                    >
+                      Admin
+                    </span>
+                  </Button>
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </aside>
@@ -192,6 +238,20 @@ export function Navbar() {
                         </Link>
                       );
                     })}
+                    {isAdmin && (
+                      <Link href="/admin">
+                        <Button
+                          variant={
+                            pathname.startsWith("/admin") ? "default" : "ghost"
+                          }
+                          className="w-full justify-start space-x-2"
+                          onClick={() => setIsSheetOpen(false)}
+                        >
+                          <Settings className="h-4 w-4" />
+                          <span>Administración</span>
+                        </Button>
+                      </Link>
+                    )}
                     <div className="border-t border-border pt-4 mt-4">
                       <AuthButton />
                     </div>
