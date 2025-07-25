@@ -105,17 +105,12 @@ La confianza se actualiza automáticamente cuando ocurren los siguientes eventos
   - `updateProductConfidence()`: Actualiza confianza de un producto
   - `updateAllProductsConfidence()`: Actualiza todos los productos
 
-### 3. Componente de Detalles
-
-- **Archivo**: `components/features/confidence-details.tsx`
-- **Funcionalidad**: Muestra desglose detallado del cálculo de confianza
-
-### 4. Página de Administración
+### 3. Página de Administración
 
 - **Archivo**: `app/admin/confidence/page.tsx`
 - **Funcionalidad**: Interfaz para actualizar confianza de todos los productos
 
-### 5. Script de Actualización
+### 4. Script de Actualización
 
 - **Archivo**: `scripts/update-confidence.js`
 - **Funcionalidad**: Script para actualización masiva de confianza

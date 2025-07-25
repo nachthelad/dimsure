@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { DimensionCard } from "@/components/features/dimension-card";
 import { DisputeModal } from "@/components/features/dispute-modal";
-import { ConfidenceDetails } from "@/components/features/confidence-details";
+
 import {
   getConfidenceBadgeVariant,
   getConfidenceDescription,
@@ -376,16 +376,6 @@ export default function ProductDetailPage({
             dimensions={product.primaryDimensions}
             title={t("product.details.verifiedDimensions")}
             isPrimary={true}
-          />
-
-          {/* Confidence Details */}
-          <ConfidenceDetails
-            product={product}
-            onConfidenceUpdate={(newConfidence) => {
-              setProduct((prev) =>
-                prev ? { ...prev, confidence: newConfidence } : null
-              );
-            }}
           />
 
           {/* Action Buttons */}
