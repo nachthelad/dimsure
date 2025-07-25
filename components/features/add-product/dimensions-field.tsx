@@ -28,7 +28,7 @@ export function DimensionsField({
   error,
   t,
 }: DimensionsFieldProps) {
-  const { getDimensionUnit, isMetric, isImperial } = useUnit();
+  const { getDimensionUnit, isMetric } = useUnit();
   const dimensionUnit = getDimensionUnit();
 
   return (

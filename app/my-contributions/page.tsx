@@ -1,102 +1,110 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
-import { Package, TrendingUp, Loader2, Plus, Search, Edit, Eye, Heart } from "lucide-react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Skeleton } from "@/components/ui/skeleton"
-import Link from "next/link"
-import Image from "next/image"
-import { useAuth } from "@/hooks/useAuth"
-import { getUserProducts } from "@/lib/firestore"
-import { useUnit } from "@/components/layout/unit-provider"
-import { useLanguage } from "@/components/layout/language-provider"
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import {
+  Package,
+  TrendingUp,
+  Plus,
+  Search,
+  Edit,
+  Eye,
+  Heart,
+} from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import Link from "next/link";
+import Image from "next/image";
+import { useAuth } from "@/hooks/useAuth";
+import { getUserProducts } from "@/lib/firestore";
+import { useUnit } from "@/components/layout/unit-provider";
+import { useLanguage } from "@/components/layout/language-provider";
 
 interface UserProduct {
-  id: string
-  name?: string
-  sku?: string
-  brand?: string
-  category?: string
-  primaryDimensions?: { length: number; width: number; height: number }
-  likes?: number
-  views?: number
-  confidence?: number
-  mainImage?: string
-  createdAt?: any
-  lastModified?: any
+  id: string;
+  name?: string;
+  sku?: string;
+  urlSlug?: string;
+  brand?: string;
+  category?: string;
+  primaryDimensions?: { length: number; width: number; height: number };
+  likes?: number;
+  views?: number;
+  confidence?: number;
+  mainImage?: string;
+  createdAt?: any;
+  lastModified?: any;
 }
 
 export default function MyContributionsPage() {
-  const { isLoggedIn, loading, user } = useAuth()
-  const { unit, convertDimension } = useUnit()
-  const { t } = useLanguage()
-  const router = useRouter()
-  const [products, setProducts] = useState<UserProduct[]>([])
-  const [filteredProducts, setFilteredProducts] = useState<UserProduct[]>([])
-  const [searchTerm, setSearchTerm] = useState("")
-  const [isLoadingProducts, setIsLoadingProducts] = useState(true)
+  const { isLoggedIn, loading, user } = useAuth();
+  const { getDimensionUnit, convertDimension } = useUnit();
+  const { t } = useLanguage();
+  const router = useRouter();
+  const [products, setProducts] = useState<UserProduct[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<UserProduct[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isLoadingProducts, setIsLoadingProducts] = useState(true);
 
   useEffect(() => {
     if (!loading && !isLoggedIn) {
-      router.push("/login?redirect=/my-contributions")
+      router.push("/login?redirect=/my-contributions");
     }
-  }, [isLoggedIn, loading, router])
+  }, [isLoggedIn, loading, router]);
 
   const fetchUserProducts = async () => {
     if (user) {
       try {
-        setIsLoadingProducts(true)
-        const userProducts = await getUserProducts(user.uid)
-        setProducts(userProducts)
-        setFilteredProducts(userProducts)
+        setIsLoadingProducts(true);
+        const userProducts = await getUserProducts(user.uid);
+        setProducts(userProducts);
+        setFilteredProducts(userProducts);
       } catch (error) {
-        console.error("Error fetching user products:", error)
+        console.error("Error fetching user products:", error);
       } finally {
-        setIsLoadingProducts(false)
+        setIsLoadingProducts(false);
       }
     }
-  }
+  };
 
   useEffect(() => {
     if (isLoggedIn && user) {
-      fetchUserProducts()
+      fetchUserProducts();
     }
-  }, [user, isLoggedIn])
+  }, [user, isLoggedIn]);
 
   // Filter products based on search term
   useEffect(() => {
     if (!searchTerm.trim()) {
-      setFilteredProducts(products)
+      setFilteredProducts(products);
     } else {
       const filtered = products.filter(
         (product) =>
           product.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
           product.sku?.toLowerCase().includes(searchTerm.toLowerCase()) ||
           product.brand?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          product.category?.toLowerCase().includes(searchTerm.toLowerCase()),
-      )
-      setFilteredProducts(filtered)
+          product.category?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setFilteredProducts(filtered);
     }
-  }, [searchTerm, products])
+  }, [searchTerm, products]);
 
   const formatDimension = (value: number) => {
-    const converted = convertDimension(value, "mm")
-    return Math.round(converted).toString()
-  }
+    const converted = convertDimension(value, "mm");
+    return Math.round(converted).toString();
+  };
 
   const formatDate = (timestamp: any) => {
-    if (!timestamp) return "Unknown"
+    if (!timestamp) return "Unknown";
     try {
-      return new Date(timestamp.toDate()).toLocaleDateString()
+      return new Date(timestamp.toDate()).toLocaleDateString();
     } catch {
-      return "Unknown"
+      return "Unknown";
     }
-  }
+  };
 
   if (loading) {
     return (
@@ -174,11 +182,11 @@ export default function MyContributionsPage() {
           ))}
         </div>
       </div>
-    )
+    );
   }
 
   if (!isLoggedIn) {
-    return null // Will redirect
+    return null; // Will redirect
   }
 
   return (
@@ -186,8 +194,12 @@ export default function MyContributionsPage() {
       <div className="mb-8">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-4">
           <div>
-            <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-2">{t("myContributions.title")}</h1>
-            <p className="text-lg sm:text-xl text-muted-foreground">{t("myContributions.subtitle")}</p>
+            <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-2">
+              {t("myContributions.title")}
+            </h1>
+            <p className="text-lg sm:text-xl text-muted-foreground">
+              {t("myContributions.subtitle")}
+            </p>
           </div>
           <div className="flex gap-2">
             <Link href="/add-product">
@@ -203,36 +215,54 @@ export default function MyContributionsPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">{t("myContributions.stats.totalProducts")}</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                {t("myContributions.stats.totalProducts")}
+              </CardTitle>
               <Package className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{products.length}</div>
-              <p className="text-xs text-muted-foreground">{t("myContributions.stats.productsSubmitted")}</p>
+              <p className="text-xs text-muted-foreground">
+                {t("myContributions.stats.productsSubmitted")}
+              </p>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">{t("myContributions.stats.totalLikes")}</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                {t("myContributions.stats.totalLikes")}
+              </CardTitle>
               <Heart className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {products.reduce((total, product) => total + (product.likes ?? 0), 0)}
+                {products.reduce(
+                  (total, product) => total + (product.likes ?? 0),
+                  0
+                )}
               </div>
-              <p className="text-xs text-muted-foreground">{t("myContributions.stats.communityAppreciation")}</p>
+              <p className="text-xs text-muted-foreground">
+                {t("myContributions.stats.communityAppreciation")}
+              </p>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">{t("myContributions.stats.totalViews")}</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                {t("myContributions.stats.totalViews")}
+              </CardTitle>
               <Eye className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {products.reduce((total, product) => total + (product.views ?? 0), 0)}
+                {products.reduce(
+                  (total, product) => total + (product.views ?? 0),
+                  0
+                )}
               </div>
-              <p className="text-xs text-muted-foreground">{t("myContributions.stats.productPageVisits")}</p>
+              <p className="text-xs text-muted-foreground">
+                {t("myContributions.stats.productPageVisits")}
+              </p>
             </CardContent>
           </Card>
         </div>
@@ -305,7 +335,10 @@ export default function MyContributionsPage() {
       ) : filteredProducts.length > 0 ? (
         <div className="space-y-4">
           {filteredProducts.map((product) => (
-            <Card key={product.id} className="hover:shadow-md transition-shadow">
+            <Card
+              key={product.id}
+              className="hover:shadow-md transition-shadow"
+            >
               <CardContent className="p-6">
                 <div className="flex flex-col sm:flex-row items-start gap-4">
                   <Image
@@ -318,22 +351,38 @@ export default function MyContributionsPage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between mb-2">
                       <div className="flex-1 min-w-0">
-                        <h3 className="text-lg font-semibold text-foreground mb-1">{product.name || "Unknown"}</h3>
+                        <h3 className="text-lg font-semibold text-foreground mb-1">
+                          {product.name || "Unknown"}
+                        </h3>
                         <div className="flex flex-wrap items-center gap-2 mb-2">
-                          <Badge variant="outline">{product.brand || "Unknown"}</Badge>
-                          <Badge variant="secondary">{product.category || "Unknown"}</Badge>
-                          <span className="text-sm font-mono text-primary">{product.sku || "Unknown"}</span>
+                          <Badge variant="outline">
+                            {product.brand || "Unknown"}
+                          </Badge>
+                          <Badge variant="secondary">
+                            {product.category || "Unknown"}
+                          </Badge>
+                          <span className="text-sm font-mono text-primary">
+                            {product.sku || "Unknown"}
+                          </span>
                         </div>
                       </div>
                       <div className="flex items-center gap-2 sm:flex-shrink-0">
-                        <Link href={`/edit-product/${product.sku}`}>
-                          <Button variant="outline" size="sm" className="flex-1 sm:flex-none">
+                        <Link href={`/edit-product/${product.urlSlug}`}>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="flex-1 sm:flex-none"
+                          >
                             <Edit className="h-4 w-4 mr-1" />
                             {t("myContributions.actions.edit")}
                           </Button>
                         </Link>
-                        <Link href={`/product/${product.sku}`}>
-                          <Button variant="default" size="sm" className="flex-1 sm:flex-none">
+                        <Link href={`/product/${product.urlSlug}`}>
+                          <Button
+                            variant="default"
+                            size="sm"
+                            className="flex-1 sm:flex-none"
+                          >
                             <Eye className="h-4 w-4 mr-1" />
                             {t("myContributions.actions.view")}
                           </Button>
@@ -345,9 +394,18 @@ export default function MyContributionsPage() {
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <Package className="h-4 w-4" />
                         <span>
-                          {formatDimension(product.primaryDimensions?.length ?? 0)} ×{" "}
-                          {formatDimension(product.primaryDimensions?.width ?? 0)} ×{" "}
-                          {formatDimension(product.primaryDimensions?.height ?? 0)} {unit}
+                          {formatDimension(
+                            product.primaryDimensions?.length ?? 0
+                          )}{" "}
+                          ×{" "}
+                          {formatDimension(
+                            product.primaryDimensions?.width ?? 0
+                          )}{" "}
+                          ×{" "}
+                          {formatDimension(
+                            product.primaryDimensions?.height ?? 0
+                          )}{" "}
+                          {getDimensionUnit()}
                         </span>
                       </div>
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -365,16 +423,20 @@ export default function MyContributionsPage() {
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <TrendingUp className="h-4 w-4" />
                         <span>
-                          {product.confidence ?? 0}% {t("product.details.confidence")}
+                          {product.confidence ?? 0}%{" "}
+                          {t("product.details.confidence")}
                         </span>
                       </div>
                     </div>
 
                     <div className="flex items-center justify-between text-xs text-muted-foreground">
                       <span>Created: {formatDate(product.createdAt)}</span>
-                      {product.lastModified && product.lastModified !== product.createdAt && (
-                        <span>Last modified: {formatDate(product.lastModified)}</span>
-                      )}
+                      {product.lastModified &&
+                        product.lastModified !== product.createdAt && (
+                          <span>
+                            Last modified: {formatDate(product.lastModified)}
+                          </span>
+                        )}
                     </div>
                   </div>
                 </div>
@@ -386,8 +448,12 @@ export default function MyContributionsPage() {
         <Card>
           <CardContent className="text-center py-12">
             <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-semibold mb-2">{t("myContributions.empty.noProducts")}</h3>
-            <p className="text-muted-foreground mb-4">{t("myContributions.empty.noProductsMessage")}</p>
+            <h3 className="text-lg font-semibold mb-2">
+              {t("myContributions.empty.noProducts")}
+            </h3>
+            <p className="text-muted-foreground mb-4">
+              {t("myContributions.empty.noProductsMessage")}
+            </p>
             <Link href="/add-product">
               <Button>
                 <Plus className="h-4 w-4 mr-2" />
@@ -400,8 +466,12 @@ export default function MyContributionsPage() {
         <Card>
           <CardContent className="text-center py-12">
             <Search className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-semibold mb-2">{t("myContributions.empty.noResults")}</h3>
-            <p className="text-muted-foreground mb-4">{t("myContributions.empty.noResultsMessage", { searchTerm })}</p>
+            <h3 className="text-lg font-semibold mb-2">
+              {t("myContributions.empty.noResults")}
+            </h3>
+            <p className="text-muted-foreground mb-4">
+              {t("myContributions.empty.noResultsMessage", { searchTerm })}
+            </p>
             <Button variant="outline" onClick={() => setSearchTerm("")}>
               {t("myContributions.actions.clearSearch")}
             </Button>
@@ -409,5 +479,5 @@ export default function MyContributionsPage() {
         </Card>
       )}
     </div>
-  )
+  );
 }

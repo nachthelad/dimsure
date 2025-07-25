@@ -1,64 +1,74 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
-import { Package } from "lucide-react"
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
-import { searchProducts } from "@/lib/firestore"
-import { APP_CONSTANTS } from "@/lib/constants"
-import { useUnit } from "@/components/layout/unit-provider"
-import { useLanguage } from "@/components/layout/language-provider"
-import type { Product } from "@/lib/types"
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { Package } from "lucide-react";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import { searchProducts } from "@/lib/firestore";
+import { APP_CONSTANTS } from "@/lib/constants";
+import { useUnit } from "@/components/layout/unit-provider";
+import { useLanguage } from "@/components/layout/language-provider";
+import type { Product } from "@/lib/types";
 
 export function ProductSearch() {
-  const [open, setOpen] = useState(false)
-  const [searchTerm, setSearchTerm] = useState("")
-  const [products, setProducts] = useState<Product[]>([])
-  const [loading, setLoading] = useState(false)
-  const router = useRouter()
-  const { unit, convertDimension } = useUnit()
-  const { t } = useLanguage()
+  const [open, setOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+  const { getDimensionUnit, convertDimension } = useUnit();
+  const { t } = useLanguage();
 
   // Debounced search
   useEffect(() => {
     const delayedSearch = setTimeout(async () => {
       if (searchTerm.trim().length >= 2) {
-        setLoading(true)
+        setLoading(true);
         try {
-          const results = await searchProducts(searchTerm, APP_CONSTANTS.MAX_SEARCH_RESULTS)
-          setProducts(results)
+          const results = await searchProducts(
+            searchTerm,
+            APP_CONSTANTS.MAX_SEARCH_RESULTS
+          );
+          setProducts(results);
         } catch (error) {
-          console.error("Search error:", error)
-          setProducts([])
+          console.error("Search error:", error);
+          setProducts([]);
         } finally {
-          setLoading(false)
+          setLoading(false);
         }
       } else {
-        setProducts([])
+        setProducts([]);
       }
-    }, 300)
+    }, 300);
 
-    return () => clearTimeout(delayedSearch)
-  }, [searchTerm])
+    return () => clearTimeout(delayedSearch);
+  }, [searchTerm]);
 
   const formatDimension = (value: number) => {
-    const converted = convertDimension(value, "mm")
-    return converted.toFixed(1)
-  }
+    const converted = convertDimension(value, "mm");
+    return converted.toFixed(1);
+  };
 
   const handleSelect = (product: Product) => {
-    router.push(`/product/${product.sku}`)
-    setOpen(false)
-    setSearchTerm("")
-  }
+    router.push(`/product/${product.urlSlug}`);
+    setOpen(false);
+    setSearchTerm("");
+  };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && products.length > 0) {
-      handleSelect(products[0])
+    if (e.key === "Enter" && products.length > 0 && products[0]) {
+      handleSelect(products[0]);
     }
-  }
+  };
 
   return (
     <div className="relative max-w-2xl mx-auto">
@@ -86,7 +96,9 @@ export function ProductSearch() {
                 <div className="flex flex-col items-center gap-2 py-6">
                   <Package className="h-8 w-8 text-muted-foreground" />
                   <p>{t("home.search.noResults", { searchTerm })}</p>
-                  <p className="text-xs text-muted-foreground">{t("home.search.tryDifferent")}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {t("home.search.tryDifferent")}
+                  </p>
                 </div>
               </CommandEmpty>
             )}
@@ -105,8 +117,12 @@ export function ProductSearch() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <p className="font-medium text-sm truncate">{product.name}</p>
-                        <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">{product.brand}</span>
+                        <p className="font-medium text-sm truncate">
+                          {product.name}
+                        </p>
+                        <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">
+                          {product.brand}
+                        </span>
                       </div>
                       <div className="flex items-center gap-2 text-xs text-muted-foreground">
                         <span className="font-mono">{product.sku}</span>
@@ -114,7 +130,8 @@ export function ProductSearch() {
                         <span>
                           {formatDimension(product.primaryDimensions.length)} ×{" "}
                           {formatDimension(product.primaryDimensions.width)} ×{" "}
-                          {formatDimension(product.primaryDimensions.height)} {unit}
+                          {formatDimension(product.primaryDimensions.height)}{" "}
+                          {getDimensionUnit()}
                         </span>
                       </div>
                     </div>
@@ -126,5 +143,5 @@ export function ProductSearch() {
         )}
       </Command>
     </div>
-  )
+  );
 }

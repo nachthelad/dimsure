@@ -4,7 +4,6 @@ import {
   getDoc,
   getDocs,
   setDoc,
-  addDoc,
   updateDoc,
   query,
   where,
@@ -14,17 +13,11 @@ import {
   increment,
   arrayUnion,
   arrayRemove,
-  deleteDoc,
 } from "firebase/firestore";
-import { db, storage } from "../firebase";
+import { db } from "../firebase";
 import type { Product } from "../types";
 import { normalizeProduct } from "../product-normalizer";
-import {
-  ref,
-  uploadBytes,
-  getDownloadURL,
-  deleteObject,
-} from "firebase/storage";
+import { generateUrlSlug } from "../utils";
 
 export class ProductService {
   // Create product
@@ -37,7 +30,8 @@ export class ProductService {
         throw new Error("User ID is required to create a product");
       }
 
-      const productRef = doc(db, "products", productData.sku);
+      const urlSlug = generateUrlSlug(productData.sku);
+      const productRef = doc(db, "products", urlSlug);
 
       // Check if product already exists
       const existingProduct = await getDoc(productRef);
@@ -47,6 +41,7 @@ export class ProductService {
 
       const productToSave = {
         ...productData,
+        urlSlug, // Store the URL slug
         createdAt: serverTimestamp(),
         createdBy: userId,
         lastModified: serverTimestamp(),
@@ -68,12 +63,12 @@ export class ProductService {
 
   // Update product
   static async updateProduct(
-    sku: string,
+    slug: string,
     productData: any,
     userId: string
   ): Promise<string> {
     try {
-      const productRef = doc(db, "products", sku);
+      const productRef = doc(db, "products", slug);
 
       await updateDoc(productRef, {
         ...productData,
@@ -81,7 +76,7 @@ export class ProductService {
         lastModifiedBy: userId,
       });
 
-      return sku;
+      return slug;
     } catch (error) {
       console.error("Error updating product:", error);
       throw error;
@@ -90,13 +85,13 @@ export class ProductService {
 
   // Update individual product field
   static async updateProductField(
-    sku: string,
+    slug: string,
     field: string,
     value: any,
     userId: string
   ): Promise<boolean> {
     try {
-      const productRef = doc(db, "products", sku);
+      const productRef = doc(db, "products", slug);
 
       const updateData: any = {
         [field]: value,
@@ -112,14 +107,17 @@ export class ProductService {
     }
   }
 
-  // Get product by SKU
-  static async getProduct(sku: string): Promise<Product | null> {
+  // Get product by slug
+  static async getProduct(slug: string): Promise<Product | null> {
     try {
-      const productRef = doc(db, "products", sku);
+      const productRef = doc(db, "products", slug);
       const productDoc = await getDoc(productRef);
 
       if (productDoc.exists()) {
-        return normalizeProduct({ id: productDoc.id, ...productDoc.data() });
+        return normalizeProduct({
+          id: productDoc.id,
+          ...productDoc.data(),
+        });
       }
 
       return null;
@@ -210,9 +208,9 @@ export class ProductService {
   }
 
   // Like product
-  static async likeProduct(userId: string, productSku: string): Promise<void> {
+  static async likeProduct(userId: string, productSlug: string): Promise<void> {
     try {
-      const productRef = doc(db, "products", productSku);
+      const productRef = doc(db, "products", productSlug);
       await updateDoc(productRef, {
         likes: increment(1),
         likedBy: arrayUnion(userId),
@@ -226,10 +224,10 @@ export class ProductService {
   // Unlike product
   static async unlikeProduct(
     userId: string,
-    productSku: string
+    productSlug: string
   ): Promise<void> {
     try {
-      const productRef = doc(db, "products", productSku);
+      const productRef = doc(db, "products", productSlug);
       await updateDoc(productRef, {
         likes: increment(-1),
         likedBy: arrayRemove(userId),
@@ -241,9 +239,9 @@ export class ProductService {
   }
 
   // Increment product views
-  static async incrementProductViews(productSku: string): Promise<void> {
+  static async incrementProductViews(productSlug: string): Promise<void> {
     try {
-      const productRef = doc(db, "products", productSku);
+      const productRef = doc(db, "products", productSlug);
       await updateDoc(productRef, {
         views: increment(1),
       });

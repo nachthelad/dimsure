@@ -2,6 +2,7 @@ export interface Product {
   id: string;
   name: string;
   sku: string;
+  urlSlug: string; // Unique slug for URLs (e.g., "md4a4ll-a-1703123456789")
   brand?: string;
   category?: string;
   primaryDimensions: ProductDimensions;

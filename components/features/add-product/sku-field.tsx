@@ -1,11 +1,11 @@
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 interface SkuFieldProps {
-  value: string
-  onChange: (value: string) => void
-  error?: string
-  t: (key: string) => string
+  value: string;
+  onChange: (value: string) => void;
+  error?: string;
+  t: (key: string) => string;
 }
 
 export function SkuField({ value, onChange, error, t }: SkuFieldProps) {
@@ -19,9 +19,15 @@ export function SkuField({ value, onChange, error, t }: SkuFieldProps) {
         value={value}
         onChange={(e) => onChange(e.target.value)}
         onBlur={(e) => {
-          const error = e.target.value.trim() === "" ? t("addProduct.validation.skuRequired") :
-                       e.target.value.trim().length < 2 ? t("addProduct.validation.skuMinLength") :
-                       e.target.value.trim().length > 50 ? t("addProduct.validation.skuMaxLength") : undefined
+          const value = e.target.value.trim();
+          const error =
+            value === ""
+              ? t("addProduct.validation.skuRequired")
+              : value.length < 2
+              ? t("addProduct.validation.skuMinLength")
+              : value.length > 50
+              ? t("addProduct.validation.skuMaxLength")
+              : undefined;
           if (error) {
             // This would need to be handled by the parent component
           }
@@ -29,9 +35,7 @@ export function SkuField({ value, onChange, error, t }: SkuFieldProps) {
         className={error ? "border-red-500 focus:border-red-500" : ""}
         required
       />
-      {error && (
-        <p className="text-sm text-red-500">{error}</p>
-      )}
+      {error && <p className="text-sm text-red-500">{error}</p>}
     </div>
-  )
-} 
+  );
+}

@@ -6,17 +6,7 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { db } from "../firebase";
-
-export interface UserData {
-  publicTag?: string;
-  email?: string;
-  displayName?: string;
-  createdAt?: any;
-  lastLoginAt?: any;
-  isActive?: boolean;
-  tagLastChanged?: any;
-  role?: string;
-}
+import { UserData, UserPreferences } from "../types/user";
 
 export class UserService {
   // Get user by ID
@@ -96,7 +86,7 @@ export class UserService {
   // Update user preferences
   static async updateUserPreferences(
     userId: string,
-    preferences: any
+    preferences: UserPreferences
   ): Promise<void> {
     try {
       const userRef = doc(db, "users", userId);
@@ -111,7 +101,7 @@ export class UserService {
   }
 
   // Get user preferences
-  static async getUserPreferences(userId: string): Promise<any> {
+  static async getUserPreferences(userId: string): Promise<UserPreferences> {
     try {
       const userRef = doc(db, "users", userId);
       const userDoc = await getDoc(userRef);
@@ -120,7 +110,7 @@ export class UserService {
         return userDoc.data().preferences || {};
       }
 
-      return {};
+      return {} as UserPreferences;
     } catch (error) {
       console.error("Error getting user preferences:", error);
       throw error;
