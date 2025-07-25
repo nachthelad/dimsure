@@ -10,6 +10,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useUnit } from "@/components/layout/unit-provider";
 import { useAuth } from "@/hooks/useAuth";
 import { createProduct, uploadProductImage } from "@/lib/firestore";
+import { generateUrlSlug } from "@/lib/utils";
 import { validateImageFile } from "@/lib/storage";
 import {
   normalizeProductName,
@@ -34,13 +35,13 @@ import { ImageUploadField } from "@/components/features/add-product/image-upload
 
 // Tipo para los errores de validación
 type ValidationErrors = {
-  name?: string;
-  sku?: string;
-  brand?: string;
-  category?: string;
-  dimensions?: string;
-  weight?: string;
-  images?: string;
+  name?: string | undefined;
+  sku?: string | undefined;
+  brand?: string | undefined;
+  category?: string | undefined;
+  dimensions?: string | undefined;
+  weight?: string | undefined;
+  images?: string | undefined;
 };
 
 export function AddProductForm() {
@@ -274,16 +275,16 @@ export function AddProductForm() {
   // Handler para pegar dimensiones en el campo Length
   const handleLengthPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
     const text = e.clipboardData.getData("text");
-    // Buscar 3 números separados por x, espacio o coma
+    // Buscar 3 números separados por x, ×, espacio o coma
     const match = text.match(
-      /(\d+(?:\.\d+)?)[ x,]+(\d+(?:\.\d+)?)[ x,]+(\d+(?:\.\d+)?)/
+      /(\d+(?:\.\d+)?)[ x×,\s]+(\d+(?:\.\d+)?)[ x×,\s]+(\d+(?:\.\d+)?)/
     );
     if (match) {
       setFormData((prev) => ({
         ...prev,
-        length: match[1],
-        width: match[2],
-        height: match[3],
+        length: match[1] || "",
+        width: match[2] || "",
+        height: match[3] || "",
       }));
       // Limpiar error de dimensiones
       clearFieldError("dimensions");
@@ -320,11 +321,15 @@ export function AddProductForm() {
           const orderedImages = [...images];
           if (mainImageIndex > 0) {
             const [mainImg] = orderedImages.splice(mainImageIndex, 1);
-            orderedImages.unshift(mainImg);
+            if (mainImg) {
+              orderedImages.unshift(mainImg);
+            }
           }
+          // Generate URL slug for image upload
+          const urlSlug = generateUrlSlug(formData.sku.toUpperCase());
           imageUrls = await Promise.all(
             orderedImages.map((file, index) =>
-              uploadProductImage(file, formData.sku.toUpperCase(), index)
+              uploadProductImage(file, urlSlug, index)
             )
           );
           toast({
@@ -392,7 +397,7 @@ export function AddProductForm() {
         moderationResults: moderationDetails,
       };
 
-      const createdSku = await createProduct(productData, user.uid);
+      const createdSlug = await createProduct(productData, user.uid);
 
       setIsSuccess(true);
       toast({
@@ -402,7 +407,7 @@ export function AddProductForm() {
 
       // Redirect to product page after 2 seconds
       setTimeout(() => {
-        router.push(`/product/${createdSku}`);
+        router.push(`/product/${createdSlug}`);
       }, 2000);
     } catch (error: any) {
       console.error("Error creating product:", error);
@@ -470,7 +475,7 @@ export function AddProductForm() {
           <ProductNameField
             value={formData.name}
             onChange={handleNameChange}
-            error={validationErrors.name}
+            error={validationErrors.name || ""}
             t={t}
           />
 
@@ -492,14 +497,14 @@ export function AddProductForm() {
             }}
             options={brandOptions}
             inputRef={brandInputRef}
-            error={validationErrors.brand}
+            error={validationErrors.brand || ""}
             t={t}
           />
 
           <SkuField
             value={formData.sku}
             onChange={handleSkuChange}
-            error={validationErrors.sku}
+            error={validationErrors.sku || ""}
             t={t}
           />
 
@@ -527,7 +532,7 @@ export function AddProductForm() {
             options={categoryOptions}
             inputRef={categoryInputRef}
             locale={locale}
-            error={validationErrors.category}
+            error={validationErrors.category || ""}
             t={t}
           />
 
@@ -545,14 +550,14 @@ export function AddProductForm() {
             height={formData.height}
             onChange={handleDimensionChange}
             onPaste={handleLengthPaste}
-            error={validationErrors.dimensions}
+            error={validationErrors.dimensions || ""}
             t={t}
           />
 
           <WeightField
             value={formData.weight}
             onChange={handleWeightChange}
-            error={validationErrors.weight}
+            error={validationErrors.weight || ""}
             t={t}
           />
 
@@ -572,7 +577,7 @@ export function AddProductForm() {
                 setMainImageIndex(mainImageIndex - 1);
             }}
             isUploading={isUploadingImage}
-            error={validationErrors.images}
+            error={validationErrors.images || ""}
             t={t}
           />
 

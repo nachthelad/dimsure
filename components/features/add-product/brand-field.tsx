@@ -1,19 +1,27 @@
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { useRef } from "react"
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 interface BrandFieldProps {
-  value: string
-  onChange: (value: string) => void
-  onInput: (value: string) => void
-  onSelect: (name: string) => void
-  options: string[]
-  inputRef: React.RefObject<HTMLInputElement>
-  error?: string
-  t: (key: string) => string
+  value: string;
+  onChange: (value: string) => void;
+  onInput: (value: string) => void;
+  onSelect: (name: string) => void;
+  options: string[];
+  inputRef: React.RefObject<HTMLInputElement>;
+  error?: string;
+  t: (key: string) => string;
 }
 
-export function BrandField({ value, onChange, onInput, onSelect, options, inputRef, error, t }: BrandFieldProps) {
+export function BrandField({
+  value,
+  onChange,
+  onInput,
+  onSelect,
+  options,
+  inputRef,
+  error,
+  t,
+}: BrandFieldProps) {
   return (
     <div className="space-y-2">
       <Label htmlFor="brand">{t("addProduct.form.brand")} *</Label>
@@ -24,11 +32,14 @@ export function BrandField({ value, onChange, onInput, onSelect, options, inputR
           placeholder={t("addProduct.form.brandPlaceholder")}
           value={value}
           onChange={(e) => {
-            onChange(e.target.value)
-            onInput(e.target.value)
+            onChange(e.target.value);
+            onInput(e.target.value);
           }}
           onBlur={(e) => {
-            const error = e.target.value.trim() === "" ? t("addProduct.validation.brandRequired") : undefined
+            const error =
+              e.target.value.trim() === ""
+                ? t("addProduct.validation.brandRequired")
+                : undefined;
             if (error) {
               // This would need to be handled by the parent component
             }
@@ -52,9 +63,7 @@ export function BrandField({ value, onChange, onInput, onSelect, options, inputR
           </ul>
         )}
       </div>
-      {error && (
-        <p className="text-sm text-red-500">{error}</p>
-      )}
+      {error && <p className="text-sm text-red-500">{error}</p>}
     </div>
-  )
-} 
+  );
+}

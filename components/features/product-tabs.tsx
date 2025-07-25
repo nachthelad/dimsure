@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Package, MessageCircle, ChevronLeft, ChevronRight } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { ProductComments } from "@/components/features/product-comments";
 
 interface ProductTabsProps {
@@ -14,11 +13,13 @@ interface ProductTabsProps {
 
 const TAB_KEYS = ["specifications", "comments", "history"];
 
-export const ProductTabs: React.FC<ProductTabsProps> = ({ product, createdByUser, lastModifiedByUser, t }) => {
+export const ProductTabs: React.FC<ProductTabsProps> = ({
+  product,
+  createdByUser,
+  lastModifiedByUser,
+  t,
+}) => {
   const [activeTab, setActiveTab] = useState(0);
-
-  // Simple mobile detection (puedes mejorar esto si tienes un hook de breakpoint)
-  const isMobile = typeof window !== "undefined" ? window.innerWidth < 768 : false;
 
   const tabTitles = [
     t("product.tabs.specifications"),
@@ -43,9 +44,9 @@ export const ProductTabs: React.FC<ProductTabsProps> = ({ product, createdByUser
                   </span>
                   <p className="text-foreground mt-1">
                     {product.specifications && product.specifications.weight
-                      ? (product.specifications.weight === "Not specified"
+                      ? product.specifications.weight === "Not specified"
                         ? t("product.specifications.notSpecified")
-                        : product.specifications.weight)
+                        : product.specifications.weight
                       : t("product.specifications.notSpecified")}
                   </p>
                 </div>
@@ -55,7 +56,8 @@ export const ProductTabs: React.FC<ProductTabsProps> = ({ product, createdByUser
                     {t("product.specifications.comment")}
                   </span>
                   <p className="text-foreground mt-1">
-                    {product.description || t("product.specifications.notSpecified")}
+                    {product.description ||
+                      t("product.specifications.notSpecified")}
                   </p>
                 </div>
               </div>
@@ -63,9 +65,7 @@ export const ProductTabs: React.FC<ProductTabsProps> = ({ product, createdByUser
           </Card>
         );
       case 1:
-        return (
-          <ProductComments productSku={product.sku} />
-        );
+        return <ProductComments productSku={product.sku} />;
       case 2:
         return (
           <Card>
@@ -87,11 +87,15 @@ export const ProductTabs: React.FC<ProductTabsProps> = ({ product, createdByUser
                       </span>
                       {product.lastModified && (
                         <span className="text-sm text-muted-foreground">
-                          {new Date(product.lastModified.toDate()).toLocaleDateString()}
+                          {new Date(
+                            product.lastModified.toDate()
+                          ).toLocaleDateString()}
                         </span>
                       )}
                     </div>
-                    <p className="text-sm text-muted-foreground">{t("product.history.updated")}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {t("product.history.updated")}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
@@ -99,15 +103,21 @@ export const ProductTabs: React.FC<ProductTabsProps> = ({ product, createdByUser
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
                       <span className="font-semibold text-primary">
-                        {createdByUser?.publicTag || createdByUser?.displayName || "@unknown"}
+                        {createdByUser?.publicTag ||
+                          createdByUser?.displayName ||
+                          "@unknown"}
                       </span>
                       {product.createdAt && (
                         <span className="text-sm text-muted-foreground">
-                          {new Date(product.createdAt.toDate()).toLocaleDateString()}
+                          {new Date(
+                            product.createdAt.toDate()
+                          ).toLocaleDateString()}
                         </span>
                       )}
                     </div>
-                    <p className="text-sm text-muted-foreground">{t("product.history.initialSubmission")}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {t("product.history.initialSubmission")}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -127,7 +137,11 @@ export const ProductTabs: React.FC<ProductTabsProps> = ({ product, createdByUser
         <div className="flex items-center justify-between mb-4">
           <button
             aria-label={t("product.tabs.previous")}
-            onClick={() => setActiveTab((prev) => (prev === 0 ? TAB_KEYS.length - 1 : prev - 1))}
+            onClick={() =>
+              setActiveTab((prev) =>
+                prev === 0 ? TAB_KEYS.length - 1 : prev - 1
+              )
+            }
             className="p-2 text-muted-foreground border rounded-lg transition-colors hover:bg-muted/70 disabled:opacity-50"
             disabled={TAB_KEYS.length <= 1}
           >
@@ -141,7 +155,11 @@ export const ProductTabs: React.FC<ProductTabsProps> = ({ product, createdByUser
           </span>
           <button
             aria-label={t("product.tabs.next")}
-            onClick={() => setActiveTab((prev) => (prev === TAB_KEYS.length - 1 ? 0 : prev + 1))}
+            onClick={() =>
+              setActiveTab((prev) =>
+                prev === TAB_KEYS.length - 1 ? 0 : prev + 1
+              )
+            }
             className="p-2 text-muted-foreground border rounded-lg transition-colors hover:bg-muted/70 disabled:opacity-50"
             disabled={TAB_KEYS.length <= 1}
           >
@@ -152,19 +170,27 @@ export const ProductTabs: React.FC<ProductTabsProps> = ({ product, createdByUser
       </div>
       {/* Desktop: tabs normales */}
       <div className="hidden md:block">
-        <Tabs defaultValue={TAB_KEYS[0]}>
+        <Tabs defaultValue={TAB_KEYS[0] || "specifications"}>
           <TabsList className="w-full grid grid-cols-3 border-b border-border mb-2">
             {TAB_KEYS.map((key, idx) => (
-              <TabsTrigger key={key} value={key}>{tabTitles[idx]}</TabsTrigger>
+              <TabsTrigger key={key} value={key}>
+                {tabTitles[idx]}
+              </TabsTrigger>
             ))}
           </TabsList>
-          <TabsContent value={TAB_KEYS[0]} className="mt-6">{renderTabContent(0)}</TabsContent>
-          <TabsContent value={TAB_KEYS[1]} className="mt-6">{renderTabContent(1)}</TabsContent>
-          <TabsContent value={TAB_KEYS[2]} className="mt-6">{renderTabContent(2)}</TabsContent>
+          <TabsContent value={TAB_KEYS[0] || "specifications"} className="mt-6">
+            {renderTabContent(0)}
+          </TabsContent>
+          <TabsContent value={TAB_KEYS[1] || "comments"} className="mt-6">
+            {renderTabContent(1)}
+          </TabsContent>
+          <TabsContent value={TAB_KEYS[2] || "history"} className="mt-6">
+            {renderTabContent(2)}
+          </TabsContent>
         </Tabs>
       </div>
     </div>
   );
 };
 
-export default ProductTabs; 
+export default ProductTabs;

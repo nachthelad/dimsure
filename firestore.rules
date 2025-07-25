@@ -13,16 +13,18 @@ service cloud.firestore {
       allow read, write: if request.auth != null;
     }
     
+
+    
     // Allow read access to products for everyone
     match /products/{productId} {
       allow read: if true;
       allow create: if request.auth != null;
       allow update: if request.auth != null && (
-        // Allow creator to update their own products
-        request.auth.uid == resource.data.createdBy ||
-        // Allow admins to update any product
-        isAdmin()
-      );
+    // Allow creator to update their own products
+    request.auth.uid == resource.data.createdBy ||
+    // Allow admins to update any product
+    isAdmin()
+  );
       allow delete: if request.auth != null && 
         (request.auth.uid == resource.data.createdBy || isAdmin());
     }

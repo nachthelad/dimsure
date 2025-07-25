@@ -4,15 +4,21 @@ export interface Dispute {
   description?: string;
   productSku?: string;
   productName?: string;
-  disputeType?: 'measurement' | 'description' | 'category' | 'image' | 'weight' | 'other';
-  status?: 'open' | 'in_review' | 'resolved' | 'rejected';
+  disputeType?:
+    | "measurement"
+    | "description"
+    | "category"
+    | "image"
+    | "weight"
+    | "other";
+  status?: "open" | "in_review" | "resolved" | "rejected";
   createdBy?: string;
   createdByTag?: string;
   createdAt?: any;
   votes?: {
     upvotes: number;
     downvotes: number;
-    userVotes: { [userId: string]: 'up' | 'down' };
+    userVotes: { [userId: string]: "up" | "down" };
   };
   evidence?: {
     currentValue?: string;
@@ -37,6 +43,7 @@ export interface Product {
   id: string;
   name: string;
   sku: string;
+  urlSlug: string;
   brand?: string;
   category?: string;
   primaryDimensions: { length: number; width: number; height: number };
@@ -52,7 +59,7 @@ export interface Product {
   lastModified?: any;
   createdAt?: any;
   specifications?: Record<string, any>;
-  status?: 'approved' | 'pending' | 'rejected';
+  status?: "approved" | "pending" | "rejected";
   moderationResults?: any[];
 }
 
@@ -66,5 +73,5 @@ export interface BlogPost {
   author?: string;
   excerpt?: string;
   tags?: string[];
-  status?: 'draft' | 'published' | 'archived';
+  status?: "draft" | "published" | "archived";
 }
