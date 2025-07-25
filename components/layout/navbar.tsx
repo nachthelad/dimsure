@@ -1,42 +1,66 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import Image from "next/image"
-import { usePathname } from "next/navigation"
-import { useEffect, useState } from "react"
-import { Package, Plus, User, MessageSquare, BookOpen, Menu, Globe } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetTitle, SheetTrigger, SheetDescription } from "@/components/ui/sheet"
-import { Separator } from "@/components/ui/separator"
-import { cn } from "@/lib/utils"
-import { AuthButton } from "@/components/features/auth-button"
-import { ThemeToggle } from "@/components/features/theme-toggle"
-import { LanguageToggle } from "@/components/features/language-toggle"
-import { useLanguage } from "@/components/layout/language-provider"
-import { NotificationBell } from "@/components/features/notification-bell"
+import Link from "next/link";
+import Image from "next/image";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import {
+  Search,
+  Plus,
+  User,
+  MessageSquare,
+  BookOpen,
+  Menu,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Sheet,
+  SheetContent,
+  SheetTitle,
+  SheetTrigger,
+  SheetDescription,
+} from "@/components/ui/sheet";
+import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
+import { AuthButton } from "@/components/features/auth-button";
+import { ThemeToggle } from "@/components/features/theme-toggle";
+import { LanguageToggle } from "@/components/features/language-toggle";
+import { useLanguage } from "@/components/layout/language-provider";
+import { NotificationBell } from "@/components/features/notification-bell";
 
 export function Navbar() {
-  const pathname = usePathname()
-  const { t, locale } = useLanguage()
-  const [isSheetOpen, setIsSheetOpen] = useState(false)
-  const [sidebarForceOpen, setSidebarForceOpen] = useState(false)
+  const pathname = usePathname();
+  const { t, locale } = useLanguage();
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [sidebarForceOpen, setSidebarForceOpen] = useState(false);
 
   // Close sheet when pathname changes
   useEffect(() => {
-    setIsSheetOpen(false)
-  }, [pathname])
+    setIsSheetOpen(false);
+  }, [pathname]);
 
   const navigation = [
     { name: t("navigation.addProduct"), href: "/add-product", icon: Plus },
-    { name: t("navigation.myContributions"), href: "/my-contributions", icon: User },
-    { name: t("navigation.communityDisputes"), href: "/disputes", icon: MessageSquare },
+    { name: t("navigation.search"), href: "/search", icon: Search },
+    {
+      name: t("navigation.myContributions"),
+      href: "/my-contributions",
+      icon: User,
+    },
+    {
+      name: t("navigation.communityDisputes"),
+      href: "/disputes",
+      icon: MessageSquare,
+    },
     { name: t("navigation.blog"), href: "/blog", icon: BookOpen },
-  ]
+  ];
 
   // Sidebar classes
-  const sidebarExpandedWidth = locale === "es" ? "xl:w-80" : "xl:w-72"
-  const sidebarHoverWidth = locale === "es" ? "xl:hover:w-80" : "xl:hover:w-72"
-  const sidebarClass = `hidden xl:flex xl:flex-col xl:fixed xl:inset-y-0 xl:left-0 xl:w-20 ${sidebarHoverWidth} ${sidebarForceOpen ? `${sidebarExpandedWidth} sidebar-force-open` : ""} xl:bg-background xl:border-r xl:border-border xl:z-50 xl:transition-all xl:duration-200 xl:ease-in-out xl:overflow-hidden group`
+  const sidebarExpandedWidth = locale === "es" ? "xl:w-80" : "xl:w-72";
+  const sidebarHoverWidth = locale === "es" ? "xl:hover:w-80" : "xl:hover:w-72";
+  const sidebarClass = `hidden xl:flex xl:flex-col xl:fixed xl:inset-y-0 xl:left-0 xl:w-20 ${sidebarHoverWidth} ${
+    sidebarForceOpen ? `${sidebarExpandedWidth} sidebar-force-open` : ""
+  } xl:bg-background xl:border-r xl:border-border xl:z-50 xl:transition-all xl:duration-200 xl:ease-in-out xl:overflow-hidden group`;
 
   return (
     <>
@@ -44,7 +68,10 @@ export function Navbar() {
       <aside className={sidebarClass}>
         <div className="flex flex-col h-full">
           {/* App Name + Logo */}
-          <Link href="/" className="flex items-center h-16 border-b border-border px-4 xl:px-6 xl:group-hover:px-6 transition-all duration-200 ease-in-out">
+          <Link
+            href="/"
+            className="flex items-center h-16 border-b border-border px-4 xl:px-6 xl:group-hover:px-6 transition-all duration-200 ease-in-out"
+          >
             {/* Logo para light mode */}
             <Image
               src="/color/color-android-chrome-192x192.png"
@@ -61,13 +88,15 @@ export function Navbar() {
               height={32}
               className="h-8 w-8 hidden dark:block flex-shrink-0"
             />
-            <span className="text-2xl font-bold text-foreground opacity-0 xl:group-hover:opacity-100 ml-2 transition-all duration-200 whitespace-nowrap">{t("site.name")}</span>
+            <span className="text-2xl font-bold text-foreground opacity-0 xl:group-hover:opacity-100 ml-2 transition-all duration-200 whitespace-nowrap">
+              {t("site.name")}
+            </span>
           </Link>
           {/* Navigation */}
           <nav className="flex-1 py-6">
             <div className="space-y-1">
               {navigation.map((item) => {
-                const Icon = item.icon
+                const Icon = item.icon;
                 return (
                   <Link key={item.name} href={item.href} className="block">
                     <Button
@@ -82,7 +111,9 @@ export function Navbar() {
                       <Icon
                         className={cn(
                           "h-5 w-5 flex-shrink-0 transition-all duration-200",
-                          pathname === item.href ? "text-foreground" : "text-muted-foreground"
+                          pathname === item.href
+                            ? "text-foreground"
+                            : "text-muted-foreground"
                         )}
                         strokeWidth={pathname === item.href ? 3 : 2}
                       />
@@ -97,7 +128,7 @@ export function Navbar() {
                       </span>
                     </Button>
                   </Link>
-                )
+                );
               })}
             </div>
           </nav>
@@ -109,7 +140,7 @@ export function Navbar() {
             </div>
             <Separator className="my-3 w-full" />
             <div className="flex justify-center w-full px-2">
-              <AuthButton expandedSidebar={sidebarForceOpen} />
+              <AuthButton />
             </div>
           </div>
         </div>
@@ -121,7 +152,13 @@ export function Navbar() {
           <div className="flex items-center justify-between h-16">
             {/* Logo only on mobile */}
             <Link href="/" className="flex items-center space-x-2">
-              <Image src="/android-chrome-192x192.png" alt="Dimsure Logo" width={32} height={32} className="h-8 w-8" />
+              <Image
+                src="/android-chrome-192x192.png"
+                alt="Dimsure Logo"
+                width={32}
+                height={32}
+                className="h-8 w-8"
+              />
             </Link>
             <div className="flex items-center space-x-2">
               <LanguageToggle />
@@ -139,11 +176,13 @@ export function Navbar() {
                   </SheetDescription>
                   <div className="flex flex-col space-y-2 mt-8">
                     {navigation.map((item) => {
-                      const Icon = item.icon
+                      const Icon = item.icon;
                       return (
                         <Link key={item.name} href={item.href}>
                           <Button
-                            variant={pathname === item.href ? "default" : "ghost"}
+                            variant={
+                              pathname === item.href ? "default" : "ghost"
+                            }
                             className="w-full justify-start space-x-2"
                             onClick={() => setIsSheetOpen(false)}
                           >
@@ -151,7 +190,7 @@ export function Navbar() {
                             <span>{item.name}</span>
                           </Button>
                         </Link>
-                      )
+                      );
                     })}
                     <div className="border-t border-border pt-4 mt-4">
                       <AuthButton />
@@ -164,5 +203,5 @@ export function Navbar() {
         </div>
       </nav>
     </>
-  )
+  );
 }
