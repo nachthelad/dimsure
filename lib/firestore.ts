@@ -84,6 +84,17 @@ export const updateProduct = async (
       lastModifiedBy: userId,
     });
 
+    // Actualizar confianza después de editar el producto
+    try {
+      await updateProductConfidence(slug);
+    } catch (confidenceError) {
+      console.error(
+        "Error updating confidence after product edit:",
+        confidenceError
+      );
+      // No lanzar error para no interrumpir la edición
+    }
+
     return slug;
   } catch (error) {
     console.error("Error updating product:", error);
@@ -420,6 +431,14 @@ export const likeProduct = async (userId: string, productSlug: string) => {
       likedBy: arrayUnion(userId),
       likes: increment(1),
     });
+
+    // Actualizar confianza después de un like
+    try {
+      await updateProductConfidence(productSlug);
+    } catch (confidenceError) {
+      console.error("Error updating confidence after like:", confidenceError);
+      // No lanzar error para no interrumpir el like
+    }
   } catch (error) {
     console.error("Error liking product:", error);
     throw error;
@@ -433,6 +452,14 @@ export const unlikeProduct = async (userId: string, productSlug: string) => {
       likedBy: arrayRemove(userId),
       likes: increment(-1),
     });
+
+    // Actualizar confianza después de un unlike
+    try {
+      await updateProductConfidence(productSlug);
+    } catch (confidenceError) {
+      console.error("Error updating confidence after unlike:", confidenceError);
+      // No lanzar error para no interrumpir el unlike
+    }
   } catch (error) {
     console.error("Error unliking product:", error);
   }
@@ -444,6 +471,20 @@ export const incrementProductViews = async (productSlug: string) => {
     await updateDoc(productRef, {
       views: increment(1),
     });
+
+    // Actualizar confianza después de incrementar views (cada 10 views)
+    try {
+      const product = await getProduct(productSlug);
+      if (product && (product.views || 0) % 10 === 0) {
+        await updateProductConfidence(productSlug);
+      }
+    } catch (confidenceError) {
+      console.error(
+        "Error updating confidence after view increment:",
+        confidenceError
+      );
+      // No lanzar error para no interrumpir el incremento de views
+    }
   } catch (error) {
     console.error("Error incrementing views:", error);
   }
@@ -1081,6 +1122,19 @@ export const voteOnDispute = async (
       updateData.status = "rejected";
     }
     await updateDoc(disputeRef, updateData);
+
+    // Actualizar confianza del producto si el estado de la disputa cambió
+    if (updateData.status && updateData.status !== data.status) {
+      try {
+        await updateProductConfidence(data.productSku);
+      } catch (confidenceError) {
+        console.error(
+          "Error updating confidence after dispute status change:",
+          confidenceError
+        );
+        // No lanzar error para no interrumpir el voto
+      }
+    }
   } catch (error) {
     console.error("Error voting on dispute:", error);
     throw error;
@@ -1141,5 +1195,123 @@ export const getProductDisputes = async (productSlug: string) => {
   } catch (error) {
     console.error("Error getting product disputes:", error);
     return [];
+  }
+};
+
+// Obtener información de disputas para cálculo de confianza
+export const getProductDisputeInfo = async (productSlug: string) => {
+  try {
+    const disputes = await getProductDisputes(productSlug);
+
+    const disputeInfo = {
+      totalDisputes: disputes.length,
+      resolvedDisputes: disputes.filter((d: any) => d.status === "resolved")
+        .length,
+      rejectedDisputes: disputes.filter((d: any) => d.status === "rejected")
+        .length,
+      openDisputes: disputes.filter(
+        (d: any) => d.status === "open" || d.status === "in_review"
+      ).length,
+    };
+
+    return disputeInfo;
+  } catch (error) {
+    console.error("Error getting product dispute info:", error);
+    return {
+      totalDisputes: 0,
+      resolvedDisputes: 0,
+      rejectedDisputes: 0,
+      openDisputes: 0,
+    };
+  }
+};
+
+// Actualizar la confianza de un producto
+export const updateProductConfidence = async (productSlug: string) => {
+  try {
+    const { calculateProductConfidence } = await import(
+      "./utils/confidence-calculator"
+    );
+
+    // Obtener el producto
+    const product = await getProduct(productSlug);
+    if (!product) {
+      throw new Error("Product not found");
+    }
+
+    // Obtener información de disputas
+    const disputeInfo = await getProductDisputeInfo(productSlug);
+
+    // Calcular nueva confianza
+    const confidenceFactors = calculateProductConfidence(product, disputeInfo);
+
+    // Solo actualizar si hay un cambio real en la confianza
+    const currentConfidence = product.confidence || 85;
+    const newConfidence = confidenceFactors.totalScore;
+
+    if (currentConfidence !== newConfidence) {
+      // Actualizar el producto con la nueva confianza
+      await updateProductField(
+        productSlug,
+        "confidence",
+        newConfidence,
+        "system"
+      );
+
+      return {
+        ...confidenceFactors,
+        wasUpdated: true,
+        oldConfidence: currentConfidence,
+        newConfidence: newConfidence,
+      };
+    } else {
+      // No hay cambios, devolver información sin actualizar
+      return {
+        ...confidenceFactors,
+        wasUpdated: false,
+        oldConfidence: currentConfidence,
+        newConfidence: newConfidence,
+      };
+    }
+  } catch (error) {
+    console.error("Error updating product confidence:", error);
+    throw error;
+  }
+};
+
+// Actualizar confianza de todos los productos (para uso administrativo)
+export const updateAllProductsConfidence = async () => {
+  try {
+    const products = await getAllProducts();
+    const results = [];
+
+    for (const product of products) {
+      try {
+        const factors = await updateProductConfidence(product.urlSlug);
+        results.push({
+          productSlug: product.urlSlug,
+          productName: product.name,
+          oldConfidence: factors.oldConfidence,
+          newConfidence: factors.newConfidence,
+          wasUpdated: factors.wasUpdated,
+          factors,
+        });
+      } catch (error) {
+        console.error(
+          `Error updating confidence for ${product.urlSlug}:`,
+          error
+        );
+        results.push({
+          productSlug: product.urlSlug,
+          productName: product.name,
+          error: error instanceof Error ? error.message : "Unknown error",
+        });
+      }
+    }
+
+    return results;
+  } catch (error) {
+    console.error("Error updating all products confidence:", error);
+    throw error;
   }
 };
