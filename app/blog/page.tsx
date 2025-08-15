@@ -10,6 +10,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useLanguage } from "@/components/layout/language-provider";
 import type { BlogPost } from "@/lib/types";
+import { AdSenseAd } from "@/components/features/adsense-ad";
 
 export default function BlogPage() {
   const { t } = useLanguage();
@@ -88,6 +89,17 @@ export default function BlogPage() {
       </div>
 
       <div className="grid gap-8 md:grid-cols-2">
+        {/* Ad between header and list, render only when there are enough posts/content */}
+        <div className="md:col-span-2">
+          <AdSenseAd
+            adSlotId="8732452191"
+            contentLength={posts.reduce(
+              (acc, p) => acc + (p.content?.length || 0),
+              0
+            )}
+            minContentLength={2000}
+          />
+        </div>
         {posts.length === 0 && (
           <Card className="max-w-2xl mx-auto">
             <CardHeader className="text-center">

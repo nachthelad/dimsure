@@ -1,3 +1,11 @@
+## Ads rendering policy
+
+- AdSense is disabled globally (no Auto Ads). Ads render only via `components/features/adsense-ad.tsx` when:
+  - User granted marketing consent in the cookie banner, and
+  - The page has sufficient content (defaults to 600+ chars; listing page uses higher threshold), and
+  - The route is content-rich (e.g., blog post/pages), not utility pages.
+- This prevents ads on thin pages and login/profile/search/admin routes.
+
 # Sistema de UI/UX
 
 ## Descripción General

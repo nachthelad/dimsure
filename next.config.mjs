@@ -1,7 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  swcMinify: true,
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -9,31 +8,21 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
-    domains: ['placeholder.svg'],
+    domains: ["placeholder.svg"],
     unoptimized: true,
   },
   async redirects() {
     return [
       {
-        source: '/blog/',
-        destination: '/blog',
+        source: "/blog/",
+        destination: "/blog",
         permanent: true,
       },
-    ]
+    ];
   },
   async headers() {
-    return [
-      {
-        source: '/(.*)',
-        headers: [
-          {
-            key: 'X-Robots-Tag',
-            value: 'index, follow',
-          },
-        ],
-      },
-    ]
+    return [];
   },
-}
+};
 
-export default nextConfig
+export default nextConfig;
