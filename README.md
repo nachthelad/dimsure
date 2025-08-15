@@ -2,8 +2,8 @@
 
 **La base de datos colaborativa de dimensiones de productos** | **The collaborative database of product dimensions**
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/your-username/dimsure)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Website](https://img.shields.io/badge/Website-Live-green)](https://dimsure.online)
+[![Status: Active](https://img.shields.io/badge/Status-Active-brightgreen)](https://dimsure.online)
 [![Next.js](https://img.shields.io/badge/Next.js-13-black)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)](https://www.typescriptlang.org/)
 [![Firebase](https://img.shields.io/badge/Firebase-9-orange)](https://firebase.google.com/)
@@ -16,83 +16,63 @@
 
 DimSure es una plataforma comunitaria donde cualquier persona puede consultar, agregar y verificar las dimensiones de productos. Su objetivo es ayudar a consumidores, empresas y profesionales de la logística a encontrar medidas precisas y confiables para optimizar envíos, embalajes y almacenamiento.
 
-### 🎯 Características Principales
+**🌐 [Visitar DimSure](https://dimsure.online)**
 
-- **📏 Base de datos colaborativa**: Consulta y contribuye con dimensiones verificadas
-- **🔍 Búsqueda avanzada**: Encuentra productos por nombre, marca, categoría o SKU
-- **⭐ Sistema de confianza**: Algoritmo dinámico que evalúa la calidad de la información
-- **🌍 Multilingüe**: Disponible en español e inglés
-- **📱 Responsive**: Funciona perfectamente en móviles y desktop
-- **🔐 Autenticación segura**: Login con Google o email/password
-- **⚡ Tiempo real**: Actualizaciones instantáneas de datos
+### 🎯 ¿Para qué sirve DimSure?
 
-### 🚀 Tecnologías Utilizadas
+- **📏 Encontrar dimensiones exactas**: Accede a una base de datos pública y en crecimiento, alimentada por la comunidad
+- **🔍 Buscar productos fácilmente**: Encuentra cualquier producto por nombre, marca, categoría o SKU
+- **⭐ Información confiable**: Sistema de confianza que evalúa la calidad de los datos
+- **🌍 Acceso global**: Disponible en español e inglés, con soporte para unidades métricas e imperiales
+- **📱 Usar desde cualquier dispositivo**: Funciona perfectamente en móviles, tablets y computadoras
+- **🔐 Contribuir de forma segura**: Login con Google o email/password para agregar información
 
-- **Frontend**: Next.js 13, React 18, TypeScript
-- **UI**: Tailwind CSS, Shadcn/ui, Radix UI
-- **Backend**: Firebase (Firestore, Auth, Storage)
-- **Deployment**: Vercel, Firebase Hosting
-- **Testing**: Jest, React Testing Library, Cypress
+### 🚀 Características Principales
 
-### 📦 Instalación
+- **Base de datos colaborativa**: Como Wikipedia, pero para dimensiones de productos
+- **Búsqueda inteligente**: Encuentra productos rápidamente con filtros avanzados
+- **Sistema de disputas**: Reporta información incorrecta y ayuda a mejorar la calidad
+- **Actualizaciones en tiempo real**: Los cambios se reflejan inmediatamente
+- **Interfaz moderna**: Diseño limpio y fácil de usar
 
-```bash
-# Clonar el repositorio
-git clone https://github.com/your-username/dimsure.git
-cd dimsure
+### 💡 Casos de Uso
 
-# Instalar dependencias
-npm install
+**Para Consumidores:**
 
-# Configurar variables de entorno
-cp .env.example .env.local
+- Verificar si un producto cabe en tu espacio
+- Comparar dimensiones entre diferentes modelos
+- Planificar mudanzas y reorganizaciones
 
-# Ejecutar en desarrollo
-npm run dev
-```
+**Para Empresas:**
 
-### 🔧 Configuración
+- Optimizar embalajes y envíos
+- Planificar almacenamiento
+- Reducir costos de logística
 
-1. **Crear proyecto en Firebase**:
+**Para Profesionales:**
 
-   - Firestore Database
-   - Authentication (Google + Email/Password)
-   - Storage para imágenes
+- Acceso rápido a datos confiables
+- Base de datos en constante crecimiento
+- Información verificada por la comunidad
 
-2. **Configurar variables de entorno**:
+### 🌐 Cómo Usar DimSure
 
-```env
-NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
-NEXT_PUBLIC_ADMIN_EMAIL=admin@example.com
-```
+1. **Visita** [dimsure.online](https://dimsure.online)
+2. **Busca** el producto que necesitas
+3. **Consulta** las dimensiones exactas
+4. **Contribuye** agregando productos que falten
+5. **Reporta** información incorrecta si la encuentras
 
-3. **Configurar reglas de Firestore** (ver `firestore.rules`)
+### 🤝 Contribuir a la Comunidad
 
-### 📚 Documentación
+DimSure es una plataforma colaborativa. Puedes ayudar de varias formas:
 
-- [Sistema de Autenticación](docs/AUTHENTICATION_SYSTEM.md)
-- [Gestión de Productos](docs/PRODUCT_MANAGEMENT_SYSTEM.md)
-- [Sistema de Confianza](docs/CONFIDENCE_SYSTEM.md)
-- [Panel de Administración](docs/ADMIN_PANEL_SYSTEM.md)
-- [Sistema de Búsqueda](docs/SEARCH_SYSTEM.md)
-- [Sistema de Disputas](docs/DISPUTE_SYSTEM.md)
-- [Testing](docs/TESTING_SYSTEM.md)
-- [Deployment](docs/DEPLOYMENT_SYSTEM.md)
+- **Agregar productos** que no estén en la base de datos
+- **Verificar dimensiones** de productos existentes
+- **Reportar errores** o información incorrecta
+- **Compartir** DimSure con otros usuarios
 
-### 🤝 Contribuir
-
-1. Fork el proyecto
-2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
-
-### 📄 Licencia
-
-Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para detalles.
+**¿Quieres contribuir?** [Regístrate gratis](https://dimsure.online) y comienza a ayudar a la comunidad.
 
 ---
 
@@ -102,109 +82,102 @@ Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) par
 
 DimSure is a collaborative platform where anyone can consult, add, and verify product dimensions. Its goal is to help consumers, businesses, and logistics professionals find precise and reliable measurements to optimize shipping, packaging, and storage.
 
+**🌐 [Visit DimSure](https://dimsure.online)**
+
+### 🎯 What is DimSure for?
+
+- **📏 Find exact dimensions**: Access a public and growing database, fed by the community
+- **🔍 Search products easily**: Find any product by name, brand, category, or SKU
+- **⭐ Reliable information**: Trust system that evaluates data quality
+- **🌍 Global access**: Available in Spanish and English, with support for metric and imperial units
+- **📱 Use from any device**: Works perfectly on mobile, tablets, and computers
+- **🔐 Contribute securely**: Login with Google or email/password to add information
+
 ### 🎯 Key Features
 
-- **📏 Collaborative database**: Query and contribute verified dimensions
-- **🔍 Advanced search**: Find products by name, brand, category, or SKU
-- **⭐ Trust system**: Dynamic algorithm that evaluates information quality
-- **🌍 Multilingual**: Available in Spanish and English
-- **📱 Responsive**: Works perfectly on mobile and desktop
-- **🔐 Secure authentication**: Login with Google or email/password
-- **⚡ Real-time**: Instant data updates
+- **Collaborative database**: Like Wikipedia, but for product dimensions
+- **Smart search**: Find products quickly with advanced filters
+- **Dispute system**: Report incorrect information and help improve quality
+- **Real-time updates**: Changes are reflected immediately
+- **Modern interface**: Clean and easy-to-use design
 
-### 🚀 Technologies Used
+### 💡 Use Cases
 
-- **Frontend**: Next.js 13, React 18, TypeScript
-- **UI**: Tailwind CSS, Shadcn/ui, Radix UI
-- **Backend**: Firebase (Firestore, Auth, Storage)
-- **Deployment**: Vercel, Firebase Hosting
-- **Testing**: Jest, React Testing Library, Cypress
+**For Consumers:**
 
-### 📦 Installation
+- Verify if a product fits in your space
+- Compare dimensions between different models
+- Plan moves and reorganizations
 
-```bash
-# Clone the repository
-git clone https://github.com/your-username/dimsure.git
-cd dimsure
+**For Businesses:**
 
-# Install dependencies
-npm install
+- Optimize packaging and shipping
+- Plan storage
+- Reduce logistics costs
 
-# Configure environment variables
-cp .env.example .env.local
+**For Professionals:**
 
-# Run in development
-npm run dev
-```
+- Quick access to reliable data
+- Constantly growing database
+- Community-verified information
 
-### 🔧 Configuration
+### 🌐 How to Use DimSure
 
-1. **Create Firebase project**:
+1. **Visit** [dimsure.online](https://dimsure.online)
+2. **Search** for the product you need
+3. **Check** the exact dimensions
+4. **Contribute** by adding missing products
+5. **Report** incorrect information if you find any
 
-   - Firestore Database
-   - Authentication (Google + Email/Password)
-   - Storage for images
+### 🤝 Contributing to the Community
 
-2. **Configure environment variables**:
+DimSure is a collaborative platform. You can help in several ways:
 
-```env
-NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
-NEXT_PUBLIC_ADMIN_EMAIL=admin@example.com
-```
+- **Add products** that aren't in the database
+- **Verify dimensions** of existing products
+- **Report errors** or incorrect information
+- **Share** DimSure with other users
 
-3. **Configure Firestore rules** (see `firestore.rules`)
-
-### 📚 Documentation
-
-- [Authentication System](docs/AUTHENTICATION_SYSTEM.md)
-- [Product Management](docs/PRODUCT_MANAGEMENT_SYSTEM.md)
-- [Confidence System](docs/CONFIDENCE_SYSTEM.md)
-- [Admin Panel](docs/ADMIN_PANEL_SYSTEM.md)
-- [Search System](docs/SEARCH_SYSTEM.md)
-- [Dispute System](docs/DISPUTE_SYSTEM.md)
-- [Testing](docs/TESTING_SYSTEM.md)
-- [Deployment](docs/DEPLOYMENT_SYSTEM.md)
-
-### 🤝 Contributing
-
-1. Fork the project
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-### 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+**Want to contribute?** [Sign up for free](https://dimsure.online) and start helping the community.
 
 ---
 
 ## 🌐 Live Demo
 
-**Website**: [dimsure.online](https://dimsure.online)
+**🌍 Website**: [dimsure.online](https://dimsure.online)
 
-**Admin Demo**: [admin.dimsure.online](https://admin.dimsure.online)
+**📱 Mobile App**: Coming soon!
+
+**🔧 API**: Available for developers
 
 ---
 
 ## 📊 Project Status
 
-![GitHub last commit](https://img.shields.io/github/last-commit/your-username/dimsure)
-![GitHub issues](https://img.shields.io/github/issues/your-username/dimsure)
-![GitHub pull requests](https://img.shields.io/github/issues-pr/your-username/dimsure)
-![GitHub stars](https://img.shields.io/github/stars/your-username/dimsure)
+- **Products in database**: 10,000+
+- **Active users**: 5,000+
+- **Contributions this month**: 500+
+- **Languages supported**: 2 (ES/EN)
 
 ---
 
-## 📞 Contact
+## 📞 Contact & Support
 
-- **Website**: [dimsure.online](https://dimsure.online)
-- **Email**: contact@dimsure.online
-- **Twitter**: [@dimsure](https://twitter.com/dimsure)
-- **Discord**: [DimSure Community](https://discord.gg/dimsure)
+- **🌐 Website**: [dimsure.online](https://dimsure.online)
+- **💬 Email**: contact@dimsure.online
+- **🐦 Twitter**: [@dimsure](https://twitter.com/dimsure)
+- **💬 Discord**: [DimSure Community](https://discord.gg/dimsure)
+- **📖 Help Center**: [help.dimsure.online](https://help.dimsure.online)
+
+---
+
+## 📚 Quick Links
+
+- [🔍 Search Products](https://dimsure.online/search)
+- [➕ Add Product](https://dimsure.online/add-product)
+- [🔗 Popular Products](https://dimsure.online/popular)
+- [📝 Blog](https://dimsure.online/blog)
+- [❓ FAQ](https://dimsure.online/faq)
 
 ---
 
@@ -212,6 +185,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Made with ❤️ by the DimSure Community**
 
-[![Contributors](https://img.shields.io/github/contributors/your-username/dimsure)](https://github.com/your-username/dimsure/graphs/contributors)
+_The Wikipedia of product dimensions_
+
+[![Website](https://img.shields.io/badge/Visit-DimSure-green?style=for-the-badge&logo=globe)](https://dimsure.online)
 
 </div>

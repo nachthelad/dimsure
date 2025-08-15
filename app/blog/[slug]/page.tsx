@@ -11,6 +11,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useLanguage } from "@/components/layout/language-provider";
 import type { BlogPost } from "@/lib/types";
+import { AdSenseAd } from "@/components/features/adsense-ad";
 
 export default function BlogPostPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -22,11 +23,10 @@ export default function BlogPostPage() {
     async function fetchPost() {
       const q = query(collection(db, "blogPosts"), where("slug", "==", slug));
       const snapshot = await getDocs(q);
-      if (!snapshot.empty) {
-        setPost({
-          id: snapshot.docs[0].id,
-          ...snapshot.docs[0].data(),
-        } as BlogPost);
+      const firstDoc = snapshot.docs.at(0);
+      if (firstDoc) {
+        const data = firstDoc.data();
+        setPost({ id: firstDoc.id, ...(data as any) } as BlogPost);
       }
       setLoading(false);
     }
@@ -78,6 +78,13 @@ export default function BlogPostPage() {
             <ReactMarkdown remarkPlugins={[remarkGfm]}>
               {post.content}
             </ReactMarkdown>
+          </div>
+          {/* Contextual in-article ad after sufficient content */}
+          <div className="mt-8">
+            <AdSenseAd
+              adSlotId="8732452191"
+              contentLength={post.content?.length || 0}
+            />
           </div>
         </CardContent>
       </Card>

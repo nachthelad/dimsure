@@ -6,6 +6,9 @@ Disallow: /my-contributions
 Disallow: /disputes
 Disallow: /add-product
 Disallow: /admin/
+Disallow: /login
+Disallow: /profile
+Disallow: /search
 
 # Allow blog explicitly
 Allow: /blog
