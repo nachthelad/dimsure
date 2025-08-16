@@ -103,7 +103,7 @@ const nextConfig = {
     scrollRestoration: true,
   },
   // Optimize CSS and JS
-  swcMinify: true,
+  // swcMinify was removed in Next.js 13+/14+. Minification is always on.
   // Bundle analyzer (uncomment to analyze bundle size)
   // webpack: (config, { isServer }) => {
   //   if (!isServer) {

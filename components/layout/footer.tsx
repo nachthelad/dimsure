@@ -1,12 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { Mail } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useLanguage } from "@/components/layout/language-provider";
-import { APP_CONSTANTS } from "@/lib/constants";
 import { FaXTwitter } from "react-icons/fa6";
+
+const CONTACT_EMAIL = "nachthelad.dev@gmail.com";
 
 export function Footer() {
   const { t } = useLanguage();
@@ -142,7 +142,7 @@ export function Footer() {
             <div className="flex flex-row xl:flex-col gap-4 text-sm">
               <div className="flex items-center gap-2 text-muted-foreground">
                 <a
-                  href={`mailto:${APP_CONSTANTS.ADMIN_EMAIL}`}
+                  href={`mailto:${CONTACT_EMAIL}`}
                   className="hover:text-foreground transition-colors"
                 >
                   <span className="xl:hidden">
@@ -150,7 +150,7 @@ export function Footer() {
                   </span>
                   <span className="hidden xl:inline-flex items-center gap-2">
                     <Mail className="h-4 w-4" />
-                    {APP_CONSTANTS.ADMIN_EMAIL}
+                    {CONTACT_EMAIL}
                   </span>
                 </a>
               </div>

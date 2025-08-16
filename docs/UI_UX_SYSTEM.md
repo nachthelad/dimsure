@@ -948,9 +948,7 @@ const nextConfig = {
     domains: ["firebasestorage.googleapis.com"],
     formats: ["image/webp", "image/avif"],
   },
-  experimental: {
-    optimizeCss: true,
-  },
+  // Nota: `optimizeCss` y otras flags experimentales quedaron obsoletas en Next.js moderno.
 };
 
 export default nextConfig;

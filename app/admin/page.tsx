@@ -38,14 +38,25 @@ export default function AdminPage() {
   const [statsLoading, setStatsLoading] = useState(true);
 
   const isAdmin =
-    user?.email === APP_CONSTANTS.ADMIN_EMAIL ||
-    user?.email === APP_CONSTANTS.DEBUG_AUTHORIZED_EMAIL;
+    APP_CONSTANTS.ADMIN_EMAIL &&
+    (user?.email === APP_CONSTANTS.ADMIN_EMAIL ||
+      user?.email === APP_CONSTANTS.DEBUG_AUTHORIZED_EMAIL);
 
   useEffect(() => {
     if (isAdmin) {
       loadStats();
     }
   }, [isAdmin]);
+
+  // Debug logging
+  useEffect(() => {
+    if (!loading && user) {
+      console.log("Admin check:", {
+        userEmail: user.email,
+        isAdmin,
+      });
+    }
+  }, [user, loading, isAdmin]);
 
   const loadStats = async () => {
     try {
@@ -121,7 +132,7 @@ export default function AdminPage() {
     );
   }
 
-  if (!isAdmin) {
+  if (!loading && !isAdmin) {
     router.push("/login?redirect=/admin");
     return null;
   }

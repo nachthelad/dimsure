@@ -133,8 +133,11 @@ export default function BlogPage() {
                       className="object-cover transition-transform duration-300 group-hover:scale-105"
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       priority={false}
-                      loading="lazy"
-                      onLoad={() => trackImageLoad(post.coverImage, Date.now())}
+                      quality={70}
+                      onLoad={() => {
+                        if (post.coverImage)
+                          trackImageLoad(post.coverImage, Date.now());
+                      }}
                     />
                   </ClientOnly>
                 </div>

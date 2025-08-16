@@ -11,7 +11,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { APP_CONSTANTS } from "@/lib/constants";
+const CONTACT_EMAIL = "nachthelad.dev@gmail.com";
 
 export default function TermsPage() {
   const lastUpdated = new Date().toLocaleDateString();
@@ -316,9 +316,7 @@ export default function TermsPage() {
             </p>
             <div className="bg-muted/50 p-4 rounded-lg">
               <p className="font-semibold">Email:</p>
-              <p className="text-muted-foreground">
-                {APP_CONSTANTS.ADMIN_EMAIL}
-              </p>
+              <p className="text-muted-foreground">{CONTACT_EMAIL}</p>
               <p className="font-semibold mt-2">Subject Line:</p>
               <p className="text-muted-foreground">
                 "Terms of Service Question - Dimsure"

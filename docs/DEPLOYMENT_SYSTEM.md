@@ -93,10 +93,8 @@ NEXT_PUBLIC_GOOGLE_ANALYTICS_ID=GA_MEASUREMENT_ID
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Optimizaciones de rendimiento
-  experimental: {
-    optimizeCss: true,
-    optimizePackageImports: ["lucide-react", "@radix-ui/react-icons"],
-  },
+  // Nota: En versiones recientes de Next.js muchas optimizaciones están habilitadas por defecto
+  // y opciones experimentales como `optimizeCss`/`optimizePackageImports` ya no son necesarias.
 
   // Configuración de imágenes
   images: {
@@ -167,9 +165,9 @@ const nextConfig = {
   compress: true,
 
   // Configuración de PWA
-  ...(process.env.NODE_ENV === "production" && {
-    swcMinify: true,
-  }),
+  // Desde Next.js 13+, la minificación con SWC está habilitada por defecto
+  // y la opción `swcMinify` fue eliminada.
+  ...(process.env.NODE_ENV === "production" && {}),
 };
 
 export default nextConfig;

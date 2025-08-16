@@ -5,6 +5,7 @@ export interface UserData {
   publicTag?: string;
   createdAt?: any;
   lastLogin?: any;
+  role?: "admin" | "user";
   reputation: number;
   contributionsCount: number;
   isVerified: boolean;
