@@ -17,13 +17,28 @@ import { Analytics } from "@vercel/analytics/next";
 import { headers } from "next/headers";
 import { getServerLocale } from "@/lib/translations";
 import { parseCookies, COOKIE_NAMES } from "@/lib/cookies";
+import { SchemaScript } from "@/components/seo/schema-script";
+import {
+  generateOrganizationSchema,
+  generateWebsiteSchema,
+} from "@/lib/seo/schema-markup";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: `${siteConfig.name} — Measure it once. Trust it forever.`,
-  description: siteConfig.description,
-  keywords: siteConfig.keywords.join(", "),
+  title: `${siteConfig.name} — Product Dimensions Database for Packaging & Logistics`,
+  description:
+    "Find accurate product dimensions for packaging optimization. Community-verified measurements for thousands of products. Reduce shipping costs with precise dimension data.",
+  keywords: [
+    ...siteConfig.keywords,
+    "product dimensions",
+    "packaging optimization",
+    "shipping calculator",
+    "box dimensions",
+    "logistics",
+    "e-commerce packaging",
+    "product measurements",
+  ].join(", "),
   authors: [{ name: siteConfig.creator }],
   creator: siteConfig.creator,
   publisher: siteConfig.name,
@@ -40,8 +55,9 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: `${siteConfig.name} — Measure it once. Trust it forever.`,
-    description: siteConfig.description,
+    title: `${siteConfig.name} — Product Dimensions Database`,
+    description:
+      "Community-verified product dimensions for packaging and logistics optimization",
     type: "website",
     locale: "en_US",
     url: siteConfig.url,
@@ -57,9 +73,11 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: `${siteConfig.name} — Measure it once. Trust it forever.`,
-    description: siteConfig.description,
+    title: `${siteConfig.name} — Product Dimensions Database`,
+    description:
+      "Community-verified product dimensions for packaging and logistics optimization",
     images: [siteConfig.ogImage],
+    creator: "@dimsure_app",
   },
   alternates: {
     canonical: siteConfig.url,
@@ -158,6 +176,10 @@ export default async function RootLayout({
         <Script id="google-ads-conversion" strategy="afterInteractive">
           {`gtag('event', 'conversion', {'send_to': 'AW-980303157/Me53CNDr45cZELX6uNMD'});`}
         </Script>
+
+        {/* Schema Markup */}
+        <SchemaScript schema={generateOrganizationSchema()} />
+        <SchemaScript schema={generateWebsiteSchema()} />
       </head>
       <body className={inter.className}>
         <ThemeProvider

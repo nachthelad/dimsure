@@ -79,22 +79,15 @@ export function Navbar() {
           <Link
             href="/"
             className="flex items-center h-16 border-b border-border px-4 xl:px-6 xl:group-hover:px-6 transition-all duration-200 ease-in-out"
+            suppressHydrationWarning
           >
-            {/* Logo para light mode */}
-            <Image
-              src="/color/color-android-chrome-192x192.png"
-              alt="Dimsure Logo Color"
-              width={32}
-              height={32}
-              className="h-8 w-8 block dark:hidden flex-shrink-0"
-            />
-            {/* Logo para dark mode */}
-            <Image
+            <img
               src="/android-chrome-192x192.png"
               alt="Dimsure Logo"
               width={32}
               height={32}
-              className="h-8 w-8 hidden dark:block flex-shrink-0"
+              className="h-8 w-8 flex-shrink-0"
+              loading="eager"
             />
             <span className="text-2xl font-bold text-foreground opacity-0 xl:group-hover:opacity-100 ml-2 transition-all duration-200 whitespace-nowrap">
               {t("site.name")}
@@ -198,12 +191,13 @@ export function Navbar() {
           <div className="flex items-center justify-between h-16">
             {/* Logo only on mobile */}
             <Link href="/" className="flex items-center space-x-2">
-              <Image
+              <img
                 src="/android-chrome-192x192.png"
                 alt="Dimsure Logo"
                 width={32}
                 height={32}
                 className="h-8 w-8"
+                loading="eager"
               />
             </Link>
             <div className="flex items-center space-x-2">
