@@ -19,12 +19,13 @@ export function Footer() {
           {/* Brand */}
           <div className="space-y-4">
             <Link href="/" className="flex items-center space-x-2">
-              <Image
+              <img
                 src="/android-chrome-192x192.png"
                 alt="Dimsure Logo"
                 width={24}
                 height={24}
                 className="h-6 w-6"
+                loading="lazy"
               />
               <span className="text-xl font-bold text-foreground">
                 {t("site.name")}
@@ -71,6 +72,14 @@ export function Footer() {
                   className="text-muted-foreground hover:text-foreground transition-colors"
                 >
                   {t("footer.links.blog")}
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/guides"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Guides
                 </Link>
               </li>
             </ul>

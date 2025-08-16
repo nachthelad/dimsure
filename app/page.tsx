@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Package, TrendingUp, Activity, Search } from "lucide-react";
-import { Card, CardContent, CardTitle } from "@/components/ui/card";
+import { Package, TrendingUp, Activity } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";

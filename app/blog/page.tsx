@@ -6,16 +6,20 @@ import { db } from "@/lib/firebase";
 import { collection, getDocs, query, orderBy } from "firebase/firestore";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { OptimizedImage } from "@/components/ui/optimized-image";
+import { ClientOnly } from "@/components/ui/client-only";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useLanguage } from "@/components/layout/language-provider";
 import type { BlogPost } from "@/lib/types";
 import { AdSenseAd } from "@/components/features/adsense-ad";
+import { usePerformanceMonitor } from "@/hooks/use-performance-monitor";
 
 export default function BlogPage() {
   const { t } = useLanguage();
   const [loading, setLoading] = useState(true);
   const [posts, setPosts] = useState<BlogPost[]>([]);
+  const { trackImageLoad } = usePerformanceMonitor();
 
   useEffect(() => {
     async function fetchPosts() {
@@ -120,11 +124,20 @@ export default function BlogPage() {
           >
             <Card className="h-full flex flex-col">
               {post.coverImage && (
-                <img
-                  src={post.coverImage}
-                  alt={post.title}
-                  className="w-full h-48 object-cover rounded-t"
-                />
+                <div className="relative w-full h-48 overflow-hidden rounded-t">
+                  <ClientOnly fallback={<Skeleton className="w-full h-48" />}>
+                    <OptimizedImage
+                      src={post.coverImage}
+                      alt={post.title || "Blog post cover"}
+                      fill
+                      className="object-cover transition-transform duration-300 group-hover:scale-105"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      priority={false}
+                      loading="lazy"
+                      onLoad={() => trackImageLoad(post.coverImage, Date.now())}
+                    />
+                  </ClientOnly>
+                </div>
               )}
               <CardHeader>
                 <CardTitle className="text-2xl group-hover:text-primary transition-colors">
