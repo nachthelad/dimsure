@@ -98,6 +98,7 @@ export const FEATURE_FLAGS = {
   ENABLE_NOTIFICATIONS:
     process.env.NEXT_PUBLIC_ENABLE_NOTIFICATIONS !== "false",
   ENABLE_ANALYTICS: process.env.NEXT_PUBLIC_ENABLE_ANALYTICS !== "false",
+  ENABLE_ADSENSE: process.env.NEXT_PUBLIC_ENABLE_ADSENSE === "true",
 } as const;
 
 // Export all configurations

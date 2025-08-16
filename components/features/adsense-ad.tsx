@@ -46,7 +46,8 @@ export function AdSenseAd({
       const consent = consentRaw ? JSON.parse(consentRaw) : null;
       const marketingAllowed = Boolean(consent?.marketing);
       setCanShow(
-        marketingAllowed &&
+        CONFIG.FEATURES.ENABLE_ADSENSE === true &&
+          marketingAllowed &&
           hasSufficientContent &&
           Boolean(adSlotId) &&
           Boolean(CONFIG.ANALYTICS.GOOGLE_ADSENSE_ID)

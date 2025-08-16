@@ -143,7 +143,9 @@ export default function BlogPage() {
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     priority={index === 0}
                     quality={70}
-                    unoptimized
+                    blurDataURL={
+                      (post as any).coverImageBlurDataURL || undefined
+                    }
                   />
                 </div>
               )}
