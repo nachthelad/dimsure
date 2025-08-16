@@ -7,19 +7,19 @@ import { collection, getDocs, query, orderBy } from "firebase/firestore";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { OptimizedImage } from "@/components/ui/optimized-image";
-import { ClientOnly } from "@/components/ui/client-only";
+import { ImagePreloader } from "@/components/seo/image-preloader";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useLanguage } from "@/components/layout/language-provider";
 import type { BlogPost } from "@/lib/types";
 import { AdSenseAd } from "@/components/features/adsense-ad";
-import { usePerformanceMonitor } from "@/hooks/use-performance-monitor";
+// import { usePerformanceMonitor } from "@/hooks/use-performance-monitor";
 
 export default function BlogPage() {
   const { t } = useLanguage();
   const [loading, setLoading] = useState(true);
   const [posts, setPosts] = useState<BlogPost[]>([]);
-  const { trackImageLoad } = usePerformanceMonitor();
+  // const { trackImageLoad } = usePerformanceMonitor();
 
   useEffect(() => {
     async function fetchPosts() {
@@ -93,6 +93,16 @@ export default function BlogPage() {
       </div>
 
       <div className="grid gap-8 md:grid-cols-2">
+        {/* Preload primeras imágenes para mejorar LCP */}
+        <ImagePreloader
+          images={
+            posts
+              .slice(0, 2)
+              .map((p) => p.coverImage || "")
+              .filter(Boolean) as string[]
+          }
+          priority
+        />
         {/* Ad between header and list, render only when there are enough posts/content */}
         <div className="md:col-span-2">
           <AdSenseAd
@@ -116,7 +126,7 @@ export default function BlogPage() {
             </CardContent>
           </Card>
         )}
-        {posts.map((post) => (
+        {posts.map((post, index) => (
           <Link
             key={post.id}
             href={`/blog/${post.slug}`}
@@ -125,21 +135,16 @@ export default function BlogPage() {
             <Card className="h-full flex flex-col">
               {post.coverImage && (
                 <div className="relative w-full h-48 overflow-hidden rounded-t">
-                  <ClientOnly fallback={<Skeleton className="w-full h-48" />}>
-                    <OptimizedImage
-                      src={post.coverImage}
-                      alt={post.title || "Blog post cover"}
-                      fill
-                      className="object-cover transition-transform duration-300 group-hover:scale-105"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      priority={false}
-                      quality={70}
-                      onLoad={() => {
-                        if (post.coverImage)
-                          trackImageLoad(post.coverImage, Date.now());
-                      }}
-                    />
-                  </ClientOnly>
+                  <OptimizedImage
+                    src={post.coverImage as string}
+                    alt={post.title || "Blog post cover"}
+                    fill
+                    className="object-cover transition-transform duration-300 group-hover:scale-105"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    priority={index === 0}
+                    quality={70}
+                    unoptimized
+                  />
                 </div>
               )}
               <CardHeader>

@@ -66,8 +66,9 @@ export default function BlogPostPage() {
               fill
               className="object-cover"
               sizes="(max-width: 768px) 100vw, 768px"
-              priority={false}
+              priority
               quality={70}
+              unoptimized
             />
           </div>
         )}
