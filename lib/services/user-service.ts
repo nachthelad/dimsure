@@ -36,6 +36,7 @@ export class UserService {
           email: userEmail || null,
           displayName: userDisplayName || null,
           publicTag: null,
+          role: "user",
           createdAt: serverTimestamp(),
           lastLogin: serverTimestamp(),
           reputation: 0,

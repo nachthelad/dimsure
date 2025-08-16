@@ -4,6 +4,7 @@ import { useParams, notFound } from "next/navigation";
 import { db } from "@/lib/firebase";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { OptimizedImage } from "@/components/ui/optimized-image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
@@ -58,11 +59,17 @@ export default function BlogPostPage() {
       </div>
       <Card className="max-w-3xl mx-auto">
         {post.coverImage && (
-          <img
-            src={post.coverImage}
-            alt={post.title}
-            className="w-full h-80 object-cover rounded-t"
-          />
+          <div className="relative w-full h-80 overflow-hidden rounded-t">
+            <OptimizedImage
+              src={post.coverImage}
+              alt={post.title || "Blog cover"}
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, 768px"
+              priority={false}
+              quality={70}
+            />
+          </div>
         )}
         <CardHeader>
           <CardTitle>{post.title}</CardTitle>
