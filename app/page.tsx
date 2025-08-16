@@ -12,6 +12,7 @@ import { getRecentProducts, getDatabaseStats } from "@/lib/firestore";
 import { useLanguage } from "@/components/layout/language-provider";
 import type { Product } from "@/lib/types";
 import HeroSection from "@/components/features/hero-section";
+import { AdSenseAd } from "@/components/features/adsense-ad";
 
 interface DatabaseStats {
   totalProducts: number;
@@ -256,6 +257,42 @@ export default function HomePage() {
         </div>
       </div>
 
+      {/* Value Proposition Section */}
+      <div className="mb-12">
+        <div className="grid md:grid-cols-3 gap-6 mb-8">
+          <Card>
+            <CardContent className="p-6 text-center">
+              <Package className="h-8 w-8 text-primary mx-auto mb-3" />
+              <h3 className="font-semibold mb-2">Accurate Measurements</h3>
+              <p className="text-sm text-muted-foreground">
+                Community-verified product dimensions with confidence scores to
+                ensure reliability for your packaging needs.
+              </p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-6 text-center">
+              <TrendingUp className="h-8 w-8 text-primary mx-auto mb-3" />
+              <h3 className="font-semibold mb-2">Cost Optimization</h3>
+              <p className="text-sm text-muted-foreground">
+                Reduce shipping costs and improve packaging efficiency with
+                precise product dimension data.
+              </p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-6 text-center">
+              <Activity className="h-8 w-8 text-primary mx-auto mb-3" />
+              <h3 className="font-semibold mb-2">Community Driven</h3>
+              <p className="text-sm text-muted-foreground">
+                Join thousands of contributors helping build the most
+                comprehensive product dimension database.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
       {/* Recently Added Products - Shared between mobile and desktop */}
       <div>
         <div className="mb-6">
@@ -268,11 +305,26 @@ export default function HomePage() {
         </div>
 
         {products.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {products.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {products.map((product, index) => (
+                <div key={product.id}>
+                  <ProductCard product={product} />
+                  {/* Add ad after every 4th product */}
+                  {(index + 1) % 4 === 0 && index < products.length - 1 && (
+                    <div className="col-span-full my-8">
+                      <AdSenseAd
+                        adSlotId="8732452191"
+                        contentLength={products.length * 200} // Estimate content length
+                        minContentLength={800}
+                        className="mx-auto"
+                      />
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </>
         ) : (
           <Card>
             <CardContent className="text-center py-12">

@@ -6,118 +6,89 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { db } from "../firebase";
-import { UserData, UserPreferences } from "../types/user";
 
 export class UserService {
-  // Get user by ID
-  static async getUserById(userId: string): Promise<UserData | null> {
+  static async getUserById(userId: string) {
     try {
-      const userRef = doc(db, "users", userId);
-      const userDoc = await getDoc(userRef);
-
+      const userDoc = await getDoc(doc(db, "users", userId));
       if (userDoc.exists()) {
-        return userDoc.data() as UserData;
+        return userDoc.data();
       }
-
       return null;
     } catch (error) {
-      console.error("Error getting user by ID:", error);
-      throw error;
+      console.error("Error getting user:", error);
+      return null;
     }
   }
 
-  // Ensure user document exists
   static async ensureUserDocument(
     userId: string,
     userEmail?: string,
     userDisplayName?: string
-  ): Promise<void> {
+  ): Promise<boolean> {
     try {
       const userRef = doc(db, "users", userId);
       const userDoc = await getDoc(userRef);
 
       if (!userDoc.exists()) {
-        // Create new user document
         await setDoc(userRef, {
-          email: userEmail,
-          displayName: userDisplayName,
+          uid: userId,
+          email: userEmail || null,
+          displayName: userDisplayName || null,
+          publicTag: null,
           createdAt: serverTimestamp(),
-          lastLoginAt: serverTimestamp(),
+          lastLogin: serverTimestamp(),
+          reputation: 0,
+          contributionsCount: 0,
+          isVerified: false,
           isActive: true,
-          role: "user",
+          preferences: {},
         });
+        return true;
       } else {
-        // Update existing user document
         await updateDoc(userRef, {
-          lastLoginAt: serverTimestamp(),
-          email: userEmail || userDoc.data().email,
-          displayName: userDisplayName || userDoc.data().displayName,
+          lastLogin: serverTimestamp(),
         });
       }
+      return false;
     } catch (error) {
       console.error("Error ensuring user document:", error);
       throw error;
     }
   }
 
-  // Update user tag
-  static async updateUserTag(
-    userId: string,
-    publicTag: string,
-    userEmail?: string,
-    userDisplayName?: string
-  ): Promise<void> {
+  static async checkAccountStatus(userId: string) {
     try {
-      const userRef = doc(db, "users", userId);
-
-      await updateDoc(userRef, {
-        publicTag,
-        tagLastChanged: serverTimestamp(),
-        email: userEmail,
-        displayName: userDisplayName,
-        lastLoginAt: serverTimestamp(),
-      });
-    } catch (error) {
-      console.error("Error updating user tag:", error);
-      throw error;
-    }
-  }
-
-  // Update user preferences
-  static async updateUserPreferences(
-    userId: string,
-    preferences: UserPreferences
-  ): Promise<void> {
-    try {
-      const userRef = doc(db, "users", userId);
-      await updateDoc(userRef, {
-        preferences,
-        lastLoginAt: serverTimestamp(),
-      });
-    } catch (error) {
-      console.error("Error updating user preferences:", error);
-      throw error;
-    }
-  }
-
-  // Get user preferences
-  static async getUserPreferences(userId: string): Promise<UserPreferences> {
-    try {
-      const userRef = doc(db, "users", userId);
-      const userDoc = await getDoc(userRef);
-
+      const userDoc = await getDoc(doc(db, "users", userId));
       if (userDoc.exists()) {
-        return userDoc.data().preferences || {};
+        const userData = userDoc.data();
+        return {
+          exists: true,
+          isActive: userData.isActive !== false,
+          userData,
+        };
       }
-
-      return {} as UserPreferences;
+      return { exists: false, isActive: false, userData: null };
     } catch (error) {
-      console.error("Error getting user preferences:", error);
+      console.error("Error checking account status:", error);
+      return { exists: false, isActive: false, userData: null };
+    }
+  }
+
+  static async reactivateAccount(userId: string): Promise<void> {
+    try {
+      const userRef = doc(db, "users", userId);
+      await updateDoc(userRef, {
+        isActive: true,
+        reactivatedAt: serverTimestamp(),
+        lastLogin: serverTimestamp(),
+      });
+    } catch (error) {
+      console.error("Error reactivating account:", error);
       throw error;
     }
   }
 
-  // Deactivate account
   static async deactivateAccount(userId: string): Promise<void> {
     try {
       const userRef = doc(db, "users", userId);
@@ -127,44 +98,6 @@ export class UserService {
       });
     } catch (error) {
       console.error("Error deactivating account:", error);
-      throw error;
-    }
-  }
-
-  // Reactivate account
-  static async reactivateAccount(userId: string): Promise<void> {
-    try {
-      const userRef = doc(db, "users", userId);
-      await updateDoc(userRef, {
-        isActive: true,
-        reactivatedAt: serverTimestamp(),
-        lastLoginAt: serverTimestamp(),
-      });
-    } catch (error) {
-      console.error("Error reactivating account:", error);
-      throw error;
-    }
-  }
-
-  // Check account status
-  static async checkAccountStatus(
-    userId: string
-  ): Promise<{ exists: boolean; isActive: boolean }> {
-    try {
-      const userRef = doc(db, "users", userId);
-      const userDoc = await getDoc(userRef);
-
-      if (userDoc.exists()) {
-        const userData = userDoc.data();
-        return {
-          exists: true,
-          isActive: userData.isActive !== false, // Default to true if not explicitly set to false
-        };
-      }
-
-      return { exists: false, isActive: true };
-    } catch (error) {
-      console.error("Error checking account status:", error);
       throw error;
     }
   }

@@ -28,8 +28,27 @@ export function CookieConsent() {
     if (!consent) {
       setShowBanner(true);
     } else {
-      const savedPreferences = JSON.parse(consent);
-      setPreferences(savedPreferences);
+      try {
+        const savedPreferences = JSON.parse(consent);
+        // Validate that the parsed object has the expected structure
+        if (
+          typeof savedPreferences === "object" &&
+          savedPreferences !== null &&
+          typeof savedPreferences.essential === "boolean"
+        ) {
+          setPreferences(savedPreferences);
+        } else {
+          // Invalid format, show banner again
+          setShowBanner(true);
+        }
+      } catch (error) {
+        // Invalid JSON or old format, clear the cookie and show banner
+        console.warn(
+          "Invalid cookie consent format, clearing and showing banner"
+        );
+        localStorage.removeItem("cookie-consent");
+        setShowBanner(true);
+      }
     }
   }, []);
 

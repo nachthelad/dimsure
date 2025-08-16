@@ -1,42 +1,23 @@
 export interface UserData {
-  publicTag?: string;
+  uid: string;
   email?: string;
   displayName?: string;
+  publicTag?: string;
   createdAt?: any;
-  lastLoginAt?: any;
-  isActive?: boolean;
+  lastLogin?: any;
+  reputation: number;
+  contributionsCount: number;
+  isVerified: boolean;
+  isActive: boolean;
+  preferences: Record<string, any>;
   tagLastChanged?: any;
-  role?: UserRole;
-  preferences?: UserPreferences;
+  lastUpdated?: any;
   deactivatedAt?: any;
   reactivatedAt?: any;
 }
 
-export type UserRole = "user" | "admin" | "moderator";
-
-export interface UserPreferences {
-  preferredUnitSystem?: "metric" | "imperial";
-  language?: "en" | "es";
-  theme?: "light" | "dark" | "system";
-  notifications?: {
-    email?: boolean;
-    push?: boolean;
-    disputes?: boolean;
-    comments?: boolean;
-  };
-}
-
-export interface UserStats {
-  totalProducts: number;
-  totalLikes: number;
-  totalViews: number;
-  averageConfidence: number;
-  joinDate: any;
-  lastActivity: any;
-}
-
-export interface UserProfile {
-  id: string;
-  data: UserData;
-  stats: UserStats;
+export interface AccountStatus {
+  exists: boolean;
+  isActive: boolean;
+  userData: UserData | null;
 }
