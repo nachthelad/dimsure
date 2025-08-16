@@ -50,6 +50,9 @@ export interface BlogPost {
   slug?: string;
   content?: string;
   coverImage?: string;
+  coverImageWidth?: number | null;
+  coverImageHeight?: number | null;
+  coverImageBlurDataURL?: string | null;
   createdAt?: any;
   author?: string;
   excerpt?: string;

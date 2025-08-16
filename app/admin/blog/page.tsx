@@ -10,7 +10,11 @@ import {
   query,
   where,
 } from "firebase/firestore";
-import { optimizeAndUploadImage, validateImageFile } from "@/lib/storage";
+import {
+  optimizeAndUploadImage,
+  validateImageFile,
+  type UploadedImageMeta,
+} from "@/lib/storage";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/components/layout/language-provider";
@@ -59,6 +63,8 @@ export default function BlogAdminPage() {
   const [content, setContent] = useState("");
   const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
   const [coverImageUrl, setCoverImageUrl] = useState("");
+  const [coverImageMeta, setCoverImageMeta] =
+    useState<UploadedImageMeta | null>(null);
   const [imageError, setImageError] = useState("");
   const [uploadingImage, setUploadingImage] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -81,9 +87,10 @@ export default function BlogAdminPage() {
     }
     setUploadingImage(true);
     try {
-      const url = await optimizeAndUploadImage(file, "blog");
+      const meta = await optimizeAndUploadImage(file, "blog");
       setCoverImageFile(file);
-      setCoverImageUrl(url);
+      setCoverImageUrl(meta.url);
+      setCoverImageMeta(meta);
     } catch (err) {
       setImageError("Error al subir la imagen");
       setCoverImageFile(null);
@@ -102,6 +109,9 @@ export default function BlogAdminPage() {
         slug,
         content,
         coverImage: coverImageUrl,
+        coverImageWidth: coverImageMeta?.width || null,
+        coverImageHeight: coverImageMeta?.height || null,
+        coverImageBlurDataURL: coverImageMeta?.blurDataURL || null,
         createdAt: serverTimestamp(),
         author: user.email,
       });

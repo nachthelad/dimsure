@@ -68,7 +68,7 @@ export default function BlogPostPage() {
               sizes="(max-width: 768px) 100vw, 768px"
               priority
               quality={70}
-              unoptimized
+              blurDataURL={(post as any).coverImageBlurDataURL || undefined}
             />
           </div>
         )}
