@@ -10,15 +10,15 @@ import { GuideHeaderClient } from "@/components/features/guide-header-client";
 import { GuideContentClient } from "@/components/features/guide-content-client";
 
 interface GuidePageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 export async function generateMetadata({
   params,
 }: GuidePageProps): Promise<Metadata> {
-  const slug = params.slug;
+  const { slug } = await params;
   const readable = slug
     .split("-")
     .map((w) => (w ? w.charAt(0).toUpperCase() + w.slice(1) : w))
@@ -41,8 +41,8 @@ export const dynamicParams = true;
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-export default function GuidePage({ params }: GuidePageProps) {
-  const slug = params.slug;
+export default async function GuidePage({ params }: GuidePageProps) {
+  const { slug } = await params;
 
   const articleSchema = {
     "@context": "https://schema.org",
