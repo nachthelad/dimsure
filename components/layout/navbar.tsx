@@ -211,9 +211,6 @@ export function Navbar() {
                 </SheetTrigger>
                 <SheetContent side="right" className="w-64">
                   <SheetTitle>Menu</SheetTitle>
-                  <SheetDescription>
-                    Navigate through the application
-                  </SheetDescription>
                   <div className="flex flex-col space-y-2 mt-8">
                     {navigation.map((item) => {
                       const Icon = item.icon;
