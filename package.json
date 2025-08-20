@@ -1,10 +1,11 @@
 {
   "name": "dimsure",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "packageManager": "pnpm@10.13.1",
   "scripts": {
     "build": "next build",
+    "postbuild": "node scripts/generate-sitemap.js && node scripts/generate-robots.js",
     "dev": "next dev",
     "lint": "next lint",
     "start": "next start",

@@ -776,6 +776,26 @@ export default function rateLimit(options: Options) {
 }
 ```
 
+## Versionado de la aplicación
+
+La UI muestra la versión como `v<version>` debajo del botón de autenticación en la navegación. La fuente de la versión es:
+
+- `NEXT_PUBLIC_APP_VERSION` si está definida en el entorno de build/deploy.
+- En su defecto, la propiedad `version` de `package.json`.
+
+Actualización manual de versión (SemVer):
+
+```bash
+pnpm version patch   # 1.0.0 -> 1.0.1
+pnpm version minor   # 1.0.0 -> 1.1.0
+pnpm version major   # 1.0.0 -> 2.0.0
+```
+
+Notas:
+
+- Tras actualizar la versión, realizar build y deploy para reflejarla en la UI.
+- También puede definirse `NEXT_PUBLIC_APP_VERSION` en el proveedor (por ejemplo Vercel/Firebase) para forzar un valor específico.
+
 ### Scripts de Utilidad
 
 **Archivo**: `scripts/deploy.sh`

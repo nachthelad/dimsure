@@ -769,6 +769,55 @@ const ProductGrid = ({ products }: { products: Product[] }) => (
 );
 ```
 
+### Mobile Topbar Component
+
+**Archivo**: `components/layout/mobile-topbar.tsx`
+
+- Componente separado para la navegación móvil siguiendo el principio de responsabilidad única (SOLID).
+- Se renderiza solo en móviles (`xl:hidden`) y muestra:
+  - Logo, `LanguageToggle`, `ThemeToggle`
+  - Menú lateral (Sheet) con los mismos enlaces que el sidebar de escritorio
+  - Enlace a `Admin` solo para usuarios administradores
+  - `AuthButton` y la versión de la app al final
+
+Uso desde `components/layout/navbar.tsx`:
+
+```typescript
+<MobileTopbar navigation={navigation} isAdmin={isAdmin} />
+```
+
+### Colocación del enlace de Admin
+
+- En escritorio, el enlace `Admin` ahora está dentro de la lista principal de navegación del sidebar, ubicado después de los demás elementos. Solo se muestra para administradores.
+- En móvil, el enlace `Admin` aparece dentro del menú de la hoja (Sheet) bajo los enlaces principales.
+
+Archivos relevantes:
+
+- `components/layout/navbar.tsx`
+- `components/layout/mobile-topbar.tsx`
+
+### Visualización de la versión de la app
+
+**Archivos**:
+
+- `components/layout/app-version.tsx`
+- `lib/version.ts`
+
+- La versión se muestra como `v<version>` debajo de `AuthButton`, separada por un `Separator`, tanto en el sidebar de escritorio como en el menú móvil.
+- Fuente de la versión:
+  - Usa `NEXT_PUBLIC_APP_VERSION` si está definida
+  - Si no, usa `version` de `package.json`
+
+Actualización manual de la versión (SemVer):
+
+```bash
+pnpm version patch   # 1.0.0 -> 1.0.1
+pnpm version minor   # 1.0.0 -> 1.1.0
+pnpm version major   # 1.0.0 -> 2.0.0
+```
+
+- Tras actualizar, reconstruir/desplegar para reflejar la nueva versión en la UI.
+
 ## Accesibilidad
 
 ### ARIA Labels

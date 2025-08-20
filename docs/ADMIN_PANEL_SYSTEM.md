@@ -184,6 +184,11 @@ const StatsCard = ({ title, value, change, icon, color }: StatsCardProps) => (
 );
 ```
 
+### Acceso desde la navegación
+
+- En escritorio, el enlace `Admin` se muestra dentro del sidebar principal (`components/layout/navbar.tsx`) debajo de los enlaces de navegación, y solo es visible para cuentas administradoras.
+- En móvil, el enlace `Admin` aparece dentro del menú del `MobileTopbar` (`components/layout/mobile-topbar.tsx`) con la misma lógica de visibilidad.
+
 ### Quick Actions
 
 ```typescript
