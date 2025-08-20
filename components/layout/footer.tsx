@@ -79,7 +79,7 @@ export function Footer() {
                   href="/guides"
                   className="text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  Guides
+                  {t("footer.links.guides")}
                 </Link>
               </li>
             </ul>

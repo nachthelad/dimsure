@@ -643,6 +643,7 @@ export const en = {
       privacy: "Privacy Policy",
       terms: "Terms of Service",
       followX: "Follow us on X",
+      guides: "Guides",
     },
     copyright: "© {{year}} Dimsure. All rights reserved.",
     poweredBy: "Powered by",
