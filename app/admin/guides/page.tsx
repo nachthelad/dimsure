@@ -54,7 +54,7 @@ export default function GuidesAdminPage() {
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("Measurement");
   const [readTime, setReadTime] = useState("5 min read");
-  const [author, setAuthor] = useState("");
+  const [author, setAuthor] = useState("Dimsure Team");
   const [content, setContent] = useState("");
   const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
   const [coverImageUrl, setCoverImageUrl] = useState("");
@@ -110,7 +110,7 @@ export default function GuidesAdminPage() {
         description,
         category,
         readTime,
-        author: author || user.email,
+        author: author || "Dimsure Team",
         content,
         coverImage: coverImageUrl || null,
         coverImageWidth: coverImageMeta?.width || null,
@@ -124,7 +124,7 @@ export default function GuidesAdminPage() {
       setDescription("");
       setCategory("Measurement");
       setReadTime("5 min read");
-      setAuthor("");
+      setAuthor("Dimsure Team");
       setContent("");
       setCoverImageFile(null);
       setCoverImageUrl("");
