@@ -1,5 +1,5 @@
-const fs = require("fs")
-const path = require("path")
+const fs = require("fs");
+const path = require("path");
 
 const siteConfig = {
   name: "Dimsure",
@@ -20,7 +20,7 @@ const siteConfig = {
   links: {
     twitter: "https://twitter.com/dimsure_app",
   },
-}
+};
 
 const generateSitemap = () => {
   const pages = [
@@ -33,9 +33,10 @@ const generateSitemap = () => {
     { url: "/disputes", changefreq: "weekly", priority: "0.6" },
     { url: "/privacy", changefreq: "yearly", priority: "0.5" },
     { url: "/terms", changefreq: "yearly", priority: "0.5" },
-  ]
+    { url: "/guides", changefreq: "weekly", priority: "0.8" },
+  ];
 
-  const today = new Date().toISOString().split("T")[0]
+  const today = new Date().toISOString().split("T")[0];
 
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -49,11 +50,11 @@ ${pages
   </url>`
   )
   .join("\n")}
-</urlset>`
+</urlset>`;
 
-  const filePath = path.join(__dirname, "../public/sitemap.xml")
-  fs.writeFileSync(filePath, sitemap)
-  console.log("✅ Sitemap generated and saved at: public/sitemap.xml")
-}
+  const filePath = path.join(__dirname, "../public/sitemap.xml");
+  fs.writeFileSync(filePath, sitemap);
+  console.log("✅ Sitemap generated and saved at: public/sitemap.xml");
+};
 
-generateSitemap()
+generateSitemap();

@@ -6,9 +6,6 @@ Disallow: /my-contributions
 Disallow: /disputes
 Disallow: /add-product
 Disallow: /admin/
-Disallow: /login
-Disallow: /profile
-Disallow: /search
 
 # Allow blog explicitly
 Allow: /blog
@@ -25,4 +22,4 @@ Allow: /
 Crawl-delay: 1
 
 # Dimsure is under development – site rules may change
-# Generated: 2025-07-21
+# Generated: 2025-08-20
