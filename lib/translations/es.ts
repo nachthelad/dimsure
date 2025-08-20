@@ -657,6 +657,7 @@ export const es = {
       privacy: "Política de Privacidad",
       terms: "Términos de Servicio",
       followX: "Síguenos en X",
+      guides: "Guías",
     },
     copyright: "© {{year}} Dimsure. Todos los derechos reservados.",
     poweredBy: "Desarrollado por",

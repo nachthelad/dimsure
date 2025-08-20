@@ -1,161 +1,59 @@
 import { Metadata } from "next";
-import { notFound } from "next/navigation";
 import Link from "next/link";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Clock, User, ArrowLeft, Share2 } from "lucide-react";
+import { Clock, User, ArrowLeft } from "lucide-react";
 import { SchemaScript } from "@/components/seo/schema-script";
-
-// This would typically come from a CMS or database
-const guides = {
-  "accurate-product-measurement": {
-    title: "How to Measure Product Dimensions Accurately",
-    description:
-      "Learn professional techniques for measuring products to ensure accurate packaging and shipping calculations.",
-    category: "Measurement",
-    readTime: "5 min read",
-    author: "Dimsure Team",
-    publishedAt: "2024-01-15",
-    content: `
-# How to Measure Product Dimensions Accurately
-
-Accurate product measurements are crucial for optimizing packaging, reducing shipping costs, and improving customer satisfaction. This comprehensive guide will teach you professional measurement techniques.
-
-## Why Accurate Measurements Matter
-
-- **Cost Savings**: Proper measurements can reduce shipping costs by up to 30%
-- **Customer Satisfaction**: Accurate size information reduces returns
-- **Inventory Management**: Better space utilization in warehouses
-- **Packaging Optimization**: Right-sized packaging reduces waste
-
-## Essential Tools
-
-1. **Digital Calipers** - For precise measurements (±0.1mm accuracy)
-2. **Steel Ruler** - For larger items
-3. **Measuring Tape** - For oversized products
-4. **Digital Scale** - For weight measurements
-
-## Step-by-Step Measurement Process
-
-### 1. Prepare Your Workspace
-- Clean, flat surface
-- Good lighting
-- Remove all packaging materials
-- Have measurement tools ready
-
-### 2. Identify the Orientation
-- **Length**: Longest dimension
-- **Width**: Second longest dimension  
-- **Height**: Shortest dimension (usually vertical)
-
-### 3. Measure Each Dimension
-- Measure at the widest points
-- Include any protruding parts
-- Round up to the nearest millimeter
-- Take multiple measurements for accuracy
-
-### 4. Document Everything
-- Record all three dimensions
-- Note any special characteristics
-- Take photos for reference
-- Include weight if relevant
-
-## Common Mistakes to Avoid
-
-- Measuring compressed packaging instead of actual product
-- Ignoring protruding elements (handles, antennas, etc.)
-- Not accounting for irregular shapes
-- Rounding down instead of up
-- Measuring only one sample of variable products
-
-## Best Practices for Different Product Types
-
-### Electronics
-- Include cables and accessories
-- Measure with protective cases if applicable
-- Account for ventilation requirements
-
-### Clothing & Textiles
-- Measure when laid flat
-- Consider compression for soft goods
-- Account for seasonal variations
-
-### Fragile Items
-- Include protective packaging in measurements
-- Consider minimum safe packaging requirements
-- Factor in cushioning materials
-
-## Quality Control Tips
-
-1. **Double-check measurements** - Measure twice, record once
-2. **Cross-reference** - Compare with manufacturer specifications
-3. **Community verification** - Submit to platforms like Dimsure for validation
-4. **Regular calibration** - Ensure your tools are accurate
-
-## Conclusion
-
-Accurate product measurement is a skill that improves with practice. By following these professional techniques, you'll contribute to better logistics efficiency and cost optimization across the supply chain.
-
-Remember: When in doubt, measure again. Accuracy today saves money tomorrow.
-    `,
-  },
-  // Add other guides here...
-};
+import { ShareButton } from "@/components/features/share-button";
+import { GuideHeaderClient } from "@/components/features/guide-header-client";
+import { GuideContentClient } from "@/components/features/guide-content-client";
 
 interface GuidePageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 export async function generateMetadata({
   params,
 }: GuidePageProps): Promise<Metadata> {
-  const guide = guides[params.slug as keyof typeof guides];
-
-  if (!guide) {
-    return {
-      title: "Guide Not Found | Dimsure",
-    };
-  }
-
+  const { slug } = await params;
+  const readable = slug
+    .split("-")
+    .map((w) => (w ? w.charAt(0).toUpperCase() + w.slice(1) : w))
+    .join(" ");
+  const description =
+    "Expert guides on packaging, logistics, and product measurement.";
   return {
-    title: `${guide.title} | Dimsure Guides`,
-    description: guide.description,
-    keywords: `${guide.category.toLowerCase()}, packaging, logistics, product measurement, shipping optimization`,
-    openGraph: {
-      title: guide.title,
-      description: guide.description,
-      type: "article",
-      publishedTime: guide.publishedAt,
-      authors: [guide.author],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: guide.title,
-      description: guide.description,
-    },
+    title: `${readable} | Dimsure Guides`,
+    description,
+    openGraph: { title: readable, description, type: "article" },
+    twitter: { card: "summary_large_image", title: readable, description },
   };
 }
 
-export default function GuidePage({ params }: GuidePageProps) {
-  const guide = guides[params.slug as keyof typeof guides];
+export function generateStaticParams() {
+  return [];
+}
 
-  if (!guide) {
-    notFound();
-  }
+export const dynamicParams = true;
+
+export default async function GuidePage({ params }: GuidePageProps) {
+  const { slug } = await params;
 
   const articleSchema = {
     "@context": "https://schema.org",
     "@type": "Article",
-    headline: guide.title,
-    description: guide.description,
+    headline: slug
+      .split("-")
+      .map((w) => (w ? w.charAt(0).toUpperCase() + w.slice(1) : w))
+      .join(" "),
+    description:
+      "Expert guide on packaging, logistics, and product measurement.",
     author: {
       "@type": "Person",
-      name: guide.author,
+      name: "Dimsure Team",
     },
     publisher: {
       "@type": "Organization",
@@ -165,11 +63,11 @@ export default function GuidePage({ params }: GuidePageProps) {
         url: "https://dimsure.online/android-chrome-512x512.png",
       },
     },
-    datePublished: guide.publishedAt,
-    dateModified: guide.publishedAt,
+    datePublished: undefined,
+    dateModified: undefined,
     mainEntityOfPage: {
       "@type": "WebPage",
-      "@id": `https://dimsure.online/guides/${params.slug}`,
+      "@id": `https://dimsure.online/guides/${slug}`,
     },
   };
 
@@ -189,59 +87,53 @@ export default function GuidePage({ params }: GuidePageProps) {
           </Link>
         </nav>
 
-        {/* Article Header */}
-        <header className="mb-8">
-          <div className="flex items-center gap-4 mb-4">
-            <Badge variant="secondary">{guide.category}</Badge>
-            <div className="flex items-center gap-4 text-sm text-muted-foreground">
-              <div className="flex items-center gap-1">
-                <Clock className="h-4 w-4" />
-                {guide.readTime}
+        {/* Article Header - client fetch ensures exact title casing from DB */}
+        <GuideHeaderClient
+          slug={slug}
+          fallback={
+            <header className="mb-8">
+              <div className="flex items-center gap-4 mb-4">
+                <Badge variant="secondary">{"Guide"}</Badge>
+                <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                  <div className="flex items-center gap-1">
+                    <Clock className="h-4 w-4" />
+                    {""}
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <User className="h-4 w-4" />
+                    {"Dimsure Team"}
+                  </div>
+                </div>
               </div>
-              <div className="flex items-center gap-1">
-                <User className="h-4 w-4" />
-                {guide.author}
-              </div>
-            </div>
-          </div>
-
-          <h1 className="text-4xl font-bold text-foreground mb-4">
-            {guide.title}
-          </h1>
-
-          <p className="text-xl text-muted-foreground mb-6">
-            {guide.description}
-          </p>
-
-          {/* Share Button */}
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              if (navigator.share) {
-                navigator.share({
-                  title: guide.title,
-                  text: guide.description,
-                  url: window.location.href,
-                });
-              } else {
-                navigator.clipboard.writeText(window.location.href);
-              }
-            }}
-          >
-            <Share2 className="h-4 w-4 mr-2" />
-            Share
-          </Button>
-        </header>
+              <h1 className="text-4xl font-bold text-foreground mb-4">
+                {slug
+                  .split("-")
+                  .map((w) => (w ? w.charAt(0).toUpperCase() + w.slice(1) : w))
+                  .join(" ")}
+              </h1>
+              <p className="text-xl text-muted-foreground mb-6">
+                {
+                  "Expert guides and best practices for packaging and logistics."
+                }
+              </p>
+              <ShareButton
+                title={slug
+                  .split("-")
+                  .map((w) => (w ? w.charAt(0).toUpperCase() + w.slice(1) : w))
+                  .join(" ")}
+                description={
+                  "Expert guides and best practices for packaging and logistics."
+                }
+              />
+            </header>
+          }
+        />
 
         {/* Article Content */}
         <Card>
           <CardContent className="p-8">
-            <div className="prose prose-lg prose-gray dark:prose-invert max-w-none">
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                {guide.content}
-              </ReactMarkdown>
-            </div>
+            {/* Client-fetched content (from Firestore) */}
+            <GuideContentClient slug={slug} />
           </CardContent>
         </Card>
 

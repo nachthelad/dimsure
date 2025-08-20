@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { db } from "@/lib/firebase";
@@ -17,7 +18,6 @@ import {
 } from "@/lib/storage";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useLanguage } from "@/components/layout/language-provider";
 import { APP_CONSTANTS } from "@/lib/constants";
 
 function slugify(text: string) {
@@ -30,22 +30,13 @@ function slugify(text: string) {
     .replace(/^-+|-+$/g, "");
 }
 
-async function ensureUniqueSlug(baseSlug: string): Promise<string> {
+async function ensureUniqueGuideSlug(baseSlug: string): Promise<string> {
   let candidate = baseSlug;
   let suffix = 1;
-  // Try a few times; extremely unlikely to loop many times
-  // Check if any post already uses this slug
-  // If exists, append incremental suffix: slug-2, slug-3, ...
-  // Firestore: query equality on field 'slug'
-  // Loop until unique
-  // Note: This is client-side uniqueness; race conditions are unlikely here
-  // For strong guarantees, enforce at write-time with a Cloud Function
-  // which is out of scope for this UI change
-  // Here, we aim for practical uniqueness in admin UI
   // eslint-disable-next-line no-constant-condition
   while (true) {
     const snapshot = await getDocs(
-      query(collection(db, "blogPosts"), where("slug", "==", candidate))
+      query(collection(db, "guides"), where("slug", "==", candidate))
     );
     if (snapshot.empty) {
       return candidate;
@@ -55,12 +46,15 @@ async function ensureUniqueSlug(baseSlug: string): Promise<string> {
   }
 }
 
-const MAX_CONTENT_LENGTH = 10000;
+const MAX_CONTENT_LENGTH = 20000;
 
-export default function BlogAdminPage() {
+export default function GuidesAdminPage() {
   const { user, loading, userData } = useAuth();
-  const { t } = useLanguage();
   const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [category, setCategory] = useState("Measurement");
+  const [readTime, setReadTime] = useState("5 min read");
+  const [author, setAuthor] = useState("");
   const [content, setContent] = useState("");
   const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
   const [coverImageUrl, setCoverImageUrl] = useState("");
@@ -71,13 +65,13 @@ export default function BlogAdminPage() {
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  if (loading) return <div>{t("blog.admin.loading")}</div>;
+  if (loading) return <div>Cargando...</div>;
   const isEmailAdmin =
     !!user?.email &&
     (user.email === APP_CONSTANTS.ADMIN_EMAIL ||
       user.email === APP_CONSTANTS.DEBUG_AUTHORIZED_EMAIL);
   if (!user || (userData?.role !== "admin" && !isEmailAdmin))
-    return <div>{t("blog.admin.notAuthorized")}</div>;
+    return <div>No autorizado</div>;
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -92,7 +86,7 @@ export default function BlogAdminPage() {
     }
     setUploadingImage(true);
     try {
-      const meta = await optimizeAndUploadImage(file, "blog");
+      const meta = await optimizeAndUploadImage(file, "guides");
       setCoverImageFile(file);
       setCoverImageUrl(meta.url);
       setCoverImageMeta(meta);
@@ -107,26 +101,36 @@ export default function BlogAdminPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
-    const slug = await ensureUniqueSlug(slugify(title));
+    const baseSlug = slugify(title);
+    const slug = await ensureUniqueGuideSlug(baseSlug);
     try {
-      await addDoc(collection(db, "blogPosts"), {
+      await addDoc(collection(db, "guides"), {
         title,
         slug,
+        description,
+        category,
+        readTime,
+        author: author || user.email,
         content,
-        coverImage: coverImageUrl,
+        coverImage: coverImageUrl || null,
         coverImageWidth: coverImageMeta?.width || null,
         coverImageHeight: coverImageMeta?.height || null,
         coverImageBlurDataURL: coverImageMeta?.blurDataURL || null,
         createdAt: serverTimestamp(),
-        author: user.email,
+        updatedAt: serverTimestamp(),
+        publishedAt: serverTimestamp(),
       });
       setTitle("");
+      setDescription("");
+      setCategory("Measurement");
+      setReadTime("5 min read");
+      setAuthor("");
       setContent("");
       setCoverImageFile(null);
       setCoverImageUrl("");
       setSuccess(true);
     } catch (err) {
-      alert("Error al guardar el artículo");
+      alert("Error al guardar la guía");
     }
     setSubmitting(false);
   };
@@ -135,25 +139,70 @@ export default function BlogAdminPage() {
     <div className="max-w-4xl mx-auto py-8 px-2">
       <Card className="mx-auto max-w-2xl">
         <CardHeader>
-          <CardTitle>{t("blog.admin.newPostTitle")}</CardTitle>
+          <CardTitle>Nueva Guía</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label className="block mb-1 font-medium">
-                {t("blog.admin.titleLabel")}
-              </label>
+              <label className="block mb-1 font-medium">Título</label>
               <input
                 className="w-full border border-input bg-background p-2 rounded focus:outline-none focus:ring-2 focus:ring-primary"
-                placeholder={t("blog.admin.titlePlaceholder")}
+                placeholder="Título de la guía"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 required
               />
             </div>
+
+            <div>
+              <label className="block mb-1 font-medium">Descripción</label>
+              <textarea
+                className="w-full border border-input bg-background p-2 rounded min-h-[80px]"
+                placeholder="Resumen breve"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                maxLength={300}
+                required
+              />
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div>
+                <label className="block mb-1 font-medium">Categoría</label>
+                <input
+                  className="w-full border border-input bg-background p-2 rounded"
+                  placeholder="Measurement / Optimization / Logistics / Operations"
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  required
+                />
+              </div>
+              <div>
+                <label className="block mb-1 font-medium">
+                  Tiempo de lectura
+                </label>
+                <input
+                  className="w-full border border-input bg-background p-2 rounded"
+                  placeholder="5 min read"
+                  value={readTime}
+                  onChange={(e) => setReadTime(e.target.value)}
+                  required
+                />
+              </div>
+              <div>
+                <label className="block mb-1 font-medium">Autor</label>
+                <input
+                  className="w-full border border-input bg-background p-2 rounded"
+                  placeholder="Autor"
+                  value={author}
+                  onChange={(e) => setAuthor(e.target.value)}
+                />
+              </div>
+            </div>
+
             <div>
               <label className="block mb-1 font-medium">
-                {t("blog.admin.coverImageLabel")}
+                Imagen de portada
               </label>
               <input
                 type="file"
@@ -163,14 +212,10 @@ export default function BlogAdminPage() {
                 className="w-full border border-input bg-background p-2 rounded"
               />
               {uploadingImage && (
-                <div className="text-blue-600 mt-1">
-                  {t("blog.admin.uploadingImage")}
-                </div>
+                <div className="text-blue-600 mt-1">Subiendo imagen...</div>
               )}
               {imageError && (
-                <div className="text-red-600 mt-1">
-                  {t("blog.admin.imageError", { error: imageError })}
-                </div>
+                <div className="text-red-600 mt-1">{imageError}</div>
               )}
               {coverImageFile && coverImageUrl && (
                 <div className="mt-2">
@@ -179,19 +224,20 @@ export default function BlogAdminPage() {
                   </div>
                   <img
                     src={coverImageUrl}
-                    alt={t("blog.admin.coverImagePreviewAlt")}
+                    alt="Vista previa"
                     className="mt-1 max-h-40 rounded"
                   />
                 </div>
               )}
             </div>
+
             <div>
               <label className="block mb-1 font-medium">
-                {t("blog.admin.contentLabel", { max: MAX_CONTENT_LENGTH })}
+                Contenido (Markdown)
               </label>
               <textarea
-                className="w-full border border-input bg-background p-2 rounded min-h-[200px] font-mono"
-                placeholder={t("blog.admin.contentPlaceholder")}
+                className="w-full border border-input bg-background p-2 rounded min-h-[240px] font-mono"
+                placeholder="Escribe el contenido en Markdown"
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 maxLength={MAX_CONTENT_LENGTH}
@@ -201,24 +247,25 @@ export default function BlogAdminPage() {
                 {content.length} / {MAX_CONTENT_LENGTH}
               </div>
             </div>
+
             <Button
               type="submit"
               disabled={
                 submitting ||
                 uploadingImage ||
                 !title ||
+                !description ||
+                !category ||
+                !readTime ||
                 !content ||
-                !coverImageUrl ||
                 content.length > MAX_CONTENT_LENGTH
               }
             >
-              {submitting
-                ? t("blog.admin.publishing")
-                : t("blog.admin.publish")}
+              {submitting ? "Publicando..." : "Publicar"}
             </Button>
             {success && (
               <div className="text-green-600 mt-2">
-                {t("blog.admin.success")}
+                ¡Guía publicada correctamente!
               </div>
             )}
           </form>

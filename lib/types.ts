@@ -75,3 +75,21 @@ export interface BlogPost {
   tags?: string[];
   status?: "draft" | "published" | "archived";
 }
+
+export interface Guide {
+  id: string;
+  title?: string;
+  slug?: string;
+  description?: string;
+  category?: string;
+  readTime?: string;
+  author?: string;
+  content?: string;
+  coverImage?: string | null;
+  coverImageWidth?: number | null;
+  coverImageHeight?: number | null;
+  coverImageBlurDataURL?: string | null;
+  createdAt?: any;
+  updatedAt?: any;
+  publishedAt?: any;
+}

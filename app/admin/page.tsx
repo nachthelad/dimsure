@@ -7,6 +7,7 @@ import {
   Database,
   TrendingUp,
   FileText,
+  BookOpen,
   Users,
   Shield,
   ArrowRight,
@@ -33,20 +34,32 @@ interface AdminSection {
 
 export default function AdminPage() {
   const router = useRouter();
-  const { user, loading } = useAuth();
+  const { user, userData, loading } = useAuth();
   const [stats, setStats] = useState<any>(null);
   const [statsLoading, setStatsLoading] = useState(true);
 
+  const email = (user?.email || "").toLowerCase();
+  const adminEmail = (APP_CONSTANTS.ADMIN_EMAIL || "").toLowerCase();
+  const debugEmail = (APP_CONSTANTS.DEBUG_AUTHORIZED_EMAIL || "").toLowerCase();
   const isAdmin =
-    APP_CONSTANTS.ADMIN_EMAIL &&
-    (user?.email === APP_CONSTANTS.ADMIN_EMAIL ||
-      user?.email === APP_CONSTANTS.DEBUG_AUTHORIZED_EMAIL);
+    (adminEmail && (email === adminEmail || email === debugEmail)) ||
+    userData?.role === "admin";
 
   useEffect(() => {
     if (isAdmin) {
       loadStats();
     }
   }, [isAdmin]);
+
+  // Redirect non-admin after auth state is known
+  useEffect(() => {
+    if (!loading && !isAdmin) {
+      const id = setTimeout(() => {
+        router.replace("/login?redirect=/admin");
+      }, 0);
+      return () => clearTimeout(id);
+    }
+  }, [loading, isAdmin, router]);
 
   // Debug logging
   useEffect(() => {
@@ -96,6 +109,14 @@ export default function AdminPage() {
       color: "default",
     },
     {
+      id: "guides",
+      title: "Gestión de Guías",
+      description: "Crear, editar y publicar guías de logística y embalaje",
+      icon: <BookOpen className="h-6 w-6" />,
+      href: "/admin/guides",
+      color: "default",
+    },
+    {
       id: "disputes",
       title: "Sistema de Disputas",
       description: "Revisar y resolver disputas de productos",
@@ -132,10 +153,7 @@ export default function AdminPage() {
     );
   }
 
-  if (!loading && !isAdmin) {
-    router.push("/login?redirect=/admin");
-    return null;
-  }
+  if (!loading && !isAdmin) return null;
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
@@ -298,6 +316,14 @@ export default function AdminPage() {
               >
                 <Package className="h-4 w-4" />
                 Gestionar Productos
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => router.push("/admin/guides")}
+                className="flex items-center gap-2"
+              >
+                <BookOpen className="h-4 w-4" />
+                Gestionar Guías
               </Button>
             </div>
           </CardContent>
