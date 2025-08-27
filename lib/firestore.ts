@@ -17,7 +17,7 @@ import {
   deleteDoc,
 } from "firebase/firestore";
 import { db, storage } from "./firebase";
-import type { Product } from "./types";
+import type { Product, Dispute } from "./types";
 import { normalizeProduct } from "./product-normalizer";
 import {
   ref,
@@ -994,32 +994,64 @@ export const getDisputes = async () => {
     const q = query(collection(db, "disputes"), orderBy("createdAt", "desc"));
     const querySnapshot = await getDocs(q);
 
-    const disputes = [];
-    for (const docSnapshot of querySnapshot.docs) {
-      const data = docSnapshot.data();
+    // Extract all unique user IDs
+    const userIds = new Set<string>();
+    const disputeData: Dispute[] = [];
 
-      // Get the user's public tag
-      let createdByTag = "@unknown";
-      if (data.createdBy) {
-        try {
-          const userRef = doc(db, "users", data.createdBy);
-          const userDoc = await getDoc(userRef);
-          if (userDoc.exists()) {
-            const userData = userDoc.data() as any;
-            createdByTag =
-              userData?.publicTag || userData?.displayName || "@unknown";
-          }
-        } catch (error) {
-          console.error("Error getting user data for dispute:", error);
-        }
-      }
-
-      disputes.push({
+    querySnapshot.docs.forEach((docSnapshot) => {
+      const data = docSnapshot.data() as Partial<Dispute>;
+      disputeData.push({
         id: docSnapshot.id,
         ...data,
-        createdByTag,
-      });
+      } as Dispute);
+
+      if (data.createdBy) {
+        userIds.add(data.createdBy);
+      }
+    });
+
+    // Batch fetch all user data
+    const userDataMap = new Map<string, string>();
+    if (userIds.size > 0) {
+      try {
+        // Firestore supports up to 10 documents per batch, so we need to chunk
+        const userIdArray = Array.from(userIds);
+        const chunks = [];
+        for (let i = 0; i < userIdArray.length; i += 10) {
+          chunks.push(userIdArray.slice(i, i + 10));
+        }
+
+        // Fetch users in batches
+        for (const chunk of chunks) {
+          const userRefs = chunk.map((id) => doc(db, "users", id));
+          const userDocs = await Promise.all(
+            userRefs.map((ref) => getDoc(ref))
+          );
+
+          userDocs.forEach((userDoc, index) => {
+            if (userDoc.exists()) {
+              const userData = userDoc.data() as any;
+              const userTag =
+                userData?.publicTag || userData?.displayName || "@unknown";
+              const uid = chunk[index];
+              if (uid) {
+                userDataMap.set(uid, userTag);
+              }
+            }
+          });
+        }
+      } catch (error) {
+        console.error("Error batch fetching user data for disputes:", error);
+      }
     }
+
+    // Combine dispute data with user tags
+    const disputes: Dispute[] = disputeData.map((dispute) => ({
+      ...dispute,
+      createdByTag: dispute.createdBy
+        ? userDataMap.get(dispute.createdBy) || "@unknown"
+        : "@unknown",
+    }));
 
     return disputes;
   } catch (error) {

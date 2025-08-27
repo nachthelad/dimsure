@@ -106,14 +106,15 @@ export function ProductCard({ product }: ProductCardProps) {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className={`h-6 px-2 ${
+                  className={`min-h-11 h-auto px-2 py-2 ${
                     isLiked ? "text-red-500" : "text-muted-foreground"
                   }`}
                   onClick={handleLike}
                   disabled={isLiking}
+                  aria-label={`${isLiked ? 'Unlike' : 'Like'} ${product.name}`}
                 >
                   <Heart
-                    className={`h-3 w-3 mr-1 ${isLiked ? "fill-current" : ""}`}
+                    className={`h-4 w-4 mr-1 ${isLiked ? "fill-current" : ""}`}
                   />
                   <span>{likesCount}</span>
                 </Button>
