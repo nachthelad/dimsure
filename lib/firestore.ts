@@ -29,6 +29,7 @@ import { en } from "@/lib/translations/en";
 import { es } from "@/lib/translations/es";
 import { APP_CONSTANTS } from "./constants";
 import { generateUrlSlug } from "./utils";
+// import { getCached, CacheKeys, CacheTTL } from "@/lib/cache/redis";
 
 // Product operations
 export const createProduct = async (productData: any, userId: string) => {

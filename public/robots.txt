@@ -22,4 +22,4 @@ Allow: /
 Crawl-delay: 1
 
 # Dimsure is under development – site rules may change
-# Generated: 2025-08-20
+# Generated: 2025-08-27
