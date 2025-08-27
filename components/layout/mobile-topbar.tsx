@@ -54,7 +54,12 @@ export function MobileTopbar({ navigation, isAdmin }: MobileTopbarProps) {
             <ThemeToggle />
             <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon">
+                <Button 
+                  variant="ghost" 
+                  size="icon"
+                  aria-label="Open navigation menu"
+                  aria-expanded={isSheetOpen}
+                >
                   <Menu className="h-6 w-6" />
                 </Button>
               </SheetTrigger>
